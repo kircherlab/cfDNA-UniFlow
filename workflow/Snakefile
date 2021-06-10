@@ -5,11 +5,14 @@
 report: "report/workflow.rst"
 
 
+include: "rules/common.smk"
+include: "rules/bam_to_fastq.smk"
+
 rule all:
     input:
+        get_final_output()
         # The first rule should define the default target files
         # Subsequent target rules can be specified below. They should start with all_*.
 
 
-include: "rules/common.smk"
-include: "rules/other.smk"
+
