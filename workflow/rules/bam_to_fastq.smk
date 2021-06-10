@@ -8,7 +8,7 @@ rule bam_to_fastq:
     log:
         "results/logs/bam_to_fastq/{SAMPLE}.log",
     conda:
-        "workflow/envs/cfDNA_prep.yaml"
+        "../envs/cfDNA_prep.yaml"
     threads: 8
     shell:
         """(
