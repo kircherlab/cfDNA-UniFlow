@@ -1,1 +1,11 @@
+name: cfDNA_prep
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - bedtools
+  - python=3.8
+  - bwa
+  - samtools
 
