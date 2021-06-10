@@ -24,8 +24,30 @@ def get_final_output():
             paired_end=["R1", "R2"],
         )
     )
+    final_output.extend(
+        expand(
+            "results/NGmerge/{SAMPLE}_merged.fastq.gz",
+            SAMPLE=samples["sample"]
+        )
+    )
+    final_output.extend(
+        expand(
+            "results/mapped_reads/{SAMPLE}_all.{GENOME}.bam",
+            zip,
+            SAMPLE=samples["sample"],
+            GENOME=samples["genome_build"]
+        )
+    )
 
     return final_output
+
+def get_read_group(sample):
+    ID = samples.loc[sample].loc["ID"]
+    library = samples.loc[sample].loc["library_name"]
+    platform = samples.loc[sample].loc["platform"]
+    RGID = f"{ID}_{sample}"
+    RG = f"@RG\\tID:{RGID}\\tSM:{sample}\\tLB:{library}\\tPL:{platform}"
+    return RG
 
 
 def get_map_reads_input():
