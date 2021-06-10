@@ -13,7 +13,8 @@
 !workflow/scripts/
 !workflow/scripts/**
 
-!config/example.config.yml
+!config/
+!config/example.config.yaml
 !config/example.samples.tsv
 
 
