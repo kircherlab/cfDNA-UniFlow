@@ -13,6 +13,9 @@
 !workflow/scripts/
 !workflow/scripts/**
 
+!workflow/rules/
+!workflow/rules/**
+
 !config/
 !config/example.config.yaml
 !config/example.samples.tsv
