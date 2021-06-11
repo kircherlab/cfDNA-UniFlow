@@ -38,6 +38,14 @@ def get_final_output():
             GENOME=samples["genome_build"]
         )
     )
+    final_output.extend(
+        expand(
+            "results/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
+            zip,
+            SAMPLE=samples["sample"],
+            GENOME=samples["genome_build"]
+        )
+    )
 
     return final_output
 
