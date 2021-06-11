@@ -41,7 +41,12 @@ def get_read_group(sample):
     ID = samples.loc[sample].loc["ID"]
     library = samples.loc[sample].loc["library_name"]
     platform = samples.loc[sample].loc["platform"]
-    RGID = f"{ID}_{sample}"
+    info = samples.loc[sample].loc["info"]
+    if pd.isna(info):
+        info=""
+    else:    
+        info="_"+info
+    RGID = f"{ID}_{sample}{info}"
     RG = f"@RG\\tID:{sample}\\tSM:{RGID}\\tLB:{library}\\tPL:{platform}"
     return RG
 
