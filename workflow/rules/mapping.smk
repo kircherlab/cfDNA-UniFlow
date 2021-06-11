@@ -58,3 +58,14 @@ rule mark_duplicates:
         "(samtools fixmate -u -m {input.mapped_reads} - | "
         "samtools sort -u -@ {threads} -T {params.TMPdir} - | "
         "samtools markdup -@ {threads} - {output.processed_reads}) 2>{log}"
+
+rule index_bam:
+    input:
+        "results/mapped_reads/{SAMPLE}_processed.{GENOME}.bam"
+    output:
+        "results/mapped_reads/{SAMPLE}_processed.{GENOME}.bam.bai"
+    log:"results/logs/index_bam/{SAMPLE}.{GENOME}.log",
+    conda: "../envs/cfDNA_prep.yaml"
+    threads: 4
+    shell:
+        "samtools index -@ {threads} {input} {output} 2> {log}"
