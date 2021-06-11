@@ -1,8 +1,7 @@
 
 rule NGmerge:
     input:
-        r1="results/fastq/{SAMPLE}_R1.fastq.gz",
-        r2="results/fastq/{SAMPLE}_R2.fastq.gz",
+        unpack(get_NGmerge_input)
     output:
         merged=temp("results/{ID}/NGmerge/{SAMPLE}_merged.fastq.gz"),
         non_merged_1=temp("results/{ID}/NGmerge/{SAMPLE}_nonmerged_1.fastq.gz"),

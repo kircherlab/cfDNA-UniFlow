@@ -19,34 +19,22 @@ def get_final_output():
 
     final_output.extend(
         expand(
-            "results/fastq/{SAMPLE}_{paired_end}.fastq.gz",
-            SAMPLE=samples["sample"],
-            paired_end=["R1", "R2"],
-        )
-    )
-    final_output.extend(
-        expand(
-            "results/NGmerge/{SAMPLE}_merged.fastq.gz",
-            SAMPLE=samples["sample"]
-        )
-    )
-    final_output.extend(
-        expand(
-            "results/mapped_reads/{SAMPLE}_all.{GENOME}.bam",
+            "results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
             zip,
+            ID=samples["ID"],
             SAMPLE=samples["sample"],
             GENOME=samples["genome_build"]
         )
     )
     final_output.extend(
         expand(
-            "results/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
+            "results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam.bai",
             zip,
+            ID=samples["ID"],
             SAMPLE=samples["sample"],
             GENOME=samples["genome_build"]
         )
     )
-
     return final_output
 
 def get_read_group(sample):
@@ -54,9 +42,12 @@ def get_read_group(sample):
     library = samples.loc[sample].loc["library_name"]
     platform = samples.loc[sample].loc["platform"]
     RGID = f"{ID}_{sample}"
-    RG = f"@RG\\tID:{RGID}\\tSM:{sample}\\tLB:{library}\\tPL:{platform}"
+    RG = f"@RG\\tID:{sample}\\tSM:{RGID}\\tLB:{library}\\tPL:{platform}"
     return RG
 
-
-def get_map_reads_input():
-    pass
+### not fully implemented -> cases: fastQ files as input -> SR,PE 
+def get_NGmerge_input(wildcards):
+    sample=wildcards.SAMPLE
+    inpath=samples.loc[sample].loc["path"]
+    if ".bam" in inpath.lower():
+        return {"r1":"results/{ID}/fastq/{SAMPLE}_R1.fastq.gz","r2":"results/{ID}/fastq/{SAMPLE}_R2.fastq.gz"}
