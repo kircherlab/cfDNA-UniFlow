@@ -4,13 +4,13 @@ rule NGmerge:
         r1="results/fastq/{SAMPLE}_R1.fastq.gz",
         r2="results/fastq/{SAMPLE}_R2.fastq.gz",
     output:
-        merged="results/NGmerge/{SAMPLE}_merged.fastq.gz",
-        non_merged_1="results/NGmerge/{SAMPLE}_nonmerged_1.fastq.gz",
-        non_merged_2="results/NGmerge/{SAMPLE}_nonmerged_2.fastq.gz",
+        merged=temp("results/{ID}/NGmerge/{SAMPLE}_merged.fastq.gz"),
+        non_merged_1=temp("results/{ID}/NGmerge/{SAMPLE}_nonmerged_1.fastq.gz"),
+        non_merged_2=temp("results/{ID}/NGmerge/{SAMPLE}_nonmerged_2.fastq.gz"),
     params:
-        non_merged_prefix="results/NGmerge/{SAMPLE}_nonmerged",
+        non_merged_prefix="results/{ID}/NGmerge/{SAMPLE}_nonmerged",
     log:
-        "results/logs/NGmerge/{SAMPLE}.log",
+        "results/logs/{ID}/NGmerge/{SAMPLE}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
     threads: 8
@@ -25,15 +25,15 @@ rule NGmerge:
 rule map_reads:
     input:
         ref=lambda wc: config[wc.GENOME]["reference"],
-        merged="results/NGmerge/{SAMPLE}_merged.fastq.gz",
-        non_merged_1="results/NGmerge/{SAMPLE}_nonmerged_1.fastq.gz",
-        non_merged_2="results/NGmerge/{SAMPLE}_nonmerged_2.fastq.gz",
+        merged="results/{ID}/NGmerge/{SAMPLE}_merged.fastq.gz",
+        non_merged_1="results/{ID}/NGmerge/{SAMPLE}_nonmerged_1.fastq.gz",
+        non_merged_2="results/{ID}/NGmerge/{SAMPLE}_nonmerged_2.fastq.gz",
     output:
-        mapped_reads="results/mapped_reads/{SAMPLE}_all.{GENOME}.bam"
+        mapped_reads=temp("results/{ID}/mapped_reads/{SAMPLE}_all.{GENOME}.bam")
     params:
         RG=lambda wc: get_read_group(wc.SAMPLE),
     log:
-        "results/logs/mapping/{SAMPLE}.{GENOME}.log",
+        "results/logs/{ID}/mapping/{SAMPLE}.{GENOME}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
     threads: 8
@@ -45,12 +45,12 @@ rule map_reads:
 
 rule mark_duplicates:
     input:
-        mapped_reads="results/mapped_reads/{SAMPLE}_all.{GENOME}.bam"
+        mapped_reads="results/{ID}/mapped_reads/{SAMPLE}_all.{GENOME}.bam"
     output:
-        processed_reads="results/mapped_reads/{SAMPLE}_processed.{GENOME}.bam"
+        processed_reads=temp("results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam")
     params:
         TMPdir=config["TMPdir"]
-    log:"results/logs/markdup/{SAMPLE}.{GENOME}.log",
+    log:"results/logs/{ID}/markdup/{SAMPLE}.{GENOME}.log",
     conda:"../envs/cfDNA_prep.yaml"
     threads: 8
     shell:
@@ -61,10 +61,10 @@ rule mark_duplicates:
 
 rule index_bam:
     input:
-        "results/mapped_reads/{SAMPLE}_processed.{GENOME}.bam"
+        "results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam"
     output:
-        "results/mapped_reads/{SAMPLE}_processed.{GENOME}.bam.bai"
-    log:"results/logs/index_bam/{SAMPLE}.{GENOME}.log",
+        config["output_root_path"] + "{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam.bai"
+    log:"results/logs/{ID}/index_bam/{SAMPLE}.{GENOME}.log",
     conda: "../envs/cfDNA_prep.yaml"
     threads: 4
     shell:

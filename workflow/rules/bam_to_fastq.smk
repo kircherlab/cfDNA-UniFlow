@@ -3,10 +3,10 @@ rule bam_to_fastq:
     input:
         bam=lambda wildcards: samples["path"][wildcards.SAMPLE],
     output:
-        r1="results/fastq/{SAMPLE}_R1.fastq.gz",
-        r2="results/fastq/{SAMPLE}_R2.fastq.gz",
+        r1=temp("results/{ID}/fastq/{SAMPLE}_R1.fastq.gz"),
+        r2=temp("results/{ID}/fastq/{SAMPLE}_R2.fastq.gz"),
     log:
-        "results/logs/bam_to_fastq/{SAMPLE}.log",
+        "results/logs/{ID}/bam_to_fastq/{SAMPLE}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
     threads: 8
