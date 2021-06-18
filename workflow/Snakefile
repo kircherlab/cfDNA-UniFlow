@@ -8,6 +8,7 @@ report: "report/workflow.rst"
 include: "rules/common.smk"
 include: "rules/bam_to_fastq.smk"
 include: "rules/mapping.smk"
+include: "rules/QualityControl.smk"
 
 rule all:
     input:

@@ -35,6 +35,13 @@ def get_final_output():
             GENOME=samples["genome_build"]
         )
     )
+    final_output.extend(
+        expand(
+            "results/{ID}/qc/multiqc.html",
+            ID=samples["ID"].unique()
+        )
+    )
+
     return final_output
 
 def get_read_group(sample):
