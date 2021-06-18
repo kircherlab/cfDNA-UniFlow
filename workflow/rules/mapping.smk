@@ -48,7 +48,7 @@ rule mark_duplicates:
     input:
         mapped_reads="results/{ID}/mapped_reads/{SAMPLE}_all.{GENOME}.bam"
     output:
-        processed_reads=temp("results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam")
+        processed_reads="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam"
     params:
         TMPdir=config["TMPdir"]
     log:"results/logs/{ID}/markdup/{SAMPLE}.{GENOME}.log",
