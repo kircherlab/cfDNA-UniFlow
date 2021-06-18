@@ -1,7 +1,8 @@
 
 rule NGmerge:
     input:
-        unpack(get_NGmerge_input)
+        unpack(get_NGmerge_input),
+        qual_table="resources/qual_profile.txt",
     output:
         merged=temp("results/{ID}/NGmerge/{SAMPLE}_merged.fastq.gz"),
         non_merged_1=temp("results/{ID}/NGmerge/{SAMPLE}_nonmerged_1.fastq.gz"),
@@ -14,7 +15,8 @@ rule NGmerge:
         "../envs/cfDNA_prep.yaml"
     threads: 8
     shell:
-        "workflow/scripts/NGmerge -n {threads} -z "
+        "set +o pipefail;"
+        "workflow/scripts/NGmerge -w {input.qual_table} -u 41 -n {threads} -z "
         "-1 {input.r1} -2 {input.r2} -o {output.merged} "
         "-f {params.non_merged_prefix} -l {log} "
 
