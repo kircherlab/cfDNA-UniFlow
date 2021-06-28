@@ -22,6 +22,28 @@ rule NGmerge:
         "-f {params.non_merged_prefix} -l {log} -v"
 
 
+rule NGmerge_adapter:
+    input:
+        non_merged_1="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_1.fastq.gz",
+        non_merged_2="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_2.fastq.gz",
+        qual_table="resources/qual_profile.txt",
+    output:
+        interleaved_output="results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.unfiltered.fastq.gz"
+        #noadapters_1="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_noadapters_1.fastq.unfiltered.gz",
+        #noadapters_2="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_noadapters_2.fastq.unfiltered.gz"#temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_noadapters.fastq.gz"),
+    params:
+        #noadapter_prefix="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_noadapters",
+        adapt_minlen=1
+    log:
+        "results/logs/{ID}/NGmerge-adapter/{SAMPLE}.log",
+    conda:
+        "../envs/cfDNA_prep.yaml"
+    threads: 8
+    shell:
+        "set +o pipefail;"
+        "workflow/scripts/NGmerge -a -i -w {input.qual_table} -u 41 -d -e {params.adapt_minlen} -n {threads} -z "
+        "-1 {input.non_merged_1} -2 {input.non_merged_2} -o {output.interleaved_output}  "
+        "-c {log} -v"
 
 
 rule map_reads:
