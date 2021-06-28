@@ -9,6 +9,7 @@ rule NGmerge:
         non_merged_2="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_2.fastq.gz",#temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_2.fastq.gz"),
     params:
         non_merged_prefix="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged",
+        minlen=20
     log:
         "results/logs/{ID}/NGmerge/{SAMPLE}.log",
     conda:
@@ -16,9 +17,9 @@ rule NGmerge:
     threads: 8
     shell:
         "set +o pipefail;"
-        "workflow/scripts/NGmerge -w {input.qual_table} -u 41 -n {threads} -z "
+        "workflow/scripts/NGmerge -w {input.qual_table} -u 41 -d -e {params.minlen} -n {threads} -z "
         "-1 {input.r1} -2 {input.r2} -o {output.merged} "
-        "-f {params.non_merged_prefix} -l {log} "
+        "-f {params.non_merged_prefix} -l {log} -v"
 
 
 
