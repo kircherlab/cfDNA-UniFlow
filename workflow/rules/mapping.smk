@@ -45,6 +45,31 @@ rule NGmerge_adapter:
         "-1 {input.non_merged_1} -2 {input.non_merged_2} -o {output.interleaved_output}  "
         "-c {log} -v"
 
+rule filter_interleaved:
+    input:
+        unfiltered="results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.unfiltered.fastq.gz"
+    output:
+        filtered="results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.filtered.fastq.gz"
+    params:
+        min_RL = 30
+    conda:
+        "../envs/cfDNA_prep.yaml"
+    shell:
+        "awk 'BEGIN {{FS = \"\\t\" ; OFS = \"\\n\"}} {{header = $0 ; getline seq ; getline qheader ; getline qseq ; if (length(seq) >= {params.min_RL}) {{print header, seq, qheader, qseq}}}}' <( zcat {input.unfiltered} ) |  gzip -c > {output.filtered}"
+
+rule filter_merged:
+    input:
+        unfiltered="results/{ID}/NGmerge/merged/{SAMPLE}_merged.unfiltered.fastq.gz"
+    output:
+        filtered="results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz"
+    params:
+        min_RL = 30
+    conda:
+        "../envs/cfDNA_prep.yaml"
+    shell:
+        "awk 'BEGIN {{FS = \"\\t\" ; OFS = \"\\n\"}} {{header = $0 ; getline seq ; getline qheader ; getline qseq ; if (length(seq) >= {params.min_RL}) {{print header, seq, qheader, qseq}}}}' <( zcat {input.unfiltered} ) |  gzip -c > {output.filtered}"
+
+
 
 rule map_reads:
     input:
