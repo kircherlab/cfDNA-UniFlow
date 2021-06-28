@@ -71,22 +71,21 @@ rule filter_merged:
 rule map_reads:
     input:
         ref=lambda wc: config[wc.GENOME]["reference"],
-        merged="results/{ID}/NGmerge/{SAMPLE}_merged.fastq.gz",
-        non_merged_1="results/{ID}/NGmerge/{SAMPLE}_nonmerged_1.fastq.gz",
-        non_merged_2="results/{ID}/NGmerge/{SAMPLE}_nonmerged_2.fastq.gz",
+        merged="results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz",
+        non_merged="results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.filtered.fastq.gz"
     output:
-        mapped_reads=temp("results/{ID}/mapped_reads/{SAMPLE}_all.{GENOME}.bam")
+        mapped_reads=temp("results/{ID}/mapped_reads/{SAMPLE}_all.{GENOME}.bam")#temp("results/{ID}/mapped_reads/{SAMPLE}_all.{GENOME}.bam")
     params:
         RG=lambda wc: get_read_group(wc.SAMPLE),
     log:
-        "results/logs/{ID}/mapping/{SAMPLE}.{GENOME}.log",
+        "results/logs/{ID}/mapping/{SAMPLE}_all.{GENOME}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
     threads: 8
     shell:
         "set +o pipefail;"
         "((bwa mem -t {threads} -R \"{params.RG}\" {input.ref} {input.merged}; "
-        "bwa mem -t {threads} -R \"{params.RG}\" {input.ref} {input.non_merged_1} {input.non_merged_2} "
+        "bwa mem -t {threads} -R \"{params.RG}\" {input.ref} {input.non_merged}"
         "| grep -v \"^@\") | samtools view -Sbh -o {output.mapped_reads} - ) 2>{log}"
 
 rule mark_duplicates:
