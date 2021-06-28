@@ -5,7 +5,7 @@ rule bam_to_fastq:
     output:
         r1=temp("results/{ID}/fastq/{SAMPLE}_R1.fastq.gz"),
         r2=temp("results/{ID}/fastq/{SAMPLE}_R2.fastq.gz"),
-        s1="results/{ID}/fastq/{SAMPLE}_singleton.fastq.gz",
+        s1=temp("results/{ID}/fastq/{SAMPLE}_singleton.fastq.gz"),
     log:
         "results/logs/{ID}/bam_to_fastq/{SAMPLE}.log",
     conda:
