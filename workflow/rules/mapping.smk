@@ -4,11 +4,11 @@ rule NGmerge:
         unpack(get_NGmerge_input),
         qual_table="resources/qual_profile.txt",
     output:
-        merged=temp("results/{ID}/NGmerge/{SAMPLE}_merged.fastq.gz"),
-        non_merged_1=temp("results/{ID}/NGmerge/{SAMPLE}_nonmerged_1.fastq.gz"),
-        non_merged_2=temp("results/{ID}/NGmerge/{SAMPLE}_nonmerged_2.fastq.gz"),
+        merged="results/{ID}/NGmerge/merged/{SAMPLE}_merged.unfiltered.fastq.gz",#temp("results/{ID}/NGmerge/merged/{SAMPLE}_merged.fastq.gz"),
+        non_merged_1="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_1.fastq.gz",#temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_1.fastq.gz"),
+        non_merged_2="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_2.fastq.gz",#temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_2.fastq.gz"),
     params:
-        non_merged_prefix="results/{ID}/NGmerge/{SAMPLE}_nonmerged",
+        non_merged_prefix="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged",
     log:
         "results/logs/{ID}/NGmerge/{SAMPLE}.log",
     conda:
