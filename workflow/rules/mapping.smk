@@ -4,9 +4,9 @@ rule NGmerge:
         unpack(get_NGmerge_input),
         qual_table="resources/qual_profile.txt",
     output:
-        merged="results/{ID}/NGmerge/merged/{SAMPLE}_merged.unfiltered.fastq.gz",#temp("results/{ID}/NGmerge/merged/{SAMPLE}_merged.fastq.gz"),
-        non_merged_1="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_1.fastq.gz",#temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_1.fastq.gz"),
-        non_merged_2="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_2.fastq.gz",#temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_2.fastq.gz"),
+        merged=temp("results/{ID}/NGmerge/merged/{SAMPLE}_merged.unfiltered.fastq.gz"),
+        non_merged_1=temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_1.fastq.gz"),
+        non_merged_2=temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_2.fastq.gz"),
     params:
         non_merged_prefix="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged",
         minlen=20
@@ -28,11 +28,8 @@ rule NGmerge_adapter:
         non_merged_2="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_2.fastq.gz",
         qual_table="resources/qual_profile.txt",
     output:
-        interleaved_output="results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.unfiltered.fastq.gz"
-        #noadapters_1="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_noadapters_1.fastq.unfiltered.gz",
-        #noadapters_2="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_noadapters_2.fastq.unfiltered.gz"#temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_noadapters.fastq.gz"),
+        interleaved_output=temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.unfiltered.fastq.gz")
     params:
-        #noadapter_prefix="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_noadapters",
         adapt_minlen=1
     log:
         "results/logs/{ID}/NGmerge-adapter/{SAMPLE}.log",
@@ -49,7 +46,7 @@ rule filter_interleaved:
     input:
         unfiltered="results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.unfiltered.fastq.gz"
     output:
-        filtered="results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.filtered.fastq.gz"
+        filtered=temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.filtered.fastq.gz")
     params:
         min_RL = 30
     conda:
@@ -61,7 +58,7 @@ rule filter_merged:
     input:
         unfiltered="results/{ID}/NGmerge/merged/{SAMPLE}_merged.unfiltered.fastq.gz"
     output:
-        filtered="results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz"
+        filtered=temp("results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz")
     params:
         min_RL = 30
     conda:
