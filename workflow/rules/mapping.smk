@@ -100,7 +100,7 @@ rule mark_duplicates:
     threads: 8
     shell:
         "set +o pipefail;"
-        "(samtools fixmate -u -m {input.mapped_reads} - | "
+        "(samtools fixmate -u -@ {threads} -m {input.mapped_reads} - | "
         "samtools sort -u -@ {threads} -T {params.TMPdir} - | "
         "samtools markdup -@ {threads} - {output.processed_reads}) 2>{log}"
 
