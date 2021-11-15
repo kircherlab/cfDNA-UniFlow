@@ -1,3 +1,19 @@
+ruleorder: flagstat_pre_conversion>bam_to_fastq
+
+rule flagstat_pre_conversion:
+    input:
+        bam=lambda wildcards: samples["path"][wildcards.SAMPLE],
+    output:
+        "results/{ID}/flagstat/{SAMPLE}_flagstat.txt.gz"
+    log:
+        "results/logs/{ID}/flagstat/{SAMPLE}.log",
+    conda:
+        "../envs/cfDNA_prep.yaml"
+    threads: 16
+    shell:
+        "set +o pipefail;"
+        "samtools flagstat -@ {threads} {input.bam} 2> {log} | gzip -c > {output}"
+
 
 rule bam_to_fastq:
     input:
