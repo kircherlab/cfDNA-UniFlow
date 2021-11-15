@@ -83,9 +83,10 @@ rule map_reads:
     input:
         ref=lambda wc: config[wc.GENOME]["reference"],
         merged="results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz",
-        non_merged="results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.filtered.fastq.gz"
+        non_merged="results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.filtered.fastq.gz",
+        single_read = "results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz",
     output:
-        mapped_reads=temp("results/{ID}/mapped_reads/{SAMPLE}_all.{GENOME}.bam")#temp("results/{ID}/mapped_reads/{SAMPLE}_all.{GENOME}.bam")
+        mapped_reads=temp("results/{ID}/mapped_reads/{SAMPLE}_all.{GENOME}.bam")
     params:
         RG=lambda wc: get_read_group(wc.SAMPLE),
     log:
