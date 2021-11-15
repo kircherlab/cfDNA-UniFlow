@@ -66,6 +66,17 @@ rule filter_merged:
     shell:
         "awk 'BEGIN {{FS = \"\\t\" ; OFS = \"\\n\"}} {{header = $0 ; getline seq ; getline qheader ; getline qseq ; if (length(seq) >= {params.min_RL}) {{print header, seq, qheader, qseq}}}}' <( zcat {input.unfiltered} ) |  gzip -c > {output.filtered}"
 
+rule filter_single_read:
+    input:
+        unfiltered="results/{ID}/fastq/{SAMPLE}_single_read.fastq.gz"
+    output:
+        filtered=temp("results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz")
+    params:
+        min_RL = 30
+    conda:
+        "../envs/cfDNA_prep.yaml"
+    shell:
+        "awk 'BEGIN {{FS = \"\\t\" ; OFS = \"\\n\"}} {{header = $0 ; getline seq ; getline qheader ; getline qseq ; if (length(seq) >= {params.min_RL}) {{print header, seq, qheader, qseq}}}}' <( zcat {input.unfiltered} ) |  gzip -c > {output.filtered}"
 
 
 rule map_reads:
