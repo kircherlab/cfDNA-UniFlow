@@ -10,11 +10,10 @@ include: "rules/bam_to_fastq.smk"
 include: "rules/mapping.smk"
 include: "rules/QualityControl.smk"
 
+
+# The first rule should define the default target files
+# Subsequent target rules can be specified below. They should start with all_*.
+
 rule all:
     input:
         get_final_output()
-        # The first rule should define the default target files
-        # Subsequent target rules can be specified below. They should start with all_*.
-
-
-
