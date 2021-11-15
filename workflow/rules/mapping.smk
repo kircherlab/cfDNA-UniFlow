@@ -95,10 +95,10 @@ rule map_reads:
         "../envs/cfDNA_prep.yaml"
     threads: 8
     shell:
-        "set +o pipefail;"
         "((bwa mem -t {threads} -R \"{params.RG}\" {input.ref} {input.merged}; "
-        "bwa mem -t {threads} -R \"{params.RG}\" {input.ref} {input.non_merged}"
-        "| grep -v \"^@\") | samtools view -Sbh -o {output.mapped_reads} - ) 2>{log}"
+        "bwa mem -t {threads} -R \"{params.RG}\" {input.ref} {input.non_merged} | grep -v \"^@\" || true ; "
+        "bwa mem -t {threads} -R \"{params.RG}\" {input.ref} {input.single_read}"
+        "| grep -v \"^@\" || true) | samtools view -b -o {output.mapped_reads} - ) 2>{log}"
 
 rule mark_duplicates:
     input:
