@@ -19,6 +19,14 @@ def get_final_output():
 
     final_output.extend(
         expand(
+            "results/{ID}/flagstat/{SAMPLE}_flagstat.txt.gz",
+            zip,
+            ID=samples["ID"],
+            SAMPLE=samples["sample"]
+        )
+    )
+    final_output.extend(
+        expand(
             "results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
             zip,
             ID=samples["ID"],
