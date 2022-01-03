@@ -11,3 +11,7 @@ GRCh37:
 
 GRCh38:
   reference: "" #path to reference genome in fasta format
+
+### global variables ###
+
+TMPDIR: "" # path to directory for writing TMP files

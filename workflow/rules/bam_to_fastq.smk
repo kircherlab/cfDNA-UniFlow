@@ -24,13 +24,15 @@ rule bam_to_fastq:
         s1=temp("results/{ID}/fastq/{SAMPLE}_single_read.fastq.gz"),
     log:
         "results/logs/{ID}/bam_to_fastq/{SAMPLE}.log",
+    params:
+        TMPDIR=config["TMPDIR"],
     conda:
         "../envs/cfDNA_prep.yaml"
     threads: 16
     shell:
         """set +o pipefail;
         (
-                    samtools sort -n -@ {threads} {input.bam} | \
+                    samtools sort -T {params.TMPDIR} -n -@ {threads} {input.bam} | \
         samtools fastq -@ {threads} -t \
         -1 {output.r1} \
         -2 {output.r2} \

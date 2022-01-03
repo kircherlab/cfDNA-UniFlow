@@ -106,14 +106,14 @@ rule mark_duplicates:
     output:
         processed_reads="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam"
     params:
-        TMPdir=config["TMPdir"]
+        TMPDIR=config["TMPDIR"]
     log:"results/logs/{ID}/markdup/{SAMPLE}.{GENOME}.log",
     conda:"../envs/cfDNA_prep.yaml"
     threads: 8
     shell:
-        "set +o pipefail;"
+        #"set +o pipefail;"
         "(samtools fixmate -u -@ {threads} -m {input.mapped_reads} - | "
-        "samtools sort -u -@ {threads} -T {params.TMPdir} - | "
+        "samtools sort -u -@ {threads} -T {params.TMPDIR} - | "
         "samtools markdup -@ {threads} - {output.processed_reads}) 2>{log}"
 
 rule index_bam:
