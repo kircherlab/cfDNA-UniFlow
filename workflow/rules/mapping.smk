@@ -14,7 +14,7 @@ rule NGmerge:
         "results/logs/{ID}/NGmerge/{SAMPLE}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
-    threads: 8
+    threads: 64
     shell:
         "set +o pipefail;"
         "workflow/scripts/NGmerge -w {input.qual_table} -u 41 -d -e {params.minlen} -n {threads} -z "
@@ -35,7 +35,7 @@ rule NGmerge_adapter:
         "results/logs/{ID}/NGmerge-adapter/{SAMPLE}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
-    threads: 8
+    threads: 64
     shell:
         "set +o pipefail;"
         "workflow/scripts/NGmerge -a -i -w {input.qual_table} -u 41 -d -e {params.adapt_minlen} -n {threads} -z "
@@ -93,7 +93,7 @@ rule map_reads:
         "results/logs/{ID}/mapping/{SAMPLE}_all.{GENOME}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
-    threads: 8
+    threads: 64
     shell:
         "((bwa mem -t {threads} -R \"{params.RG}\" {input.ref} {input.merged}; "
         "bwa mem -t {threads} -R \"{params.RG}\" {input.ref} {input.non_merged} | grep -v \"^@\" || true ; "
@@ -109,7 +109,7 @@ rule mark_duplicates:
         TMPDIR=config["TMPDIR"]
     log:"results/logs/{ID}/markdup/{SAMPLE}.{GENOME}.log",
     conda:"../envs/cfDNA_prep.yaml"
-    threads: 8
+    threads: 64
     shell:
         #"set +o pipefail;"
         "(samtools fixmate -u -@ {threads} -m {input.mapped_reads} - | "
@@ -123,6 +123,6 @@ rule index_bam:
         config["output_root_path"] + "{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam.bai"
     log:"results/logs/{ID}/index_bam/{SAMPLE}.{GENOME}.log",
     conda: "../envs/cfDNA_prep.yaml"
-    threads: 4
+    threads: 32
     shell:
         "samtools index -@ {threads} {input} {output} 2> {log}"

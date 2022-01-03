@@ -9,7 +9,7 @@ rule flagstat_pre_conversion:
         "results/logs/{ID}/flagstat/{SAMPLE}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
-    threads: 16
+    threads: 64
     shell:
         "set +o pipefail;"
         "samtools flagstat -@ {threads} {input.bam} 2> {log} | gzip -c > {output}"
@@ -28,7 +28,7 @@ rule bam_to_fastq:
         TMPDIR=config["TMPDIR"],
     conda:
         "../envs/cfDNA_prep.yaml"
-    threads: 16
+    threads: 64
     shell:
         """set +o pipefail;
         (
