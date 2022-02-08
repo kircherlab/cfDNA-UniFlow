@@ -20,6 +20,7 @@
 !config/example.config.yaml
 !config/example.samples.tsv
 
+!resources/qual_profile.txt
 
 !.gitignore
 !.gitattributes
