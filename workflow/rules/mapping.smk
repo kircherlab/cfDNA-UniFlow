@@ -120,7 +120,7 @@ rule index_bam:
     input:
         "results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam"
     output:
-        config["output_root_path"] + "{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam.bai"
+        "results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam.bai"
     log:"results/logs/{ID}/index_bam/{SAMPLE}.{GENOME}.log",
     conda: "../envs/cfDNA_prep.yaml"
     threads: 32
