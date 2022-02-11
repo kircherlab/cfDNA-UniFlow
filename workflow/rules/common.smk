@@ -1,5 +1,7 @@
 from snakemake.utils import validate
 import pandas as pd
+from pathlib import Path
+import sys
 
 ##### load config and sample sheets #####
 
@@ -71,3 +73,23 @@ def get_NGmerge_input(wildcards):
     inpath=samples.loc[sample].loc["path"]
     if ".bam" in inpath.lower():
         return {"r1":"results/{ID}/fastq/{SAMPLE}_R1.fastq.gz","r2":"results/{ID}/fastq/{SAMPLE}_R2.fastq.gz"}
+
+
+def get_reference(wildcards):
+    genome_build = wildcards.GENOME
+    gpath = config[genome_build]["reference"]
+    p=Path(gpath)
+    if p.exists():
+        try:
+            p.open().close()
+            return p.as_posix()
+        except PermissionError as f:
+            print(f,file = sys.stderr)
+            print(f"Please check file permissions of {gpath} or remove path from config.yaml 
+            download a reference.",file = sys.stderr)
+            break
+    else:
+        print("p does not exist! Preparing to download.")
+        return f"resources/reference/{genome_build}.fa"
+
+
