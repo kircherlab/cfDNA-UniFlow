@@ -79,15 +79,15 @@ def get_reference(wildcards):
     genome_build = wildcards.GENOME
     gpath = config[genome_build]["reference"]
     p=Path(gpath)
-    if p.exists():
+    if p.exists() and not p.is_dir():
         try:
             p.open().close()
             return p.as_posix()
         except PermissionError as f:
             print(f,file = sys.stderr)
-            print(f"Please check file permissions of {gpath} or remove path from config.yaml 
+            print(f"Please check file permissions of {gpath} or remove path from config.yaml \
             download a reference.",file = sys.stderr)
-            break
+            raise f
     else:
         print("p does not exist! Preparing to download.")
         return f"resources/reference/{genome_build}.fa"
