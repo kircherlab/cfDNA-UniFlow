@@ -4,6 +4,7 @@
 rule bam_to_fastq:
     input:
         bam=lambda wildcards: samples["path"][wildcards.SAMPLE],
+        bai=lambda wildcards: samples["path"][wildcards.SAMPLE]+".bai",
     output:
         r1=temp("results/{ID}/fastq/{SAMPLE}_R1.fastq.gz"),
         r2=temp("results/{ID}/fastq/{SAMPLE}_R2.fastq.gz"),
