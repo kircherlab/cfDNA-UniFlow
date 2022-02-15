@@ -89,7 +89,13 @@ def get_reference(wildcards):
             download a reference.",file = sys.stderr)
             raise f
     else:
-        print("p does not exist! Preparing to download.")
         return f"resources/reference/{genome_build}.fa"
 
+def get_ref_url(wildcards):
+    genome_build = wildcards.GENOME
+    url_dict={
+        "hg19":"https://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/hg19.fa.gz",
+        "hg38":"https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz",
+    }
+    return url_dict[genome_build]
 
