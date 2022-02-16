@@ -16,13 +16,15 @@ rule get_reference:
 
 rule bwa_index:
     input:
-        lambda wc: config[wc.GENOME]["reference"],
+        ref="resources/reference/{GENOME}.fa",
     output:
-        ref=multiext(config[wc.GENOME]["reference"], ".amb", ".ann", ".bwt", ".pac", ".sa"),
+        ref=multiext( "resources/reference/{GENOME}.fa", ".amb", ".ann", ".bwt", ".pac", ".sa"),
+    params:
+        algorithm="bwtsw",
     log:
-        "logs/bwa_index.log",
-    resources:
-        mem_mb=369000,
-        cache: True
-    wrapper:
-        "0.74.0/bio/bwa/index"
+       "logs/bwa_index-{GENOME}.log",
+    conda:
+        "../envs/cfDNA_prep.yaml"
+    threads: 1
+    shell:
+        "bwa index -a {params.algorithm} {input.ref}"
