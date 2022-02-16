@@ -1,19 +1,18 @@
 
 #! wrapper rules können auch anders benannte inputs und outputs haben -> output based on configs!
 
-#rule get_genome:
-#    output:
-#        "resources/genome.fasta",
-#    log:
-#        "logs/get-genome.log",
-#    params:
-#        species=config["ref"]["species"],
-#        datatype="dna",
-#        build=config["ref"]["build"],
-#        release=config["ref"]["release"],
-#    cache: True
-#    wrapper:
-#        "0.75.0/bio/reference/ensembl-sequence"
+
+rule get_reference:
+    output:
+        "resources/reference/{GENOME}.fa",
+    log:
+        "logs/get-{GENOME}-reference.log",
+    params:
+        url= lambda wc:get_ref_url(wc)
+    shell:
+        "(curl -L {params.url} | gzip -d > {output}) 2> {log}"
+        
+
 
 rule bwa_index:
     input:
