@@ -81,7 +81,8 @@ rule filter_single_read:
 
 rule map_reads:
     input:
-        ref=lambda wc: config[wc.GENOME]["reference"],
+        ref=lambda wc: get_reference(wc),
+        ref_index=lambda wc: get_reference(wc)+".amb",
         merged="results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz",
         non_merged="results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.filtered.fastq.gz",
         single_read = "results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz",

@@ -6,6 +6,8 @@ report: "report/workflow.rst"
 
 
 include: "rules/common.smk"
+include: "rules/reference.smk"
+include: "rules/raw_input_QC.smk"
 include: "rules/bam_to_fastq.smk"
 include: "rules/mapping.smk"
 include: "rules/QualityControl.smk"
@@ -14,6 +16,7 @@ include: "rules/QualityControl.smk"
 # The first rule should define the default target files
 # Subsequent target rules can be specified below. They should start with all_*.
 
+
 rule all:
     input:
-        get_final_output()
+        get_final_output(),
