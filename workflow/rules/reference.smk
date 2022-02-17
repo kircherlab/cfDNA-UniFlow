@@ -28,3 +28,27 @@ rule bwa_index:
     threads: 1
     shell:
         "bwa index -a {params.algorithm} {input.ref}"
+
+
+rule get_trimmomatic_adapters:
+    output:
+        "resources/adapter/NexteraPE-PE.fa",
+        "resources/adapter/TruSeq2-PE.fa",
+        "resources/adapter/TruSeq2-SE.fa",
+        "resources/adapter/TruSeq3-PE-2.fa",
+        "resources/adapter/TruSeq3-PE.fa",
+        "resources/adapter/TruSeq3-SE.fa",
+    params:
+        prefix="resources/adapter/",
+        URLs = [
+        "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/NexteraPE-PE.fa",
+        "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/TruSeq2-PE.fa",
+        "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/TruSeq2-SE.fa",
+        "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/TruSeq3-PE-2.fa",
+        "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/TruSeq3-PE.fa",
+        "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/TruSeq3-SE.fa",
+        ]
+    log:
+        "logs/get_trimmomatic_adapter.log"
+    shell:
+        "wget -P {params.prefix} {params.URLs} -o {log}"
