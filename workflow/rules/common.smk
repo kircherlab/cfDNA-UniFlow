@@ -67,8 +67,8 @@ def get_read_group(sample):
     RG = f"@RG\\tID:{sample}\\tSM:{RGID}\\tLB:{library}\\tPL:{platform}"
     return RG
 
-### not fully implemented -> cases: fastQ files as input -> SR,PE 
-def get_NGmerge_input(wildcards):
+### not fully implemented -> cases: fastQ files as input -> SE,PE 
+def get_trimming_input(wildcards):
     sample=wildcards.SAMPLE
     inpath=samples.loc[sample].loc["path"]
     if ".bam" in inpath.lower():
