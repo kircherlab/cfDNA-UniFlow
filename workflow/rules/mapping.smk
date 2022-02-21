@@ -5,7 +5,7 @@ rule filter_interleaved:
     output:
         filtered=temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.filtered.fastq.gz")
     params:
-        min_RL = 30
+        min_RL = config["NGmerge"]["MINLEN"]
     conda:
         "../envs/cfDNA_prep.yaml"
     shell:
@@ -17,7 +17,7 @@ rule filter_merged:
     output:
         filtered=temp("results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz")
     params:
-        min_RL = 30
+        min_RL = config["NGmerge"]["MINLEN"]
     conda:
         "../envs/cfDNA_prep.yaml"
     shell:
@@ -29,7 +29,7 @@ rule filter_single_read:
     output:
         filtered=temp("results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz")
     params:
-        min_RL = 30
+        min_RL = config["NGmerge"]["MINLEN"]
     conda:
         "../envs/cfDNA_prep.yaml"
     shell:
