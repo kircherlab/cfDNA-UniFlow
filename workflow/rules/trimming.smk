@@ -54,8 +54,7 @@ rule trimmomatic_pe:
         "logs/{ID}/trimmomatic/{SAMPLE}.log"
     params:
         # list of trimmers (see manual)
-        trimmer=["TRAILING:3", "ILLUMINACLIP:resources/adapter/NexteraPE-PE.fa:4:30:10"],
-        trimmer1 = get_trimmomatic_trimmers(),
+        trimmer = get_trimmomatic_trimmers(),
         # optional parameters
         extra="",
         compression_level="-9"
@@ -69,3 +68,28 @@ rule trimmomatic_pe:
         mem_mb=1024
     wrapper:
         "v1.1.0/bio/trimmomatic/pe"
+
+rule trimmomatic_se:
+    input:
+        "reads/{sample}.fastq.gz"  # input and output can be uncompressed or compressed
+    output:
+        "results/{ID}/trimmed/trimmomatic/{SAMPLE}.trimmed.fastq.gz",
+    log:
+        "logs/{ID}/trimmomatic/{SAMPLE}.log"
+    params:
+        # list of trimmers (see manual)
+        trimmer=get_trimmomatic_trimmers(),
+        # optional parameters
+        extra="",
+        # optional compression levels from -0 to -9 and -11
+        compression_level="-9"
+    threads:
+        32
+    # optional specification of memory usage of the JVM that snakemake will respect with global
+    # resource restrictions (https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#resources)
+    # and which can be used to request RAM during cluster job submission as `{resources.mem_mb}`:
+    # https://snakemake.readthedocs.io/en/latest/executing/cluster.html#job-properties
+    resources:
+        mem_mb=1024
+    wrapper:
+        "v1.1.0/bio/trimmomatic/se"
