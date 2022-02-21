@@ -55,6 +55,7 @@ rule trimmomatic_pe:
     params:
         # list of trimmers (see manual)
         trimmer=["TRAILING:3", "ILLUMINACLIP:resources/adapter/NexteraPE-PE.fa:4:30:10"],
+        trimmer1 = get_trimmomatic_trimmers(),
         # optional parameters
         extra="",
         compression_level="-9"
