@@ -24,7 +24,7 @@ def get_final_output():
             "results/{ID}/flagstat/{SAMPLE}_flagstat.txt.gz",
             zip,
             ID=samples["ID"],
-            SAMPLE=samples["sample"]
+            SAMPLE=samples["sample"],
         )
     )
     final_output.extend(
@@ -33,7 +33,7 @@ def get_final_output():
             zip,
             ID=samples["ID"],
             SAMPLE=samples["sample"],
-            GENOME=samples["genome_build"]
+            GENOME=samples["genome_build"],
         )
     )
     final_output.extend(
@@ -42,17 +42,15 @@ def get_final_output():
             zip,
             ID=samples["ID"],
             SAMPLE=samples["sample"],
-            GENOME=samples["genome_build"]
+            GENOME=samples["genome_build"],
         )
     )
     final_output.extend(
-        expand(
-            "results/{ID}/qc/multiqc.html",
-            ID=samples["ID"].unique()
-        )
+        expand("results/{ID}/qc/multiqc.html", ID=samples["ID"].unique())
     )
 
     return final_output
+
 
 def get_read_group(sample):
     ID = samples.loc[sample].loc["ID"]
@@ -60,42 +58,162 @@ def get_read_group(sample):
     platform = samples.loc[sample].loc["platform"]
     info = samples.loc[sample].loc["info"]
     if pd.isna(info):
-        info=""
-    else:    
-        info="_"+info
+        info = ""
+    else:
+        info = "_" + info
     RGID = f"{ID}_{sample}{info}"
     RG = f"@RG\\tID:{sample}\\tSM:{RGID}\\tLB:{library}\\tPL:{platform}"
     return RG
 
-### not fully implemented -> cases: fastQ files as input -> SR,PE 
-def get_NGmerge_input(wildcards):
-    sample=wildcards.SAMPLE
-    inpath=samples.loc[sample].loc["path"]
+
+### not fully implemented -> cases: fastQ files as input -> SE,PE
+def get_trimming_input(wildcards):
+    sample = wildcards.SAMPLE
+    inpath = samples.loc[sample].loc["path"]
     if ".bam" in inpath.lower():
-        return {"r1":"results/{ID}/fastq/{SAMPLE}_R1.fastq.gz","r2":"results/{ID}/fastq/{SAMPLE}_R2.fastq.gz"}
+        return {
+            "r1": "results/{ID}/fastq/{SAMPLE}_R1.fastq.gz",
+            "r2": "results/{ID}/fastq/{SAMPLE}_R2.fastq.gz",
+        }
 
 
+### get reference based on genome_build provided in samples.tsv
 def get_reference(wildcards):
     genome_build = wildcards.GENOME
     gpath = config[genome_build]["reference"]
-    p=Path(gpath)
+    p = Path(gpath)
     if p.exists() and not p.is_dir():
         try:
             p.open().close()
             return p.as_posix()
         except PermissionError as f:
-            print(f,file = sys.stderr)
-            print(f"Please check file permissions of {gpath} or remove path from config.yaml \
-            download a reference.",file = sys.stderr)
+            print(
+                f"Please check file permissions of {gpath} or remove path from config.yaml \
+            download a reference.",
+                file=sys.stderr,
+            )
             raise f
     else:
         return f"resources/reference/{genome_build}.fa"
 
+
+### provides download URLs for UCSC human genomes
 def get_ref_url(wildcards):
     genome_build = wildcards.GENOME
-    url_dict={
-        "hg19":"https://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/hg19.fa.gz",
-        "hg38":"https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz",
+    url_dict = {
+        "hg19": "https://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/hg19.fa.gz",
+        "hg38": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz",
     }
     return url_dict[genome_build]
 
+
+### returns properly formattet trimming rules based on config.yaml
+def get_trimmomatic_trimmers():
+    default_adapter = {
+        "nexterape-pe.fa": "resources/adapter/NexteraPE-PE.fa",
+        "truseq2-pe.fa": "resources/adapter/TruSeq2-PE.fa",
+        "truseq2-se.fa": "resources/adapter/TruSeq2-SE.fa",
+        "truseq3-pe-2.fa": "resources/adapter/TruSeq3-PE-2.fa",
+        "truseq3-pe.fa": "resources/adapter/TruSeq3-PE.fa",
+        "truseq3-se.fa": "resources/adapter/TruSeq3-SE.fa",
+    }
+    trimmers = list()
+    t_conf = config["trimmers"]
+
+    if default_adapter.get(t_conf["Illuminaclip"]["adapter_files"].lower()) is not None:
+        adapter_path = Path(
+            default_adapter.get(t_conf["Illuminaclip"]["adapter_files"].lower())
+        )
+    else:
+        adapter_path = Path(t_conf["Illuminaclip"]["adapter_files"])
+
+    if isinstance(t_conf["Illuminaclip"]["seedMismatches"], int):
+        mismatches = abs(t_conf["Illuminaclip"]["seedMismatches"])
+    else:
+        mismatches = 4
+        print(
+            f"Invalid config, setting default value for seedMismatches: {mismatches}",
+            file=sys.stderr,
+        )
+
+    if isinstance(t_conf["Illuminaclip"]["palindromeClipThreshold"], int):
+        read_overlap = abs(t_conf["Illuminaclip"]["palindromeClipThreshold"])
+    else:
+        read_overlap = 30
+        print(
+            f"Invalid config, setting default value for palindromeClipThreshold: {read_overlap}",
+            file=sys.stderr,
+        )
+
+    if isinstance(t_conf["Illuminaclip"]["simpleClipThreshold"], int):
+        minimal_overlap = abs(t_conf["Illuminaclip"]["simpleClipThreshold"])
+    else:
+        minimal_overlap = 10
+        print(
+            f"Invalid config, setting default value for simpleClipThreshold: {minimal_overlap}",
+            file=sys.stderr,
+        )
+
+    if isinstance(t_conf["Illuminaclip"]["minAdapterLength"], int):
+        minAdapterLength = abs(t_conf["Illuminaclip"]["minAdapterLength"])
+    else:
+        minAdapterLength = 8
+        print(
+            f"Invalid config, setting default value for minAdapterLength: {minAdapterLength}",
+            file=sys.stderr,
+        )
+    if t_conf["Illuminaclip"]["keepBothReads"] is True:
+        keepBothReads = "True"
+    else:
+        keepBothReads = "False"
+
+    if adapter_path.exists() and not adapter_path.is_dir():
+        try:
+            adapter_path.open().close()
+            illumina_string = f"ILLUMINACLIP:{adapter_path}:{mismatches}:{read_overlap}:{minimal_overlap}:{minAdapterLength}:{keepBothReads}"
+            trimmers.append(illumina_string)
+        except PermissionError as f:
+            print(
+                f"Please check file permissions of {adapter_path} or select one of the provided files.",
+                file=sys.stderr,
+            )
+            raise f
+
+    if (
+        t_conf["SLIDINGWINDOW"]["window"] > 0
+        and t_conf["SLIDINGWINDOW"]["quality_threshold"] > 0
+    ):
+        window = t_conf["SLIDINGWINDOW"]["window"]
+        threshold = t_conf["SLIDINGWINDOW"]["quality_threshold"]
+        trimmers.append(f"SLIDINGWINDOW:{window}:{threshold}")
+
+    if t_conf["LEADING"] > 0:
+        LEADING = t_conf["LEADING"]
+        trimmers.append(f"LEADING:{LEADING}")
+    if t_conf["TRAILING"] > 0:
+        TRAILING = t_conf["TRAILING"]
+        trimmers.append(f"TRAILING:{TRAILING}")
+    if t_conf["MINLEN"] > 0:
+        MINLEN = t_conf["MINLEN"]
+        trimmers.append(f"MINLEN:{MINLEN}")
+
+    return trimmers
+
+
+
+def get_mapping_input(wildcards):
+    mapping_input = dict()
+    trimming_algorithm = config["trimming_algorithm"]
+    all_data = config["mapping"]["all_data"]
+
+    if trimming_algorithm.lower() == "ngmerge":
+        mapping_input["reads"] = "results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz"
+        if all_data:
+            mapping_input["non_merged"] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.filtered.fastq.gz"
+            mapping_input["single_reads"] = "results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz"
+    elif trimming_algorithm.lower() == "trimmomatic":
+        mapping_input["reads"] = ["results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.fastq.gz", "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.fastq.gz",]
+        if all_data:
+            mapping_input["non_merged"] = ["results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.unpaired.fastq.gz","results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.unpaired.fastq.gz"]
+        
+    return mapping_input
