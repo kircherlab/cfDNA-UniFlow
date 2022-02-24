@@ -198,3 +198,22 @@ def get_trimmomatic_trimmers():
         trimmers.append(f"MINLEN:{MINLEN}")
 
     return trimmers
+
+
+
+def get_mapping_input(wildcards):
+    mapping_input = dict()
+    trimming_algorithm = config["trimming_algorithm"]
+    all_data = config["mapping"]["all_data"]
+
+    if trimming_algorithm.lower() == "ngmerge":
+        mapping_input["reads"] = "results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz"
+        if all_data:
+            mapping_input["non_merged"] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.filtered.fastq.gz"
+            mapping_input["single_reads"] = "results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz"
+    elif trimming_algorithm.lower() == "trimmomatic":
+        mapping_input["reads"] = ["results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.fastq.gz", "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.fastq.gz",]
+        if all_data:
+            mapping_input["non_merged"] = ["results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.unpaired.fastq.gz","results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.unpaired.fastq.gz"]
+        
+    return mapping_input
