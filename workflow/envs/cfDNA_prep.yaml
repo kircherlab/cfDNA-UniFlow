@@ -6,6 +6,6 @@ channels:
 dependencies:
   - bedtools
   - python=3.8
-  - bwa
+  - bwa-mem2
   - samtools=1.14
 

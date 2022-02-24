@@ -15,6 +15,7 @@ Insert your code into the respective folders, i.e. `scripts`, `rules`, and `envs
     - [Authors](#authors)
     - [Table of Contents](#table-of-contents)
     - [Dependencies](#dependencies)
+    - [Notes](#notes)
     - [Usage](#usage)
         - [Step 1: Obtain a copy of this workflow](#step-1-obtain-a-copy-of-this-workflow)
         - [Step 2: Configure workflow](#step-2-configure-workflow)
@@ -34,6 +35,22 @@ Dependencies are automatically managed by conda environments. Only exception is 
 ```bash
 - NGmerge v0.3.0
 ```
+
+## Notes
+
+- The indext creation of bwa-mem2 is resource intesive (needs quotation): 
+
+```
+# Indexing the reference sequence (Requires 28N GB memory where N is the size of the reference sequence).
+./bwa-mem2 index [-p prefix] <in.fasta>
+Where 
+<in.fasta> is the path to reference sequence fasta file and 
+<prefix> is the prefix of the names of the files that store the resultant index. Default is in.fasta.
+```
+
+- bwa-mem2 mem uses around 4GB memory per thread
+
+- NGmerge merges/removes adapter from 3' end of the reads. The ends of the merged reads are defined by the 5' ends of the reads.
 
 ## Usage
 

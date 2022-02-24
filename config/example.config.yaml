@@ -15,3 +15,51 @@ GRCh38:
 ### global variables ###
 
 TMPDIR: "" # path to directory for writing TMP files
+
+
+
+### trimming ###
+
+trimming_algorithm: "trimmomatic" #can be either NGmerge or trimmomatic
+
+#### NGmerge specific options ####9
+
+NGmerge:
+  MINLEN: 30 # min lenght of reads in additional filter steps
+
+#### trimmomatic specific options ####
+
+
+# Illuminaclip takes a fasta file with adapter sequences and removes them in the trimming step.
+# The adapter_files option takes either the path to a custom file </PATH/TO/CUSTOM/ADAPTER.fa>
+# or one of the following default files provided by Illumina and Trimmomatic:
+    # "NexteraPE-PE.fa",
+    # "TruSeq2-PE.fa",
+    # "TruSeq2-SE.fa",
+    # "TruSeq3-PE-2.fa",
+    # "TruSeq3-PE.fa",
+    # "TruSeq3-SE.fa",
+# For more information on Trimmomatic and its functionality can be found at:
+# http://www.usadellab.org/cms/?page=trimmomatic
+trimmers:
+  Illuminaclip: 
+    adapter_files: "TruSeq3-PE.fa" # filter not used if empty/invalid; can be either a path to a fasta file or the name of the default files;
+    seedMismatches: 2 # if not provided, defaults to 4
+    palindromeClipThreshold: 30 # if not provided, defaults to 30
+    simpleClipThreshold: 10 # if not provided, defaults to 10
+    minAdapterLength: 8 #optional argument, default ist 8
+    keepBothReads: True # if not provided, defaults to False
+  LEADING: 3  #(LEADING:3) Remove leading low quality or N bases (below quality 3); deactivated when set to 0
+  TRAILING: 3 #(TRAILING:3) Remove trailing low quality or N bases (below quality 3); deactivated when set to 0
+  SLIDINGWINDOW: #(SLIDINGWINDOW:4:15) Scan the read with a 4-base wide sliding window, cutting when the average quality per base drops below 15; deactivated when set to 0
+    window: 4 # deactivated when set to 0
+    quality_threshold: 15 
+  MINLEN: 30 #Drop reads below a ceartain length (e.g. 36 bp)  (MINLEN:36); deactivated when set to 0
+
+
+### Mapping ###
+
+# This option lets you add unpaired/singleton reads in the mapping step that were filtered,
+# but are either not paired or not merged. Otherwise these reads are not further processed.
+mapping:
+  all_data: False # default is False

@@ -9,6 +9,8 @@ include: "rules/common.smk"
 include: "rules/reference.smk"
 include: "rules/raw_input_QC.smk"
 include: "rules/bam_to_fastq.smk"
+include: "rules/trimming.smk"
+include: "rules/filtering.smk"
 include: "rules/mapping.smk"
 include: "rules/QualityControl.smk"
 
