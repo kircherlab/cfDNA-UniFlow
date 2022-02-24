@@ -48,7 +48,9 @@ Where
 <prefix> is the prefix of the names of the files that store the resultant index. Default is in.fasta.
 ```
 
-- bwa-mem2 mem gets resource intensive when using many cores
+- bwa-mem2 mem uses around 4GB memory per thread
+
+- NGmerge merges/removes adapter from 3' end of the reads. The ends of the merged reads are defined by the 5' ends of the reads.
 
 ## Usage
 
