@@ -14,20 +14,19 @@ rule get_reference:
         
 
 
-rule bwa_index:
+rule bwa_mem2_index:
     input:
         ref="resources/reference/{GENOME}.fa",
     output:
-        ref=multiext( "resources/reference/{GENOME}.fa", ".amb", ".ann", ".bwt", ".pac", ".sa"),
-    params:
-        algorithm="bwtsw",
+        ref=multiext( "resources/reference/{GENOME}.fa", ".amb", ".ann", ".pac", ),
+        #ref=multiext( "resources/reference/{GENOME}.fa", ".amb", ".ann", ".bwt", ".pac", ".sa"),
     log:
        "logs/bwa_index-{GENOME}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
-    threads: 1
+    threads: 16
     shell:
-        "bwa index -a {params.algorithm} {input.ref}"
+        "bwa-mem2 index {input.ref}"
 
 
 rule get_trimmomatic_adapters:
