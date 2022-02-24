@@ -27,7 +27,7 @@ rule NGmerge_adapter:
         non_merged_2="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_2.fastq.gz",
         qual_table="resources/qual_profile.txt",
     output:
-        interleaved_output=temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.unfiltered.fastq.gz")
+        interleaved_output=temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.unfiltered.fastq.gz"),
     params:
         adapt_minlen=1
     log:
@@ -45,11 +45,11 @@ rule trimmomatic_pe:
     input:
         unpack(get_trimming_input),
     output:
-        r1="results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.fastq.gz",
-        r2="results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.fastq.gz",
+        r1=temp("results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.fastq.gz"),
+        r2=temp("results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.fastq.gz"),
         # reads where trimming entirely removed the mate
-        r1_unpaired="results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.unpaired.fastq.gz",
-        r2_unpaired="results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.unpaired.fastq.gz"
+        r1_unpaired=temp("results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.unpaired.fastq.gz"),
+        r2_unpaired=temp("results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.unpaired.fastq.gz")
     log:
         "logs/{ID}/trimmomatic/{SAMPLE}.log"
     params:
@@ -73,7 +73,7 @@ rule trimmomatic_se:
     input:
         "reads/{sample}.fastq.gz"  # input and output can be uncompressed or compressed
     output:
-        "results/{ID}/trimmed/trimmomatic/{SAMPLE}.trimmed.fastq.gz",
+        temp("results/{ID}/trimmed/trimmomatic/{SAMPLE}.trimmed.fastq.gz",)
     log:
         "logs/{ID}/trimmomatic/{SAMPLE}.log"
     params:
