@@ -1,0 +1,10 @@
+plots_force_interactive: True
+max_table_rows: 600
+
+fastqc_config:
+  fastqc_theoretical_gc: "hg19_genome"
+
+# use filenames for proper merging of information
+use_filename_as_sample_name:
+  - fastqc/zip
+  - fastqc/data

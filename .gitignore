@@ -19,7 +19,9 @@
 !config/
 !config/example.config.yaml
 !config/example.samples.tsv
+!config/multiqc_config.yaml
 
+!resources/qual_profile.txt
 
 !.gitignore
 !.gitattributes

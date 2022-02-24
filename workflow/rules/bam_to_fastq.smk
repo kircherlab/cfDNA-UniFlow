@@ -1,23 +1,10 @@
-ruleorder: flagstat_pre_conversion>bam_to_fastq
-
-rule flagstat_pre_conversion:
-    input:
-        bam=lambda wildcards: samples["path"][wildcards.SAMPLE],
-    output:
-        "results/{ID}/flagstat/{SAMPLE}_flagstat.txt.gz"
-    log:
-        "results/logs/{ID}/flagstat/{SAMPLE}.log",
-    conda:
-        "../envs/cfDNA_prep.yaml"
-    threads: 64
-    shell:
-        "set +o pipefail;"
-        "samtools flagstat -@ {threads} {input.bam} 2> {log} | gzip -c > {output}"
-
+# Convert bam file to R1 and R2 fastQ files.
+# Singletons (reads not having a partner read) will be saved to a separate file.
 
 rule bam_to_fastq:
     input:
         bam=lambda wildcards: samples["path"][wildcards.SAMPLE],
+        bai=lambda wildcards: samples["path"][wildcards.SAMPLE]+".bai",
     output:
         r1=temp("results/{ID}/fastq/{SAMPLE}_R1.fastq.gz"),
         r2=temp("results/{ID}/fastq/{SAMPLE}_R2.fastq.gz"),
