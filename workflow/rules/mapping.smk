@@ -1,26 +1,22 @@
 
-
-rule map_reads:
+rule map_reads_bwa2:
     input:
         ref=lambda wc: get_reference(wc),
-        ref_index=lambda wc: get_reference(wc)+".amb",
-        merged="results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz",
+        ref_index=lambda wc: multiext(get_reference(wc),".amb",".ann"),
+        reads="results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz",
         non_merged="results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.filtered.fastq.gz",
-        single_read = "results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz",
+        single_reads = "results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz",
     output:
-        mapped_reads=temp("results/{ID}/mapped_reads/{SAMPLE}_all.{GENOME}.bam")
+        mapped_reads=temp("results/{ID}/mapped_reads/{SAMPLE}_bwa2.{GENOME}.bam")
     params:
         RG=lambda wc: get_read_group(wc.SAMPLE),
     log:
         "results/logs/{ID}/mapping/{SAMPLE}_all.{GENOME}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
-    threads: 64
-    shell:
-        "((bwa mem -t {threads} -R \"{params.RG}\" {input.ref} {input.merged}; "
-        "bwa mem -t {threads} -R \"{params.RG}\" {input.ref} {input.non_merged} | grep -v \"^@\" || true ; "
-        "bwa mem -t {threads} -R \"{params.RG}\" {input.ref} {input.single_read}"
-        "| grep -v \"^@\" || true) | samtools view -b -o {output.mapped_reads} - ) 2>{log}"
+    threads: 32
+    script:
+        "../scripts/bwa-mem2_wrapper.py"
 
 rule mark_duplicates:
     input:
