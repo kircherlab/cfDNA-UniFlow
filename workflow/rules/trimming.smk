@@ -27,9 +27,11 @@ rule NGmerge_adapter:
         non_merged_2="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_2.fastq.gz",
         qual_table="resources/qual_profile.txt",
     output:
-        interleaved_output=temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.unfiltered.fastq.gz"),
+        R1_noadapters = temp("results/{ID}/NGmerge/nonmerged/unfiltered.{SAMPLE}_noadapters_1.fastq.gz"),
+        R2_noadapters = temp("results/{ID}/NGmerge/nonmerged/unfiltered.{SAMPLE}_noadapters_2.fastq.gz"),
     params:
-        adapt_minlen=1
+        adapt_minlen=1,
+        output_prefix="results/{ID}/NGmerge/nonmerged/unfiltered.{SAMPLE}_noadapters"
     log:
         "logs/{ID}/NGmerge-adapter/{SAMPLE}.log",
     conda:
@@ -37,8 +39,8 @@ rule NGmerge_adapter:
     threads: 64
     shell:
         "set +o pipefail;"
-        "workflow/scripts/NGmerge -a -i -w {input.qual_table} -u 41 -d -e {params.adapt_minlen} -n {threads} -z "
-        "-1 {input.non_merged_1} -2 {input.non_merged_2} -o {output.interleaved_output}  "
+        "workflow/scripts/NGmerge -a -w {input.qual_table} -u 41 -d -e {params.adapt_minlen} -n {threads} -z "
+        "-1 {input.non_merged_1} -2 {input.non_merged_2} -o {params.output_prefix}  "
         "-c {log} -v"
 
 rule trimmomatic_pe:

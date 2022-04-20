@@ -29,7 +29,7 @@ non_merged_cmd = ""
 singleton_cmd = ""
 
 if snakemake.input.get("non_merged"):
-    non_merged_cmd = "bwa-mem2 mem -t {snakemake.threads} -R \"{snakemake.params.RG}\" {snakemake.input.ref} {snakemake.input.non_merged} | grep -v \"^@\" || true ; "
+    non_merged_cmd = "bwa-mem2 mem -t {snakemake.threads} -R \"{snakemake.params.RG}\" {snakemake.input.ref} {snakemake.input.noadapter_R1} {snakemake.input.noadapter_R2}| grep -v \"^@\" || true ; "
 
 if snakemake.input.get("single_reads"):
     singleton_cmd = "bwa-mem2 mem -t {snakemake.threads} -R \"{snakemake.params.RG}\" {snakemake.input.ref} {snakemake.input.single_reads} | grep -v \"^@\" || true ; "

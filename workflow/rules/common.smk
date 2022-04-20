@@ -209,7 +209,8 @@ def get_mapping_input(wildcards):
     if trimming_algorithm.lower() == "ngmerge":
         mapping_input["reads"] = "results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz"
         if all_data:
-            mapping_input["non_merged"] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_interleaved_noadapters.filtered.fastq.gz"
+            mapping_input["noadapter_R1"] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_1.filtered.fastq.gz"
+            mapping_input["noadapter_R2"] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_2.filtered.fastq.gz"
             mapping_input["single_reads"] = "results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz"
     elif trimming_algorithm.lower() == "trimmomatic":
         mapping_input["reads"] = ["results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.fastq.gz", "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.fastq.gz",]
