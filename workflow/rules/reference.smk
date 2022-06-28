@@ -1,7 +1,4 @@
 
-#! wrapper rules können auch anders benannte inputs und outputs haben -> output based on configs!
-
-
 rule get_reference:
     output:
         "resources/reference/{GENOME}.fa",
