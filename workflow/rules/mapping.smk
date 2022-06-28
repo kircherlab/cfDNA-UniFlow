@@ -33,11 +33,11 @@ rule mark_duplicates:
 
 rule index_bam:
     input:
-        "results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam"
+        "{path}.bam"
     output:
-        "results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam.bai"
-    log:"results/logs/{ID}/index_bam/{SAMPLE}.{GENOME}.log",
+        "{path}.bam.bai"
     conda: "../envs/cfDNA_prep.yaml"
     threads: 32
     shell:
-        "samtools index -@ {threads} {input} {output} 2> {log}"
+        "samtools index -@ {threads} {input} {output}"
+
