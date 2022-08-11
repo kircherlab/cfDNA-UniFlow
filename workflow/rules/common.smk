@@ -48,6 +48,15 @@ def get_final_output():
     final_output.extend(
         expand("results/{ID}/qc/multiqc.html", ID=samples["ID"].unique())
     )
+    final_output.extend(
+        expand(
+            "results/{ID}/icorCNA/readcounts/{SAMPLE}_processed.{GENOME}.wig",
+            zip,
+            ID=samples["ID"],
+            SAMPLE=samples["sample"],
+            GENOME=samples["genome_build"],
+        )
+    )
 
     return final_output
 
