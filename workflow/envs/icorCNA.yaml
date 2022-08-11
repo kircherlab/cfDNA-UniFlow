@@ -1,0 +1,9 @@
+name: icorCNA
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - r-ichorcna
+  - hmmcopy
+
