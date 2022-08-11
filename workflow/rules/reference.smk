@@ -57,6 +57,6 @@ rule get_ichorCNA_files:
         prefix="resources/",
         URL="https://github.com/broadinstitute/ichorCNA/archive/refs/heads/master.zip"
     log:
-
+        "logs/get_ichorCNA_files.log"
     shell:
-        'wget -P {params.prefix} -c {params.URL} -O {output.zip}; unzip -j {output.zip} "ichorCNA-master/inst/*" -d {output.dir}'
+        '(wget -P {params.prefix} -c {params.URL} -O {output.zip}; unzip -j {output.zip} "ichorCNA-master/inst/*" -d {output.dir}) 2> {log}'
