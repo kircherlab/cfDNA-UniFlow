@@ -42,19 +42,21 @@ rule ichorCNA:
         bam="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
         bai="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam.bai",
         wig="results/{ID}/icorCNA/readcounts/{SAMPLE}_processed.{GENOME}.wig",
+        resources="resources/ichorCNA/"
     output:
-        outDir=directory("results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}"),
+        outDir=directory("results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}/"),
+        summary="results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}/{SAMPLE}_processed.params.txt"
     params:
         sID="{SAMPLE}_processed",
         ploidy='"c(2,3)"',
         normal='"c(0.5,0.6,0.7,0.8,0.9)"',
         maxCN=5,
-        gcWIG="../ichorCNA/inst/extdata/gc_hg38_1000kb.wig",
-        mapWIG="../ichorCNA/inst/extdata/map_hg38_1000kb.wig",
-        centro="../ichorCNA/inst/extdata/GRCh38.GCA_000001405.2_centromere_acen.txt",
-        normalPanel="../ichorCNA/inst/extdata/HD_ULP_PoN_1Mb_median_normAutosome_mapScoreFiltered_median.rds",
+        gcWIG="resources/ichorCNA/gc_hg38_1000kb.wig",
+        mapWIG="resources/ichorCNA/map_hg38_1000kb.wig",
+        centro="resources/ichorCNA/GRCh38.GCA_000001405.2_centromere_acen.txt",
+        normalPanel="resources/ichorCNA/HD_ULP_PoN_1Mb_median_normAutosome_mapScoreFiltered_median.rds",
         includeHOMD="False",
-        chrs='"c(1:22, "X")"',
+        chrs="'c(1:22)'",
         chrTrain='"c(1:22)"',
         estimateNormal="True",
         estimatePloidy="True",
