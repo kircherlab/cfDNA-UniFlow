@@ -57,6 +57,18 @@ def get_final_output():
             GENOME=samples["genome_build"],
         )
     )
+    final_output.extend(
+        expand(
+            "results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}",
+            zip,
+            ID=samples["ID"],
+            SAMPLE=samples["sample"],
+            GENOME=samples["genome_build"],
+        )
+    )
+
+
+
 
     return final_output
 
