@@ -7,6 +7,7 @@ rule fastqc:
         zip="results/{ID}/qc/fastqc/{SAMPLE}.{GENOME}_fastqc.zip",
     log:
         "results/logs/{ID}/fastqc/{SAMPLE}_all.{GENOME}.log",
+    threads: 8
     wrapper:
         "0.75.0/bio/fastqc"
 
@@ -18,6 +19,7 @@ rule samtools_stats:
         "results/{ID}/qc/samtools-stats/{SAMPLE}.{GENOME}.txt",
     log:
         "results/logs/{ID}/fastqc/{SAMPLE}.{GENOME}.log",
+    threads: 8
     wrapper:
         "0.75.0/bio/samtools/stats"
 
