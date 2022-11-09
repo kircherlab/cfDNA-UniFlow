@@ -25,9 +25,9 @@ rule read_counter:
     log:
         "results/logs/{ID}/mapping/{SAMPLE}_all.{GENOME}.log",
     params:
-        window=1000000,
-        quality=20,
-        chroms="chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY",
+        window = config["read_counter"]["window"],
+        quality = config["read_counter"]["quality"],
+        chroms= config["read_counter"]["chroms"],
     conda:
         "../envs/icorCNA.yaml"
     shell:
@@ -48,22 +48,22 @@ rule ichorCNA:
         summary="results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}/{SAMPLE}_processed.params.txt"
     params:
         sID="{SAMPLE}_processed",
-        ploidy='"c(2,3)"',
-        normal='"c(0.5,0.6,0.7,0.8,0.9)"',
-        maxCN=5,
-        gcWIG="resources/ichorCNA/gc_hg38_1000kb.wig",
-        mapWIG="resources/ichorCNA/map_hg38_1000kb.wig",
-        centro="resources/ichorCNA/GRCh38.GCA_000001405.2_centromere_acen.txt",
-        normalPanel="resources/ichorCNA/HD_ULP_PoN_1Mb_median_normAutosome_mapScoreFiltered_median.rds",
-        includeHOMD="False",
-        chrs="'c(1:22)'",
-        chrTrain='"c(1:22)"',
-        estimateNormal="True",
-        estimatePloidy="True",
-        estimateScPrevalence="True",
-        scStates='"c(1,3)"',
-        txnE=0.9999,
-        txnStrength=10000,
+        ploidy = config["ichorCNA"]["ploidy"],
+        normal = config["ichorCNA"]["normal"],
+        maxCN = config["ichorCNA"]["maxCN"],
+        gcWIG = lambda wc: config["ichorCNA"]["gcWIG"][wc.GENOME],
+        mapWIG = lambda wc: config["ichorCNA"]["mapWIG"][wc.GENOME],
+        centro = lambda wc: config["ichorCNA"]["centro"][wc.GENOME],
+        normalPanel = config["ichorCNA"]["normalPanel"],
+        includeHOMD = config["ichorCNA"]["includeHOMD"],
+        chrs = config["ichorCNA"]["chrs"],
+        chrTrain = config["ichorCNA"]["chrTrain"],
+        estimateNormal = config["ichorCNA"]["estimateNormal"],
+        estimatePloidy = config["ichorCNA"]["estimatePloidy"],
+        estimateScPrevalence = config["ichorCNA"]["estimateScPrevalence"],
+        scStates = config["ichorCNA"]["scStates"],
+        txnE = config["ichorCNA"]["txnE"],
+        txnStrength = config["ichorCNA"]["txnStrength"],
     log:
         "results/logs/{ID}/mapping/{SAMPLE}_all.{GENOME}.log",
     conda:
