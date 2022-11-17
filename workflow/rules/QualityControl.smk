@@ -35,12 +35,12 @@ rule mosdepth:
     log:
         "results/logs/{ID}/mosdepth/{SAMPLE}.{GENOME}.log",
     params:
-        extra="--no-per-base --fast-mode",  # optional
+        extra="--no-per-base",  # optional
         by="500",
     # additional decompression threads through `--threads`
     threads: 32  # This value - 1 will be sent to `--threads`
     wrapper:
-        "v1.1.0/bio/mosdepth"
+        "v1.19.1/bio/mosdepth"
 
 
 rule multiqc:
