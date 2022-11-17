@@ -1,3 +1,13 @@
+def get_chroms_readcounter(chromfile):
+    if config["read_counter"]["chroms"]["autoselect_chroms"]:
+        with open(chromfile,"r") as f:
+            chrom = f.read()
+        return chrom
+    else:
+        return config["read_counter"]["chroms"]["chrom_list"]
+
+
+
 
 rule get_chroms:
     input:
@@ -20,6 +30,7 @@ rule read_counter:
     input:
         bam="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
         bai="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam.bai",
+        chroms="results/{ID}/icorCNA/chroms/{SAMPLE}_processed.{GENOME}.chromosomes.txt",
     output:
         wig="results/{ID}/icorCNA/readcounts/{SAMPLE}_processed.{GENOME}.wig",
     log:
@@ -27,7 +38,7 @@ rule read_counter:
     params:
         window = config["read_counter"]["window"],
         quality = config["read_counter"]["quality"],
-        chroms= config["read_counter"]["chroms"],
+        chroms= lambda wc: get_chroms_readcounter(f"test/{wc.ID}/icorCNA/chroms/{wc.SAMPLE}_processed.{wc.GENOME}.chromosomes.txt"),
     conda:
         "../envs/icorCNA.yaml"
     shell:
