@@ -27,17 +27,17 @@ rule mark_duplicates:
     threads: 64
     shell:
         #"set +o pipefail;"
-        "(samtools fixmate -u -@ {threads} -m {input.mapped_reads} - | "
-        "samtools sort -u -@ {threads} -T {params.TMPDIR} - | "
-        "samtools markdup -@ {threads} - {output.processed_reads}) 2>{log}"
+        "(samtools fixmate -u -@ $(({threads}/3)) -m {input.mapped_reads} - | "
+        "samtools sort -u -@ $(({threads}/3)) -T {params.TMPDIR} - | "
+        "samtools markdup -@ $(({threads}/3)) - {output.processed_reads}) 2>{log}"
 
 rule index_bam:
     input:
-        "results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam"
+        "{path}.bam"
     output:
-        "results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam.bai"
-    log:"results/logs/{ID}/index_bam/{SAMPLE}.{GENOME}.log",
+        "{path}.bam.bai"
     conda: "../envs/cfDNA_prep.yaml"
     threads: 32
     shell:
-        "samtools index -@ {threads} {input} {output} 2> {log}"
+        "samtools index -@ {threads} {input} {output}"
+

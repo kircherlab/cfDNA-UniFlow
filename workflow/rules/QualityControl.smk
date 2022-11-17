@@ -7,6 +7,7 @@ rule fastqc:
         zip="results/{ID}/qc/fastqc/{SAMPLE}.{GENOME}_fastqc.zip",
     log:
         "results/logs/{ID}/fastqc/{SAMPLE}_all.{GENOME}.log",
+    threads: 8
     wrapper:
         "0.75.0/bio/fastqc"
 
@@ -18,6 +19,7 @@ rule samtools_stats:
         "results/{ID}/qc/samtools-stats/{SAMPLE}.{GENOME}.txt",
     log:
         "results/logs/{ID}/fastqc/{SAMPLE}.{GENOME}.log",
+    threads: 8
     wrapper:
         "0.75.0/bio/samtools/stats"
 
@@ -33,12 +35,12 @@ rule mosdepth:
     log:
         "results/logs/{ID}/mosdepth/{SAMPLE}.{GENOME}.log",
     params:
-        extra="--no-per-base --fast-mode",  # optional
+        extra="--no-per-base",  # optional
         by="500",
     # additional decompression threads through `--threads`
     threads: 32  # This value - 1 will be sent to `--threads`
     wrapper:
-        "v1.1.0/bio/mosdepth"
+        "v1.19.1/bio/mosdepth"
 
 
 rule multiqc:

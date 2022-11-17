@@ -48,6 +48,27 @@ def get_final_output():
     final_output.extend(
         expand("results/{ID}/qc/multiqc.html", ID=samples["ID"].unique())
     )
+    final_output.extend(
+        expand(
+            "results/{ID}/icorCNA/readcounts/{SAMPLE}_processed.{GENOME}.wig",
+            zip,
+            ID=samples["ID"],
+            SAMPLE=samples["sample"],
+            GENOME=samples["genome_build"],
+        )
+    )
+    final_output.extend(
+        expand(
+            "results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}",
+            zip,
+            ID=samples["ID"],
+            SAMPLE=samples["sample"],
+            GENOME=samples["genome_build"],
+        )
+    )
+
+
+
 
     return final_output
 
@@ -215,6 +236,7 @@ def get_mapping_input(wildcards):
     elif trimming_algorithm.lower() == "trimmomatic":
         mapping_input["reads"] = ["results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.fastq.gz", "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.fastq.gz",]
         if all_data:
-            mapping_input["non_merged"] = ["results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.unpaired.fastq.gz","results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.unpaired.fastq.gz"]
+            mapping_input["noadapter_R1"] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.unpaired.fastq.gz"
+            mapping_input["noadapter_R2"] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.unpaired.fastq.gz"
         
     return mapping_input

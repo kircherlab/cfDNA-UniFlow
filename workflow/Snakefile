@@ -12,6 +12,7 @@ include: "rules/bam_to_fastq.smk"
 include: "rules/trimming.smk"
 include: "rules/filtering.smk"
 include: "rules/mapping.smk"
+include: "rules/ichorCNA.smk"
 include: "rules/QualityControl.smk"
 
 

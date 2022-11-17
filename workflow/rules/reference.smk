@@ -1,7 +1,4 @@
 
-#! wrapper rules können auch anders benannte inputs und outputs haben -> output based on configs!
-
-
 rule get_reference:
     output:
         "resources/reference/{GENOME}.fa",
@@ -51,3 +48,15 @@ rule get_trimmomatic_adapters:
         "logs/get_trimmomatic_adapter.log"
     shell:
         "wget -P {params.prefix} {params.URLs} -o {log}"
+
+rule get_ichorCNA_files:
+    output:
+        zip="ichorCNA_master.zip",
+        dir=directory("resources/ichorCNA")
+    params:
+        prefix="resources/",
+        URL="https://github.com/broadinstitute/ichorCNA/archive/refs/heads/master.zip"
+    log:
+        "logs/get_ichorCNA_files.log"
+    shell:
+        '(wget -P {params.prefix} -c {params.URL} -O {output.zip}; unzip -j {output.zip} "ichorCNA-master/inst/*" -d {output.dir}) 2> {log}'
