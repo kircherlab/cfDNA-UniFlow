@@ -56,11 +56,14 @@ rule ichorCNA:
         bam="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
         bai="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam.bai",
         wig="results/{ID}/icorCNA/readcounts/{SAMPLE}_processed.{GENOME}.wig",
-        resources="resources/ichorCNA/"
+        resources="resources/ichorCNA/",
+        chroms="results/{ID}/icorCNA/chroms/{SAMPLE}_processed.{GENOME}.chromosomes.txt",
     output:
         outDir=directory("results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}/"),
         summary="results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}/{SAMPLE}_processed.params.txt"
     params:
+        genome="{GENOME}",
+        plot_format="png",
         sID="{SAMPLE}_processed",
         ploidy = config["ichorCNA"]["ploidy"],
         normal = config["ichorCNA"]["normal"],
@@ -68,7 +71,7 @@ rule ichorCNA:
         gcWIG = lambda wc: config["ichorCNA"]["gcWIG"][wc.GENOME],
         mapWIG = lambda wc: config["ichorCNA"]["mapWIG"][wc.GENOME],
         centro = lambda wc: config["ichorCNA"]["centro"][wc.GENOME],
-        normalPanel = config["ichorCNA"]["normalPanel"],
+        normalPanel = lambda wc: config["ichorCNA"]["normalPanel"][wc.GENOME],
         includeHOMD = config["ichorCNA"]["includeHOMD"],
         chrs = config["ichorCNA"]["chrs"],
         chrTrain = config["ichorCNA"]["chrTrain"],
@@ -81,7 +84,7 @@ rule ichorCNA:
     log:
         "results/logs/{ID}/mapping/{SAMPLE}_all.{GENOME}.log",
     conda:
-        "../envs/icorCNA.yaml"
+        "../envs/ichorCNA.yaml"
     shell:
         """
         runIchorCNA.R --id {params.sID} --WIG {input.wig} \
@@ -92,5 +95,6 @@ rule ichorCNA:
         --chrTrain {params.chrTrain} --estimateNormal {params.estimateNormal} \
         --estimatePloidy {params.estimatePloidy} \
         --estimateScPrevalence {params.estimateScPrevalence} --scStates {params.scStates} \
-        --txnE {params.txnE} --txnStrength {params.txnStrength} --outDir {output.outDir}
+        --txnE {params.txnE} --txnStrength {params.txnStrength} --plotFileType {params.plot_format} \
+        --outDir {output.outDir}
         """
