@@ -1,6 +1,8 @@
 *
 
 !resources/
+!resources/blacklists/
+!resources/blacklists/**
 
 
 !workflow/
