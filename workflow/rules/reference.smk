@@ -17,7 +17,7 @@ rule get_twobit_reference:
     params:
         url= lambda wc:get_ref_url(wc)
     shell:
-        "(curl -L {params.url:q} | gzip -d > {output}) 2> {log}"
+        "(curl -L -o {output} {params.url:q}) 2> {log}"
 
 
 rule bwa_mem2_index:
