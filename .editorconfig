@@ -18,13 +18,10 @@ charset = utf-8
 indent_style = space
 indent_size = 4
 
-# Tab indentation (no size specified)
-[Makefile]
-indent_style = tab
-
-# Indentation override for .tsv files
+# 1 Tab indentation
 [*.tsv]
 indent_style = tab
+indent_size = 1
 
 # Matches the exact files either package.json or .travis.yml
 [{package.json,.travis.yml}]
