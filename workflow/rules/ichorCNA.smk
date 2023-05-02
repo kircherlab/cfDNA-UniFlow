@@ -15,16 +15,19 @@ rule get_chroms:
         bai="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam.bai",
     output:
         chroms="results/{ID}/icorCNA/chroms/{SAMPLE}_processed.{GENOME}.chromosomes.txt",
+    params:
+        strict_filter = "awk '{if ($3 > 0) {printf $0 \"\\n\"}}' | " if config["read_counter"]["chroms"]["autoselect_strict"]
+        else ""
     log:
         "results/logs/{ID}/get_chroms/{SAMPLE}_processed.{GENOME}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
     shell:
-        """samtools idxstats {input.bam} | \
+        r"""samtools idxstats {input.bam} | \
+        {params.strict_filter} \
         cut -f 1 | grep -w 'chr[1-9]\|chr[1-2][0-9]\|chr[X,Y]\|^[1-2][0-9]\|^[0-9]\|^[X,Y]' \
-        | tr '\n' ','| sed 's/,*\r*$//' \
+        | sort -k1,1 -V -s | tr '\n' ','| sed 's/,*\r*$//' \
         1> {output.chroms} 2>{log}"""
-
 
 rule read_counter:
     input:
@@ -38,9 +41,9 @@ rule read_counter:
     params:
         window = config["read_counter"]["window"],
         quality = config["read_counter"]["quality"],
-        chroms= lambda wc: get_chroms_readcounter(f"test/{wc.ID}/icorCNA/chroms/{wc.SAMPLE}_processed.{wc.GENOME}.chromosomes.txt"),
+        chroms= lambda wc: get_chroms_readcounter(f"results/{wc.ID}/icorCNA/chroms/{wc.SAMPLE}_processed.{wc.GENOME}.chromosomes.txt"),
     conda:
-        "../envs/icorCNA.yaml"
+        "../envs/ichorCNA.yaml"
     shell:
         """
         readCounter --window {params.window} --quality {params.quality} \
