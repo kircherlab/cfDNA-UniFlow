@@ -122,8 +122,8 @@ def get_reference(wildcards):
 def get_ref_url(wildcards):
     genome_build = wildcards.GENOME
     url_dict = {
-        "hg19": "https://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/hg19.fa.gz",
-        "hg38": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz",
+        "hg19": "ftp://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.fa.gz",
+        "hg38": "ftp://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa.gz",
     }
     return url_dict[genome_build]
 
