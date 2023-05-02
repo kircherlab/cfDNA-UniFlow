@@ -11,7 +11,7 @@ rule get_fasta_reference:
 
 rule get_twobit_reference:
     output:
-        "resources/reference/{GENOME}.twobit",
+        "resources/reference/{GENOME}.2bit",
     log:
         "logs/get-{GENOME}-reference.log",
     params:
@@ -32,7 +32,7 @@ rule bwa_mem2_index:
         "../envs/cfDNA_prep.yaml"
     threads: 16
     shell:
-        "bwa-mem2 index {input.ref}"
+        "bwa-mem2 index {input.ref} 2> {log}"
 
 
 rule get_trimmomatic_adapters:
