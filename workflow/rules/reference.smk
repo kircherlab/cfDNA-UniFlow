@@ -7,8 +7,7 @@ rule get_reference:
     params:
         url= lambda wc:get_ref_url(wc)
     shell:
-        "(curl -L {params.url} | gzip -d > {output}) 2> {log}"
-        
+        "(curl -L {params.url:q} | gzip -d > {output}) 2> {log}"
 
 
 rule bwa_mem2_index:
@@ -55,7 +54,7 @@ rule get_ichorCNA_files:
         dir=directory("resources/ichorCNA")
     params:
         prefix="resources/",
-        URL="https://github.com/broadinstitute/ichorCNA/archive/refs/heads/master.zip"
+        URL="https://github.com/broadinstitute/ichorCNA/archive/refs/heads/master.zip" #"https://github.com/GavinHaLab/ichorCNA/archive/refs/heads/master.zip"
     log:
         "logs/get_ichorCNA_files.log"
     shell:
