@@ -1,7 +1,17 @@
 
-rule get_reference:
+rule get_fasta_reference:
     output:
         "resources/reference/{GENOME}.fa",
+    log:
+        "logs/get-{GENOME}-reference.log",
+    params:
+        url= lambda wc:get_ref_url(wc)
+    shell:
+        "(curl -L {params.url:q} | gzip -d > {output}) 2> {log}"
+
+rule get_twobit_reference:
+    output:
+        "resources/reference/{GENOME}.twobit",
     log:
         "logs/get-{GENOME}-reference.log",
     params:

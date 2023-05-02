@@ -118,7 +118,7 @@ def get_reference(wildcards):
         return f"resources/reference/{genome_build}.fa"
 
 
-### provides download URLs for UCSC human genomes
+### provides download URLs for UCSC human reference files in fasta format
 def get_ref_url(wildcards):
     genome_build = wildcards.GENOME
     url_dict = {
@@ -127,6 +127,14 @@ def get_ref_url(wildcards):
     }
     return url_dict[genome_build]
 
+### provides download URLs for UCSC human reference files in twobit format
+def get_ref_url(wildcards):
+    genome_build = wildcards.GENOME
+    url_dict = {
+        "hg19": "ftp://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.2bit",
+        "hg38": "ftp://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.2bit",
+    }
+    return url_dict[genome_build]
 
 ### returns properly formattet trimming rules based on config.yaml
 def get_trimmomatic_trimmers():
