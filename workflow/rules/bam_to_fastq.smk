@@ -18,10 +18,9 @@ rule bam_to_fastq:
     threads: 64
     shell:
         """set +o pipefail;
-        (
-        samtools sort -T {params.TMPDIR} -n -@ $(({threads}/2)) {input.bam} | \
+        ( samtools sort -T {params.TMPDIR} -n -@ $(({threads}/2)) {input.bam} | \
         samtools fastq -@ $(({threads}/2)) -t \
         -1 {output.r1} \
         -2 {output.r2} \
-        -0 {output.s1} \
+        -s {output.s1} \
         )2> {log}"""
