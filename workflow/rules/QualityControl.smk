@@ -14,14 +14,14 @@ rule fastqc:
 
 rule samtools_stats:
     input:
-        "results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
+        bam="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
     output:
         "results/{ID}/qc/samtools-stats/{SAMPLE}.{GENOME}.txt",
     log:
         "results/logs/{ID}/fastqc/{SAMPLE}.{GENOME}.log",
     threads: 8
     wrapper:
-        "0.75.0/bio/samtools/stats"
+        "v1.25.0/bio/samtools/stats"
 
 rule mosdepth:
     input:
@@ -40,7 +40,7 @@ rule mosdepth:
     # additional decompression threads through `--threads`
     threads: 32  # This value - 1 will be sent to `--threads`
     wrapper:
-        "v1.19.1/bio/mosdepth"
+        "v1.25.0/bio/mosdepth"
 
 
 rule multiqc:
@@ -65,4 +65,4 @@ rule multiqc:
     log:
         "results/logs/{ID}/multiqc/multiqc.log",
     wrapper:
-        "v1.1.0/bio/multiqc"
+        "v1.25.0/bio/multiqc"
