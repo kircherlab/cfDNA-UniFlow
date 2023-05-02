@@ -7,8 +7,7 @@ rule map_reads_bwa2:
         mapped_reads=temp("results/{ID}/mapped_reads/{SAMPLE}_all.{GENOME}.bam")
     params:
         RG=lambda wc: get_read_group(wc.SAMPLE),
-    log:
-        "results/logs/{ID}/mapping/{SAMPLE}_all.{GENOME}.log",
+    log: "logs/{ID}/map_reads_bwa2/{SAMPLE}_all.{GENOME}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
     threads: 32
@@ -17,12 +16,12 @@ rule map_reads_bwa2:
 
 rule mark_duplicates:
     input:
-        mapped_reads="results/{ID}/mapped_reads/{SAMPLE}_all.{GENOME}.bam"
+        unpack(get_mark_duplicates_input),
     output:
         processed_reads="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam"
     params:
         TMPDIR=config["TMPDIR"]
-    log:"results/logs/{ID}/markdup/{SAMPLE}.{GENOME}.log",
+    log: "logs/{ID}/markdup/{SAMPLE}.{GENOME}.log",
     conda:"../envs/cfDNA_prep.yaml"
     threads: 64
     shell:

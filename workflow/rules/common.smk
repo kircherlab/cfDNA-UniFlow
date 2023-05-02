@@ -67,9 +67,6 @@ def get_final_output():
         )
     )
 
-
-
-
     return final_output
 
 
@@ -127,6 +124,7 @@ def get_ref_url(wildcards):
     }
     return url_dict[genome_build]
 
+
 ### provides download URLs for UCSC human reference files in twobit format
 def get_ref_url(wildcards):
     genome_build = wildcards.GENOME
@@ -135,6 +133,7 @@ def get_ref_url(wildcards):
         "hg38": "ftp://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.2bit",
     }
     return url_dict[genome_build]
+
 
 ### returns properly formattet trimming rules based on config.yaml
 def get_trimmomatic_trimmers():
@@ -229,22 +228,54 @@ def get_trimmomatic_trimmers():
     return trimmers
 
 
-
 def get_mapping_input(wildcards):
     mapping_input = dict()
     trimming_algorithm = config["trimming_algorithm"]
     all_data = config["mapping"]["all_data"]
 
     if trimming_algorithm.lower() == "ngmerge":
-        mapping_input["reads"] = "results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz"
+        mapping_input[
+            "reads"
+        ] = "results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz"
         if all_data:
-            mapping_input["noadapter_R1"] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_1.filtered.fastq.gz"
-            mapping_input["noadapter_R2"] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_2.filtered.fastq.gz"
-            mapping_input["single_reads"] = "results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz"
+            mapping_input[
+                "noadapter_R1"
+            ] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_1.filtered.fastq.gz"
+            mapping_input[
+                "noadapter_R2"
+            ] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_2.filtered.fastq.gz"
+            mapping_input[
+                "single_reads"
+            ] = "results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz"
     elif trimming_algorithm.lower() == "trimmomatic":
-        mapping_input["reads"] = ["results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.fastq.gz", "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.fastq.gz",]
+        mapping_input["reads"] = [
+            "results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.fastq.gz",
+            "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.fastq.gz",
+        ]
         if all_data:
-            mapping_input["noadapter_R1"] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.unpaired.fastq.gz"
-            mapping_input["noadapter_R2"] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.unpaired.fastq.gz"
-        
+            mapping_input[
+                "noadapter_R1"
+            ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.unpaired.fastq.gz"
+            mapping_input[
+                "noadapter_R2"
+            ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.unpaired.fastq.gz"
+
     return mapping_input
+
+
+def get_mark_duplicates_input(wildcards):
+    mark_duplicates_input = dict()
+    GCcorrection = config["utility"]["GCbias-correction"]
+    blacklist = "repeatmasker"
+    if GCcorrection:
+        mark_duplicates_input[
+            "mapped_reads"
+        ] = "results/{{ID}}/corrected_reads/{{SAMPLE}}_GCcorrected_{blacklist}.{{GENOME}}.bam".format(
+            blacklist=blacklist,
+        )
+    else:
+        mark_duplicates_input[
+            "mapped_reads"
+        ] = "results/{ID}/mapped_reads/{SAMPLE}_all.{GENOME}.bam"
+
+    return mark_duplicates_input
