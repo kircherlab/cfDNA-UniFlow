@@ -21,14 +21,6 @@ def get_final_output():
 
     final_output.extend(
         expand(
-            "results/{ID}/flagstat/{SAMPLE}_flagstat.txt.gz",
-            zip,
-            ID=samples["ID"],
-            SAMPLE=samples["sample"],
-        )
-    )
-    final_output.extend(
-        expand(
             "results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
             zip,
             ID=samples["ID"],
@@ -48,24 +40,41 @@ def get_final_output():
     final_output.extend(
         expand("results/{ID}/qc/multiqc.html", ID=samples["ID"].unique())
     )
-    final_output.extend(
-        expand(
-            "results/{ID}/icorCNA/readcounts/{SAMPLE}_processed.{GENOME}.wig",
-            zip,
-            ID=samples["ID"],
-            SAMPLE=samples["sample"],
-            GENOME=samples["genome_build"],
+
+    if config["utility"]["GCbias-plot"]:
+        final_output.extend(
+            expand(
+                expand(
+                    "results/{ID}/GCBias/plots/{SAMPLE}-GCbias-plot_{blacklist}.{GENOME}.png",
+                    zip,
+                    ID=samples["ID"],
+                    SAMPLE=samples["sample"],
+                    GENOME=samples["genome_build"],
+                    allow_missing=True,
+                ),
+                blacklist=["repeatmasker"],
+            )
         )
-    )
-    final_output.extend(
-        expand(
-            "results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}",
-            zip,
-            ID=samples["ID"],
-            SAMPLE=samples["sample"],
-            GENOME=samples["genome_build"],
+
+    if config["utility"]["ichorCNA"]:
+        final_output.extend(
+            expand(
+                "results/{ID}/icorCNA/readcounts/{SAMPLE}_processed.{GENOME}.wig",
+                zip,
+                ID=samples["ID"],
+                SAMPLE=samples["sample"],
+                GENOME=samples["genome_build"],
+            )
         )
-    )
+        final_output.extend(
+            expand(
+                "results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}",
+                zip,
+                ID=samples["ID"],
+                SAMPLE=samples["sample"],
+                GENOME=samples["genome_build"],
+            )
+        )
 
     return final_output
 
