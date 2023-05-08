@@ -25,10 +25,10 @@ rule mark_duplicates:
     conda:"../envs/cfDNA_prep.yaml"
     threads: 64
     shell:
-        #"set +o pipefail;"
-        "(samtools fixmate -u -@ $(({threads}/3)) -m {input.mapped_reads} - | "
-        "samtools sort -u -@ $(({threads}/3)) -T {params.TMPDIR} - | "
-        "samtools markdup -@ $(({threads}/3)) - {output.processed_reads}) 2>{log}"
+        "(samtools sort -n -@ $(({threads}/4)) -T {params.TMPDIR} {input.mapped_reads} | "
+        "samtools fixmate -u -@ $(({threads}/4)) -m - - | "
+        "samtools sort -u -@ $(({threads}/4)) -T {params.TMPDIR} - | "
+        "samtools markdup -@ $(({threads}/4)) - {output.processed_reads}) 2>{log}"
 
 rule index_bam:
     input:
