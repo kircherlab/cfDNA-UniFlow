@@ -7,13 +7,11 @@ import sys
 
 
 configfile: "config/config.yaml"
-
-
-# validate(config, schema="../schemas/config.schema.yaml")
+validate(config, schema="../schemas/config.schema.yaml")
 
 samples = pd.read_csv(config["samples"], sep="\t").set_index("sample", drop=False)
 samples.index.names = ["sample_id"]
-# validate(samples, schema="../schemas/samples.schema.yaml")
+validate(samples, schema="../schemas/samples.schema.yaml")
 
 
 def get_final_output():
@@ -243,7 +241,7 @@ def get_trimmomatic_trimmers():
     if t_conf["TRAILING"] > 0:
         TRAILING = t_conf["TRAILING"]
         trimmers.append(f"TRAILING:{TRAILING}")
-    if conf["filtering"]["MINLEN"] > 0:
+    if config["length-filter"]["MINLEN"] > 0:
         MINLEN = t_conf["MINLEN"]
         trimmers.append(f"MINLEN:{MINLEN}")
 
