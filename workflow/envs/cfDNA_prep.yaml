@@ -7,5 +7,5 @@ dependencies:
   - bedtools
   - python=3.8
   - bwa-mem2
-  - samtools=1.14
+  - samtools
 
