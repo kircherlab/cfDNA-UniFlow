@@ -3,7 +3,7 @@ rule fastqc:
     input:
         "results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
     output:
-        html="results/{ID}/qc/fastqc/{SAMPLE}_processed.{GENOME}.html",
+        html="results/{ID}/qc/fastqc/{SAMPLE}.{GENOME}.html",
         zip="results/{ID}/qc/fastqc/{SAMPLE}.{GENOME}_fastqc.zip",
     log:
         "results/logs/{ID}/fastqc/{SAMPLE}_all.{GENOME}.log",
@@ -57,7 +57,7 @@ rule multiqc:
     output:
         report(
             "results/{ID}/qc/multiqc.html",
-            caption="workflow/report/multiqc.rst",
+            caption="../report/QualityControl.rst",
             category="Quality control",
         ),
     params:
