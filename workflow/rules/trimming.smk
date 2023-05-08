@@ -86,7 +86,7 @@ rule trimmomatic_pe:
 
 rule trimmomatic_se:
     input:
-        "reads/{sample}.fastq.gz",  # input and output can be uncompressed opr compressed
+        "reads/{sample}.fastq.gz",  # input and output can be uncompressed or compressed
     output:
         temp(
             "results/{ID}/trimmed/trimmomatic/{SAMPLE}.trimmed.fastq.gz",
