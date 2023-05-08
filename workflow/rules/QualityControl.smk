@@ -23,6 +23,7 @@ rule samtools_stats:
     wrapper:
         "v1.25.0/bio/samtools/stats"
 
+
 rule mosdepth:
     input:
         bam="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
@@ -49,7 +50,7 @@ rule multiqc:
             [
                 "results/{s.ID}/qc/samtools-stats/{s.sample}.{s.genome_build}.txt",
                 "results/{s.ID}/qc/fastqc/{s.sample}.{s.genome_build}_fastqc.zip",
-                 "results/{s.ID}/qc/mosdepth/{s.sample}.{s.genome_build}.mosdepth.global.dist.txt",
+                "results/{s.ID}/qc/mosdepth/{s.sample}.{s.genome_build}.mosdepth.global.dist.txt",
                 "results/{s.ID}/qc/mosdepth/{s.sample}.{s.genome_build}.mosdepth.region.dist.txt",
             ],
             s=list(samples.itertuples()),
@@ -61,7 +62,7 @@ rule multiqc:
             category="Quality control",
         ),
     params:
-        "--config config/multiqc_config.yaml"
+        "--config config/multiqc_config.yaml",
     log:
         "results/logs/{ID}/multiqc/multiqc.log",
     wrapper:

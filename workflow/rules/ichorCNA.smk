@@ -1,12 +1,10 @@
 def get_chroms_readcounter(chromfile):
     if config["read_counter"]["chroms"]["autoselect_chroms"]:
-        with open(chromfile,"r") as f:
+        with open(chromfile, "r") as f:
             chrom = f.read()
         return chrom
     else:
         return config["read_counter"]["chroms"]["chrom_list"]
-
-
 
 
 rule get_chroms:
@@ -16,8 +14,9 @@ rule get_chroms:
     output:
         chroms="results/{ID}/icorCNA/chroms/{SAMPLE}_processed.{GENOME}.chromosomes.txt",
     params:
-        strict_filter = "awk '{if ($3 > 0) {printf $0 \"\\n\"}}' | " if config["read_counter"]["chroms"]["autoselect_strict"]
-        else ""
+        strict_filter="awk '{if ($3 > 0) {printf $0 \"\\n\"}}' | "
+        if config["read_counter"]["chroms"]["autoselect_strict"]
+        else "",
     log:
         "results/logs/{ID}/get_chroms/{SAMPLE}_processed.{GENOME}.log",
     conda:
@@ -29,6 +28,7 @@ rule get_chroms:
         | sort -k1,1 -V -s | tr '\n' ','| sed 's/,*\r*$//' \
         1> {output.chroms} 2>{log}"""
 
+
 rule read_counter:
     input:
         bam="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
@@ -39,9 +39,11 @@ rule read_counter:
     log:
         "results/logs/{ID}/mapping/{SAMPLE}_all.{GENOME}.log",
     params:
-        window = config["read_counter"]["window"],
-        quality = config["read_counter"]["quality"],
-        chroms= lambda wc: get_chroms_readcounter(f"results/{wc.ID}/icorCNA/chroms/{wc.SAMPLE}_processed.{wc.GENOME}.chromosomes.txt"),
+        window=config["read_counter"]["window"],
+        quality=config["read_counter"]["quality"],
+        chroms=lambda wc: get_chroms_readcounter(
+            f"results/{wc.ID}/icorCNA/chroms/{wc.SAMPLE}_processed.{wc.GENOME}.chromosomes.txt"
+        ),
     conda:
         "../envs/ichorCNA.yaml"
     shell:
@@ -60,37 +62,38 @@ rule ichorCNA:
         chroms="results/{ID}/icorCNA/chroms/{SAMPLE}_processed.{GENOME}.chromosomes.txt",
     output:
         outDir=directory("results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}/"),
-        plotDir=report(directory("results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}/{SAMPLE}_processed/"),
-                        patterns=["{SAMPLE}_processed_genomeWide.png",],
-                        caption="../report/ichorCNA.rst",
-                        category="ichorCNA",
-                        labels={
-              "Sample": "{SAMPLE}",
-              "Type":"CNA-TumorFraction plot"
-          }
-          ),
-        summary="results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}/{SAMPLE}_processed.params.txt"
-
+        plotDir=report(
+            directory(
+                "results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}/{SAMPLE}_processed/"
+            ),
+            patterns=[
+                "{SAMPLE}_processed_genomeWide.png",
+            ],
+            caption="../report/ichorCNA.rst",
+            category="ichorCNA",
+            labels={"Sample": "{SAMPLE}", "Type": "CNA-TumorFraction plot"},
+        ),
+        summary="results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}/{SAMPLE}_processed.params.txt",
     params:
         genome="{GENOME}",
         plot_format="png",
         sID="{SAMPLE}_processed",
-        ploidy = config["ichorCNA"]["ploidy"],
-        normal = config["ichorCNA"]["normal"],
-        maxCN = config["ichorCNA"]["maxCN"],
-        gcWIG = lambda wc: config["ichorCNA"]["gcWIG"][wc.GENOME],
-        mapWIG = lambda wc: config["ichorCNA"]["mapWIG"][wc.GENOME],
-        centro = lambda wc: config["ichorCNA"]["centro"][wc.GENOME],
-        normalPanel = lambda wc: config["ichorCNA"]["normalPanel"][wc.GENOME],
-        includeHOMD = config["ichorCNA"]["includeHOMD"],
-        chrs = config["ichorCNA"]["chrs"],
-        chrTrain = config["ichorCNA"]["chrTrain"],
-        estimateNormal = config["ichorCNA"]["estimateNormal"],
-        estimatePloidy = config["ichorCNA"]["estimatePloidy"],
-        estimateScPrevalence = config["ichorCNA"]["estimateScPrevalence"],
-        scStates = config["ichorCNA"]["scStates"],
-        txnE = config["ichorCNA"]["txnE"],
-        txnStrength = config["ichorCNA"]["txnStrength"],
+        ploidy=config["ichorCNA"]["ploidy"],
+        normal=config["ichorCNA"]["normal"],
+        maxCN=config["ichorCNA"]["maxCN"],
+        gcWIG=lambda wc: config["ichorCNA"]["gcWIG"][wc.GENOME],
+        mapWIG=lambda wc: config["ichorCNA"]["mapWIG"][wc.GENOME],
+        centro=lambda wc: config["ichorCNA"]["centro"][wc.GENOME],
+        normalPanel=lambda wc: config["ichorCNA"]["normalPanel"][wc.GENOME],
+        includeHOMD=config["ichorCNA"]["includeHOMD"],
+        chrs=config["ichorCNA"]["chrs"],
+        chrTrain=config["ichorCNA"]["chrTrain"],
+        estimateNormal=config["ichorCNA"]["estimateNormal"],
+        estimatePloidy=config["ichorCNA"]["estimatePloidy"],
+        estimateScPrevalence=config["ichorCNA"]["estimateScPrevalence"],
+        scStates=config["ichorCNA"]["scStates"],
+        txnE=config["ichorCNA"]["txnE"],
+        txnStrength=config["ichorCNA"]["txnStrength"],
     log:
         "results/logs/{ID}/mapping/{SAMPLE}_all.{GENOME}.log",
     conda:

@@ -93,6 +93,7 @@ rule computeGCbias:
         -v &> {log}
         """
 
+
 rule plot_GCbias:
     input:
         GCfreqfile="results/{ID}/GCBias/bias_table/{SAMPLE}-GCbias_{blacklist}.{GENOME}.tsv.gz",
@@ -101,10 +102,7 @@ rule plot_GCbias:
             "results/{ID}/GCBias/plots/{SAMPLE}-GCbias-plot_{blacklist}.{GENOME}.png",
             caption="../report/GCbias.rst",
             category="GCbias",
-            labels={
-              "Sample": "{SAMPLE}",
-              "Type":"GCbias plot"
-          }
+            labels={"Sample": "{SAMPLE}", "Type": "GCbias plot"},
         ),
     params:
         sample_name="{SAMPLE}",
