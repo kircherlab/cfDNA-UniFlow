@@ -93,15 +93,28 @@ def get_read_group(sample):
     return RG
 
 
-### not fully implemented -> cases: fastQ files as input -> SE,PE
+### get input files for trimming rules (NGmerge/trimmomatic) based on input format
 def get_trimming_input(wildcards):
     sample = wildcards.SAMPLE
-    inpath = samples.loc[sample].loc["path"]
-    if ".bam" in inpath.lower():
+    bam = samples.loc[sample].loc["bam"]
+    fq1 = samples.loc[sample].loc["fq1"]
+    fq2 = samples.loc[sample].loc["fq2"]
+
+    if ".fastq" in fq1.lower() and ".fastq" in fq2.lower():
+        return {
+            "r1": fq1,
+            "r2": fq2,
+        }
+    elif ".bam" in bam.lower():
         return {
             "r1": "results/{ID}/fastq/{SAMPLE}_R1.fastq.gz",
             "r2": "results/{ID}/fastq/{SAMPLE}_R2.fastq.gz",
         }
+    else:
+        raise ValueError(
+            f"No raw fastq files or bam file found for sample: {sample} (bam: {bam}; fq1: {fq1}; fq2: {fq2})."
+            f"Please check the your sample sheet."
+        )
 
 
 ### get reference based on genome_build provided in samples.tsv
@@ -238,6 +251,8 @@ def get_trimmomatic_trimmers():
 
 
 def get_mapping_input(wildcards):
+    sample = wildcards.SAMPLE
+    bam = samples.loc[sample].loc["bam"]
     mapping_input = dict()
     trimming_algorithm = config["trimming_algorithm"]
     all_data = config["mapping"]["all_data"]
@@ -253,9 +268,10 @@ def get_mapping_input(wildcards):
             mapping_input[
                 "noadapter_R2"
             ] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_2.filtered.fastq.gz"
-            mapping_input[
-                "single_reads"
-            ] = "results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz"
+            if ".bam" in bam.lower():
+                mapping_input[
+                    "single_reads"
+                ] = "results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz"
     elif trimming_algorithm.lower() == "trimmomatic":
         mapping_input["reads"] = [
             "results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.fastq.gz",
