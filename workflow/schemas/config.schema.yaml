@@ -5,10 +5,222 @@ description: snakemake configuration file
 type: object
 
 # possible entries of the config file and which type they should be
-properties:
-  samples:
-    type: string
 
 # entries that have to be in the config file for successful validation
+
+properties:
+  samples: 
+    type: string
+  hg19:
+    reference: 
+      type: string 
+      default: resources/reference/hg19.fa
+      description: path to reference genome in fasta format
+    2bit_ref:  
+      type: string
+      default: "resources/reference/hg19.2bit"
+      description: path to reference genome in twobit format
+    repeatmasker:  
+      type: string
+      default: resources/blacklists/repeatmasker.hg19.merged.bed.gz
+      description: for more details see file location
+    effectiveGenomeSize: 
+      type: number
+      default: 2864785220
+      description: for more details see https://deeptools.readthedocs.io/en/latest/content/feature/effectiveGenomeSize.html
+  hg38:
+    reference: 
+      type: string
+      default: resources/reference/hg38.fa
+      description: path to reference genome in fasta format
+    2bit_ref: 
+      type: string
+      default: resources/reference/hg38.2bit 
+      description: path to reference genome in twobit format
+    repeatmasker: 
+      type: string
+      default: "resources/blacklists/repeatmasker.hg38.merged.bed.gz"
+      description: for more details see file location
+    effectiveGenomeSize:
+      type: number
+      default: 2913022398
+      description: for more details see https://deeptools.readthedocs.io/en/latest/content/feature/effectiveGenomeSize.html
+  TMPDIR:
+    type: string
+    default: ./ 
+    description: path to directory for writing TMP files
+  trimming_algorithm: 
+    type: string
+    default: NGmerge 
+    enum:
+      - NGmerge
+      - trimmomatic
+    description: Adapter removal option
+  filtering:
+    MINLEN:
+      type: number
+      default: 30
+      description: min lenght of reads in additional filter steps
+  trimmers:
+    Illuminaclip: 
+      adapter_files:
+        type: string
+        description: filter not used if empty/invalid; can be either a path to a fasta file or the name of the default files;
+      seedMismatches:
+        type: number
+        default: 2 # if not provided, defaults to 4
+      palindromeClipThreshold:
+        type: number
+        default: 30 # if not provided, defaults to 30
+      simpleClipThreshold:
+        type: number
+        default: 10 # if not provided, defaults to 10
+      minAdapterLength:
+        type: number
+        default: 8 #optional argument, default ist 8
+      keepBothReads:
+        type: boolean
+        default: False # if not provided, defaults to False
+    LEADING:  
+      type: number
+      default: 3  #(LEADING:3) Remove leading low quality or N bases (below quality 3); deactivated when set to 0
+    TRAILING:
+      type: number
+      default: 3 #(TRAILING:3) Remove trailing low quality or N bases (below quality 3); deactivated when set to 0
+    SLIDINGWINDOW: #(SLIDINGWINDOW:4:15) Scan the read with a 4-base wide sliding window, cutting when the average quality per base drops below 15; deactivated when set to 0
+      window:
+        type: number
+        default: 4 # deactivated when set to 0
+      quality_threshold:
+        type: number
+        default: 15
+  mapping:
+    unmerged:
+      type: boolean
+      default: True # default is True
+    singleton:
+      type: boolean
+      default: False # default is False
+  utility:
+    GCbias-plot:
+      type: boolean
+      default: True
+    GCbias-correction:
+      type: boolean
+      default: True
+    ichorCNA:
+      type: boolean
+      default: True
+  read_counter:
+    window:
+      type: number
+      default: 1000000
+    quality:
+      type: number
+      default: 20
+    chroms: 
+      autoselect_chroms: 
+        type: boolean
+        description: It is recommended to use this option, because chrom_list has to match the chromosome in the bam file!
+      autoselect_strict:
+        type: boolean
+        description: Only selects chromosomes with mapped reads.
+      chrom_list: 
+        type: string
+        description: List of chromosomes to use, e.g. "chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY"
+  ichorCNA:
+    ploidy: 
+      type: string
+      default: '"c(2,3)"'
+      description: R style list
+    normal: 
+      type: string
+      default: '"c(0.5,0.6,0.7,0.8,0.9)"'
+      description: R style list
+    maxCN: 
+      type: number
+      default: 5
+    gcWIG: 
+      hg19:
+        type: string
+        default: "resources/ichorCNA/gc_hg19_1000kb.wig"
+        description: GC content 
+      hg38: 
+        type: string
+        default: "resources/ichorCNA/gc_hg38_1000kb.wig"
+        description: GC content 
+    mapWIG: 
+      hg19: 
+        type: string
+        default: "resources/ichorCNA/map_hg19_1000kb.wig"
+        description: mappability
+      hg38: 
+        type: string
+        default: "resources/ichorCNA/map_hg38_1000kb.wig"
+        description: mappability 
+    centro:
+      hg19: 
+        type: string
+        default: "resources/ichorCNA/GRCh37.p13_centromere_UCSC-gapTable.txt"
+        description: centromeric regions 
+      hg38: 
+        type: string
+        default: "resources/ichorCNA/GRCh38.GCA_000001405.2_centromere_acen.txt"
+        description: centromeric regions 
+    normalPanel: 
+      hg19: 
+        type: string
+        default: "resources/ichorCNA/HD_ULP_PoN_1Mb_median_normAutosome_mapScoreFiltered_median.rds"
+        description: normal panel of cfDNA samples 
+      hg38: 
+        type: string
+        default: "resources/ichorCNA/HD_ULP_PoN_hg38_1Mb_median_normAutosome_median.rds"
+        description: normal panel of cfDNA samples 
+    includeHOMD: 
+      type: string
+      default: "False"
+      description: R CLI bool
+    chrs: 
+      type: string
+      default: "'c(1:22,\"X\")'"
+      description: R style list. this schould be fine, because ichorCNA evaluates these expressions and maps chromosome names
+    chrTrain:
+      type: string
+      default: '"c(20:22)"'
+      description: R style list. this schould be fine, because ichorCNA evaluates these expressions and maps chromosome names 
+    estimateNormal: 
+      type: string
+      default: "True"
+      description: R CLI bool 
+    estimatePloidy: 
+      type: string
+      default: "True"
+      description: R CLI bool
+    estimateScPrevalence: 
+      type: string
+      default: "True"
+      description: R CLI bool
+    scStates: 
+      type: string
+      default: '"c(1,3)"'
+      description: R style list 
+    txnE:
+      type: number
+      default: 0.9999
+    txnStrength:
+      type: number
+      default: 10000
+
 required:
   - samples
+  - hg19
+  - hg38
+  - TMPDIR
+  - trimming_algorithm
+  - filtering
+  - trimmers
+  - mapping
+  - utility
+  - read_counter
+  - ichorCNA
+
