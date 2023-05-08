@@ -56,7 +56,7 @@ properties:
       - NGmerge
       - trimmomatic
     description: Adapter removal option
-  filtering:
+  length-filter:
     MINLEN:
       type: number
       default: 30
@@ -217,7 +217,7 @@ required:
   - hg38
   - TMPDIR
   - trimming_algorithm
-  - filtering
+  - length-filter
   - trimmers
   - mapping
   - utility
