@@ -243,7 +243,7 @@ def get_trimmomatic_trimmers():
     if t_conf["TRAILING"] > 0:
         TRAILING = t_conf["TRAILING"]
         trimmers.append(f"TRAILING:{TRAILING}")
-    if t_conf["MINLEN"] > 0:
+    if conf["filtering"]["MINLEN"] > 0:
         MINLEN = t_conf["MINLEN"]
         trimmers.append(f"MINLEN:{MINLEN}")
 
