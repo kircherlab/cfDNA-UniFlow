@@ -4,14 +4,44 @@ description: an entry in the sample sheet
 
 # columns that the config/samples.tsv file can have and which type they should be
 properties:
+  ID:
+    type: string
+    description: identifier of the cohort/experiment
   sample:
     type: string
     description: sample name/identifier
-  condition:
+  bam:
     type: string
-    description: sample condition that will be compared during differential analysis (e.g. a treatment, a tissue time, a disease)
+    description: path to the BAM file; insert "-" if FASTQ files are used
+  fq1:
+    type: string
+    description: path to the R1 FASTQ file; insert "-" if bam is used
+  fq2:
+    type: string
+    description: path to the R2 FASTQ file; insert "-" if bam is used
+  genome_build:
+    type: string
+    enum:
+      - hg19
+      - hg38
+    description: Can either be hg19 or hg38
+  library_name:
+    type: string
+    description: name of the library prep (e.g. ThruPLEX DNA-seq)
+  platform:
+    type: string
+    description: platform used for sequencing (e.g. Illumina NextSeq 500)
+  info:
+    type: string
+    description: additional information that should be included in read group ID (e.g. condition)
 
 # columns that the config/samples.tsv file must have to pass schema validation
 required:
+  - ID
   - sample
-  - condition
+  - bam
+  - fq1
+  - fq2
+  - genome_build
+  - library_name
+  - platform
