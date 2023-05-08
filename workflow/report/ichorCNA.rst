@@ -1,1 +1,1 @@
-Copy number alterations and tumor fraction estimation using IchorCNA
+Copy number alterations and tumor fraction estimation using IchorCNA.
