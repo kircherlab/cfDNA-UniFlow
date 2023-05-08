@@ -5,6 +5,7 @@ def get_blacklist(wildcards):
     else:
         return {}
 
+
 def get_ref_bam_whole_genome(wildcards):
     """Gets a reference bam file for a given genome build.
 
@@ -16,7 +17,9 @@ def get_ref_bam_whole_genome(wildcards):
     """
 
     sample = samples["sample"].loc[samples.genome_build == wildcards.GENOME].iloc[0]
-    bamfile = "results/{{ID}}/mapped_reads/{SAMPLE}_all.{{GENOME}}.bam".format(SAMPLE=sample)
+    bamfile = "results/{{ID}}/mapped_reads/{SAMPLE}_all.{{GENOME}}.bam".format(
+        SAMPLE=sample
+    )
     baifile = bamfile + ".bai"
     return {"BAMFILE": bamfile, "BAIFILE": baifile}
 
@@ -34,7 +37,7 @@ rule computeGCbias_background:
         if get_blacklist(wildcards)
         else "",
     log:
-        "logs/{ID}/computeGCbias_background/precomputed_background_{blacklist}.{GENOME}.log"
+        "logs/{ID}/computeGCbias_background/precomputed_background_{blacklist}.{GENOME}.log",
     conda:
         "../envs/GC_bias.yaml"
     threads: 48
@@ -69,7 +72,7 @@ rule computeGCbias:
         else "",
         #read_length = 150
     log:
-        "logs/{ID}/computeGCbias/{SAMPLE}-GCbias_{blacklist}.{GENOME}.log"
+        "logs/{ID}/computeGCbias/{SAMPLE}-GCbias_{blacklist}.{GENOME}.log",
     conda:
         "../envs/GC_bias.yaml"
     threads: 48
@@ -88,7 +91,35 @@ rule computeGCbias:
         --seed {params.seed} \
         --standard_chroms \
         -v &> {log}
+        """
 
+rule plot_GCbias:
+    input:
+        GCfreqfile="results/{ID}/GCBias/bias_table/{SAMPLE}-GCbias_{blacklist}.{GENOME}.tsv.gz",
+    output:
+        GCbias_plot=report(
+            "results/{ID}/GCBias/plots/{SAMPLE}-GCbias-plot_{blacklist}.{GENOME}.png",
+            caption="../report/GCbias.rst",
+            category="GCbias",
+            labels={
+              "Sample": "{SAMPLE}",
+              "Type":"GCbias plot"
+          }
+        ),
+    params:
+        sample_name="{SAMPLE}",
+        quantile_threshold="0.999",
+        figsize="15 12",
+    conda:
+        "../envs/GC_bias.yaml"
+    shell:
+        """
+        workflow/scripts/plot_GCbias_distribution.py \
+        -o {output.GCbias_plot} \
+        -s {params.sample_name} \
+        -q {params.quantile_threshold} \
+        --figsize {params.figsize} \
+        {input.GCfreqfile}
         """
 
 
@@ -99,14 +130,19 @@ rule correctGCbias:
         twobit_genome=lambda wildcards: config[wildcards.GENOME]["2bit_ref"],
         GCfreqfile="results/{ID}/GCBias/bias_table/{SAMPLE}-GCbias_{blacklist}.{GENOME}.tsv.gz",
     output:
-        gc_weighted_bam=temp("results/{ID}/corrected_reads/{SAMPLE}_GCcorrected_{blacklist}.{GENOME}.bam")
+        gc_weighted_bam=temp(
+            "results/{ID}/corrected_reads/{SAMPLE}_GCcorrected_{blacklist}.{GENOME}.bam"
+        ),
+        gc_weighted_bai=temp(
+            "results/{ID}/corrected_reads/{SAMPLE}_GCcorrected_{blacklist}.{GENOME}.bam.bai"
+        ),
     params:
         GC_weights="-w",
         effectiveGenomeSize=lambda wildcards: config[wildcards.GENOME][
             "effectiveGenomeSize"
         ],
     log:
-        "logs/{ID}/correctGCbias/{SAMPLE}-GCbias_{blacklist}.{GENOME}.log"
+        "logs/{ID}/correctGCbias/{SAMPLE}-GCbias_{blacklist}.{GENOME}.log",
     conda:
         "../envs/GC_bias.yaml"
     threads: 48
