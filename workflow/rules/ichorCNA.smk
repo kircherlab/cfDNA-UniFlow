@@ -60,7 +60,17 @@ rule ichorCNA:
         chroms="results/{ID}/icorCNA/chroms/{SAMPLE}_processed.{GENOME}.chromosomes.txt",
     output:
         outDir=directory("results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}/"),
+        plotDir=report(directory("results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}/{SAMPLE}_processed/"),
+                        patterns=["{SAMPLE}_processed_genomeWide.png",],
+                        caption="../report/ichorCNA.rst",
+                        category="ichorCNA",
+                        labels={
+              "Sample": "{SAMPLE}",
+              "Type":"CNA-TumorFraction plot"
+          }
+          ),
         summary="results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}/{SAMPLE}_processed.params.txt"
+
     params:
         genome="{GENOME}",
         plot_format="png",
