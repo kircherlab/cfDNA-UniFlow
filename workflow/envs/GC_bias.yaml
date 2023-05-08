@@ -5,6 +5,8 @@ channels:
 dependencies:
   - pybigwig
   - bedtools
+  - seaborn
+  - scipy
   - pip
   - pip:
     - git+https://github.com/kircherlab/cfDNA_GCcorrection.git
