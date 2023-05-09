@@ -1,30 +1,36 @@
 # This file should contain everything to configure the workflow on a global scale.
 # In case of sample based data, it should be complemented by a samples.tsv file that contains
 # one row per sample. It can be parsed easily via pandas.
-samples: "config/samples.tsv"
+samples: "config/samples.tsv" 
 
 
 ### genome build specific options ###
 
-GRCh37:
-  reference: "" #path to reference genome in fasta format
+hg19:
+  reference: "resources/reference/hg19.fa" #path to reference genome in fasta format
+  2bit_ref: "resources/reference/hg19.2bit" #path to reference genome in twobit format
+  repeatmasker: "resources/blacklists/repeatmasker.hg19.merged.bed.gz" #for more details see file location
+  effectiveGenomeSize: 2864785220 #for more details see https://deeptools.readthedocs.io/en/latest/content/feature/effectiveGenomeSize.html
 
-GRCh38:
-  reference: "" #path to reference genome in fasta format
+hg38:
+  reference: "resources/reference/hg38.fa" #path to reference genome in fasta format
+  2bit_ref: "resources/reference/hg38.2bit" #path to reference genome in twobit format
+  repeatmasker: "resources/blacklists/repeatmasker.hg38.merged.bed.gz" #for more details see file location
+  effectiveGenomeSize: 2913022398 #for more details see https://deeptools.readthedocs.io/en/latest/content/feature/effectiveGenomeSize.html
+
 
 ### global variables ###
 
-TMPDIR: "" # path to directory for writing TMP files
-
+TMPDIR: "./" # path to directory for writing TMP files
 
 
 ### trimming ###
 
 trimming_algorithm: "NGmerge" #can be either NGmerge or trimmomatic
 
-#### NGmerge specific options ####9
+#### NGmerge specific options ####
 
-NGmerge:
+length-filter:
   MINLEN: 30 # min lenght of reads in additional filter steps
 
 #### trimmomatic specific options ####
@@ -62,12 +68,21 @@ trimmers:
 # This option lets you add unpaired/singleton reads in the mapping step that were filtered,
 # but are either not paired or not merged. Otherwise these reads are not further processed.
 mapping:
-  all_data: False # default is False
+  unmerged: True # default is True
+  singleton: False # default is False
+
+### Utility ###
+
+utility:
+  GCbias-plot: True
+  GCbias-correction: True
+  ichorCNA: True
 
 
-### ichorCNA ###
 
-# These are the default options used by the authors of icorCNA! Change at own risk.
+#### ichorCNA ####
+
+# These are the default options used by the authors of IcorCNA! Change at own risk.
 
 read_counter:
   window: 1000000
@@ -94,8 +109,8 @@ ichorCNA:
     hg19: "resources/ichorCNA/HD_ULP_PoN_1Mb_median_normAutosome_mapScoreFiltered_median.rds"
     hg38: "resources/ichorCNA/HD_ULP_PoN_hg38_1Mb_median_normAutosome_median.rds"
   includeHOMD: "False"
-  chrs: "'c(1:22,\"X\")'"
-  chrTrain: '"c(1:22)"'
+  chrs: "'c(1:22,\"X\")'" # this schould be fine, because ichorCNA evaluates these expressions and maps chromosome names"
+  chrTrain: '"c(1:22)"'  # this schould be fine, because ichorCNA evaluates these expressions and maps chromosome names"
   estimateNormal: "True"
   estimatePloidy: "True"
   estimateScPrevalence: "True"
