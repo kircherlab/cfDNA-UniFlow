@@ -49,6 +49,9 @@ properties:
     type: string
     default: ./ 
     description: path to directory for writing TMP files
+  SEED:
+    type: number
+    description: seed for increased reproducibility
   trimming_algorithm: 
     type: string
     default: NGmerge 

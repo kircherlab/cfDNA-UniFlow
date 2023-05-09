@@ -32,7 +32,7 @@ rule computeGCbias_background:
     output:
         background="results/{ID}/GCBias_background/precomputed_background_{blacklist}.{GENOME}.tsv.gz",
     params:
-        seed=42,
+        seed=config["SEED"],
         bl=lambda wildcards: "-bl {}".format(get_blacklist(wildcards)["blacklist"])
         if get_blacklist(wildcards)
         else "",
@@ -66,7 +66,7 @@ rule computeGCbias:
     output:
         GCfreqfile="results/{ID}/GCBias/bias_table/{SAMPLE}-GCbias_{blacklist}.{GENOME}.tsv.gz",
     params:
-        seed=42,
+        seed=config["SEED"],
         bl=lambda wildcards: "-bl {}".format(get_blacklist(wildcards)["blacklist"])
         if get_blacklist(wildcards)
         else "",
