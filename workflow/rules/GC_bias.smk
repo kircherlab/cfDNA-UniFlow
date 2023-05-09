@@ -106,7 +106,7 @@ rule plot_GCbias:
         ),
     params:
         sample_name="{SAMPLE}",
-        quantile_threshold="0.999",
+        quantile_threshold="0.99",
         figsize="15 12",
     conda:
         "../envs/GC_bias.yaml"
