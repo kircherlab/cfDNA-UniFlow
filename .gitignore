@@ -1,7 +1,11 @@
 *
 
 !resources/
+!resources/blacklists/
+!resources/blacklists/**
 
+!supplement/
+!supplement/**
 
 !workflow/
 !workflow/envs/
@@ -16,10 +20,15 @@
 !workflow/rules/
 !workflow/rules/**
 
+!workflow/report/
+!workflow/report/**
+
 !config/
 !config/example.config.yaml
 !config/example.samples.tsv
 !config/multiqc_config.yaml
+!config/test-config.yaml
+!config/test-samples.tsv
 
 !resources/qual_profile.txt
 

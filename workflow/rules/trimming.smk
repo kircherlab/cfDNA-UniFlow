@@ -4,11 +4,15 @@ rule NGmerge:
         qual_table="resources/qual_profile.txt",
     output:
         merged=temp("results/{ID}/NGmerge/merged/{SAMPLE}_merged.unfiltered.fastq.gz"),
-        non_merged_1=temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_1.fastq.gz"),
-        non_merged_2=temp("results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_2.fastq.gz"),
+        non_merged_1=temp(
+            "results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_1.fastq.gz"
+        ),
+        non_merged_2=temp(
+            "results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_2.fastq.gz"
+        ),
     params:
         non_merged_prefix="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged",
-        minlen=20
+        minlen=20,
     log:
         "logs/{ID}/NGmerge/{SAMPLE}.log",
     conda:
@@ -27,11 +31,15 @@ rule NGmerge_adapter:
         non_merged_2="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_2.fastq.gz",
         qual_table="resources/qual_profile.txt",
     output:
-        R1_noadapters = temp("results/{ID}/NGmerge/nonmerged/unfiltered.{SAMPLE}_noadapters_1.fastq.gz"),
-        R2_noadapters = temp("results/{ID}/NGmerge/nonmerged/unfiltered.{SAMPLE}_noadapters_2.fastq.gz"),
+        R1_noadapters=temp(
+            "results/{ID}/NGmerge/nonmerged/unfiltered.{SAMPLE}_noadapters_1.fastq.gz"
+        ),
+        R2_noadapters=temp(
+            "results/{ID}/NGmerge/nonmerged/unfiltered.{SAMPLE}_noadapters_2.fastq.gz"
+        ),
     params:
         adapt_minlen=1,
-        output_prefix="results/{ID}/NGmerge/nonmerged/unfiltered.{SAMPLE}_noadapters"
+        output_prefix="results/{ID}/NGmerge/nonmerged/unfiltered.{SAMPLE}_noadapters",
     log:
         "logs/{ID}/NGmerge-adapter/{SAMPLE}.log",
     conda:
@@ -43,6 +51,7 @@ rule NGmerge_adapter:
         "-1 {input.non_merged_1} -2 {input.non_merged_2} -o {params.output_prefix}  "
         "-c {log} -v"
 
+
 rule trimmomatic_pe:
     input:
         unpack(get_trimming_input),
@@ -50,48 +59,53 @@ rule trimmomatic_pe:
         r1=temp("results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.fastq.gz"),
         r2=temp("results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.fastq.gz"),
         # reads where trimming entirely removed the mate
-        r1_unpaired=temp("results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.unpaired.fastq.gz"),
-        r2_unpaired=temp("results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.unpaired.fastq.gz")
+        r1_unpaired=temp(
+            "results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.unpaired.fastq.gz"
+        ),
+        r2_unpaired=temp(
+            "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.unpaired.fastq.gz"
+        ),
     log:
-        "logs/{ID}/trimmomatic/{SAMPLE}.log"
+        "logs/{ID}/trimmomatic/{SAMPLE}.log",
     params:
         # list of trimmers (see manual)
-        trimmer = get_trimmomatic_trimmers(),
+        trimmer=get_trimmomatic_trimmers(),
         # optional parameters
         extra="",
-        compression_level="-9"
-    threads:
-        32
+        compression_level="-9",
+    threads: 32
     # optional specification of memory usage of the JVM that snakemake will respect with global
     # resource restrictions (https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#resources)
     # and which can be used to request RAM during cluster job submission as `{resources.mem_mb}`:
     # https://snakemake.readthedocs.io/en/latest/executing/cluster.html#job-properties
     resources:
-        mem_mb=1024
+        mem_mb=1024,
     wrapper:
         "v1.1.0/bio/trimmomatic/pe"
 
+
 rule trimmomatic_se:
     input:
-        "reads/{sample}.fastq.gz"  # input and output can be uncompressed or compressed
+        "reads/{sample}.fastq.gz",  # input and output can be uncompressed or compressed
     output:
-        temp("results/{ID}/trimmed/trimmomatic/{SAMPLE}.trimmed.fastq.gz",)
+        temp(
+            "results/{ID}/trimmed/trimmomatic/{SAMPLE}.trimmed.fastq.gz",
+        ),
     log:
-        "logs/{ID}/trimmomatic/{SAMPLE}.log"
+        "logs/{ID}/trimmomatic/{SAMPLE}.log",
     params:
         # list of trimmers (see manual)
         trimmer=get_trimmomatic_trimmers(),
         # optional parameters
         extra="",
         # optional compression levels from -0 to -9 and -11
-        compression_level="-9"
-    threads:
-        32
+        compression_level="-9",
+    threads: 32
     # optional specification of memory usage of the JVM that snakemake will respect with global
     # resource restrictions (https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#resources)
     # and which can be used to request RAM during cluster job submission as `{resources.mem_mb}`:
     # https://snakemake.readthedocs.io/en/latest/executing/cluster.html#job-properties
     resources:
-        mem_mb=1024
+        mem_mb=1024,
     wrapper:
         "v1.1.0/bio/trimmomatic/se"

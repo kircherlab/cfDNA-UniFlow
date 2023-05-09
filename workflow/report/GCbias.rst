@@ -1,0 +1,1 @@
+Calculated GC bias of cell free DNA (cfDNA) fragments in sample: {{ snakemake.wildcards.SAMPLE }}.

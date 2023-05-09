@@ -1,5 +1,5 @@
 
-rule get_reference:
+rule get_fasta_reference:
     output:
         "resources/reference/{GENOME}.fa",
     log:
@@ -7,8 +7,17 @@ rule get_reference:
     params:
         url= lambda wc:get_ref_url(wc)
     shell:
-        "(curl -L {params.url} | gzip -d > {output}) 2> {log}"
-        
+        "(curl -L {params.url:q} | gzip -d > {output}) 2> {log}"
+
+rule get_twobit_reference:
+    output:
+        "resources/reference/{GENOME}.2bit",
+    log:
+        "logs/get-{GENOME}-reference.log",
+    params:
+        url= lambda wc:get_ref_url(wc)
+    shell:
+        "(curl -L -o {output} {params.url:q}) 2> {log}"
 
 
 rule bwa_mem2_index:
@@ -23,7 +32,7 @@ rule bwa_mem2_index:
         "../envs/cfDNA_prep.yaml"
     threads: 16
     shell:
-        "bwa-mem2 index {input.ref}"
+        "bwa-mem2 index {input.ref} 2> {log}"
 
 
 rule get_trimmomatic_adapters:
@@ -55,7 +64,7 @@ rule get_ichorCNA_files:
         dir=directory("resources/ichorCNA")
     params:
         prefix="resources/",
-        URL="https://github.com/broadinstitute/ichorCNA/archive/refs/heads/master.zip"
+        URL="https://github.com/broadinstitute/ichorCNA/archive/refs/heads/master.zip" #"https://github.com/GavinHaLab/ichorCNA/archive/refs/heads/master.zip"
     log:
         "logs/get_ichorCNA_files.log"
     shell:

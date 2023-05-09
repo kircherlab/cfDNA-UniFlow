@@ -7,26 +7,16 @@ import sys
 
 
 configfile: "config/config.yaml"
-
-
-# validate(config, schema="../schemas/config.schema.yaml")
+validate(config, schema="../schemas/config.schema.yaml")
 
 samples = pd.read_csv(config["samples"], sep="\t").set_index("sample", drop=False)
 samples.index.names = ["sample_id"]
-# validate(samples, schema="../schemas/samples.schema.yaml")
+validate(samples, schema="../schemas/samples.schema.yaml")
 
 
 def get_final_output():
     final_output = []
 
-    final_output.extend(
-        expand(
-            "results/{ID}/flagstat/{SAMPLE}_flagstat.txt.gz",
-            zip,
-            ID=samples["ID"],
-            SAMPLE=samples["sample"],
-        )
-    )
     final_output.extend(
         expand(
             "results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
@@ -48,27 +38,41 @@ def get_final_output():
     final_output.extend(
         expand("results/{ID}/qc/multiqc.html", ID=samples["ID"].unique())
     )
-    final_output.extend(
-        expand(
-            "results/{ID}/icorCNA/readcounts/{SAMPLE}_processed.{GENOME}.wig",
-            zip,
-            ID=samples["ID"],
-            SAMPLE=samples["sample"],
-            GENOME=samples["genome_build"],
+
+    if config["utility"]["GCbias-plot"]:
+        final_output.extend(
+            expand(
+                expand(
+                    "results/{ID}/GCBias/plots/{SAMPLE}-GCbias-plot_{blacklist}.{GENOME}.png",
+                    zip,
+                    ID=samples["ID"],
+                    SAMPLE=samples["sample"],
+                    GENOME=samples["genome_build"],
+                    allow_missing=True,
+                ),
+                blacklist=["repeatmasker"],
+            )
         )
-    )
-    final_output.extend(
-        expand(
-            "results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}",
-            zip,
-            ID=samples["ID"],
-            SAMPLE=samples["sample"],
-            GENOME=samples["genome_build"],
+
+    if config["utility"]["ichorCNA"]:
+        final_output.extend(
+            expand(
+                "results/{ID}/icorCNA/readcounts/{SAMPLE}_processed.{GENOME}.wig",
+                zip,
+                ID=samples["ID"],
+                SAMPLE=samples["sample"],
+                GENOME=samples["genome_build"],
+            )
         )
-    )
-
-
-
+        final_output.extend(
+            expand(
+                "results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}",
+                zip,
+                ID=samples["ID"],
+                SAMPLE=samples["sample"],
+                GENOME=samples["genome_build"],
+            )
+        )
 
     return final_output
 
@@ -87,15 +91,28 @@ def get_read_group(sample):
     return RG
 
 
-### not fully implemented -> cases: fastQ files as input -> SE,PE
+### get input files for trimming rules (NGmerge/trimmomatic) based on input format
 def get_trimming_input(wildcards):
     sample = wildcards.SAMPLE
-    inpath = samples.loc[sample].loc["path"]
-    if ".bam" in inpath.lower():
+    bam = samples.loc[sample].loc["bam"]
+    fq1 = samples.loc[sample].loc["fq1"]
+    fq2 = samples.loc[sample].loc["fq2"]
+
+    if ".fastq" in fq1.lower() and ".fastq" in fq2.lower():
+        return {
+            "r1": fq1,
+            "r2": fq2,
+        }
+    elif ".bam" in bam.lower():
         return {
             "r1": "results/{ID}/fastq/{SAMPLE}_R1.fastq.gz",
             "r2": "results/{ID}/fastq/{SAMPLE}_R2.fastq.gz",
         }
+    else:
+        raise ValueError(
+            f"No raw fastq files or bam file found for sample: {sample} (bam: {bam}; fq1: {fq1}; fq2: {fq2})."
+            f"Please check the your sample sheet."
+        )
 
 
 ### get reference based on genome_build provided in samples.tsv
@@ -118,12 +135,22 @@ def get_reference(wildcards):
         return f"resources/reference/{genome_build}.fa"
 
 
-### provides download URLs for UCSC human genomes
+### provides download URLs for UCSC human reference files in fasta format
 def get_ref_url(wildcards):
     genome_build = wildcards.GENOME
     url_dict = {
-        "hg19": "https://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/hg19.fa.gz",
-        "hg38": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz",
+        "hg19": "ftp://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.fa.gz",
+        "hg38": "ftp://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa.gz",
+    }
+    return url_dict[genome_build]
+
+
+### provides download URLs for UCSC human reference files in twobit format
+def get_ref_url(wildcards):
+    genome_build = wildcards.GENOME
+    url_dict = {
+        "hg19": "ftp://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.2bit",
+        "hg38": "ftp://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.2bit",
     }
     return url_dict[genome_build]
 
@@ -214,29 +241,65 @@ def get_trimmomatic_trimmers():
     if t_conf["TRAILING"] > 0:
         TRAILING = t_conf["TRAILING"]
         trimmers.append(f"TRAILING:{TRAILING}")
-    if t_conf["MINLEN"] > 0:
+    if config["length-filter"]["MINLEN"] > 0:
         MINLEN = t_conf["MINLEN"]
         trimmers.append(f"MINLEN:{MINLEN}")
 
     return trimmers
 
 
-
 def get_mapping_input(wildcards):
+    sample = wildcards.SAMPLE
+    bam = samples.loc[sample].loc["bam"]
     mapping_input = dict()
     trimming_algorithm = config["trimming_algorithm"]
-    all_data = config["mapping"]["all_data"]
+    unmerged = config["mapping"]["unmerged"]
+    singleton = config["mapping"]["singleton"]
 
     if trimming_algorithm.lower() == "ngmerge":
-        mapping_input["reads"] = "results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz"
-        if all_data:
-            mapping_input["noadapter_R1"] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_1.filtered.fastq.gz"
-            mapping_input["noadapter_R2"] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_2.filtered.fastq.gz"
-            mapping_input["single_reads"] = "results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz"
+        mapping_input[
+            "reads"
+        ] = "results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz"
+        if unmerged:
+            mapping_input[
+                "noadapter_R1"
+            ] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_1.filtered.fastq.gz"
+            mapping_input[
+                "noadapter_R2"
+            ] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_2.filtered.fastq.gz"
+        if singleton and ".bam" in bam.lower():
+            mapping_input[
+                "single_reads"
+            ] = "results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz"
     elif trimming_algorithm.lower() == "trimmomatic":
-        mapping_input["reads"] = ["results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.fastq.gz", "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.fastq.gz",]
+        mapping_input["reads"] = [
+            "results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.fastq.gz",
+            "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.fastq.gz",
+        ]
         if all_data:
-            mapping_input["noadapter_R1"] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.unpaired.fastq.gz"
-            mapping_input["noadapter_R2"] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.unpaired.fastq.gz"
-        
+            mapping_input[
+                "noadapter_R1"
+            ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.unpaired.fastq.gz"
+            mapping_input[
+                "noadapter_R2"
+            ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.unpaired.fastq.gz"
+
     return mapping_input
+
+
+def get_mark_duplicates_input(wildcards):
+    mark_duplicates_input = dict()
+    GCcorrection = config["utility"]["GCbias-correction"]
+    blacklist = "repeatmasker"
+    if GCcorrection:
+        mark_duplicates_input[
+            "mapped_reads"
+        ] = "results/{{ID}}/corrected_reads/{{SAMPLE}}_GCcorrected_{blacklist}.{{GENOME}}.bam".format(
+            blacklist=blacklist,
+        )
+    else:
+        mark_duplicates_input[
+            "mapped_reads"
+        ] = "results/{ID}/mapped_reads/{SAMPLE}_all.{GENOME}.bam"
+
+    return mark_duplicates_input

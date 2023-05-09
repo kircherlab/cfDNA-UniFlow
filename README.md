@@ -1,46 +1,139 @@
-# Snakemake workflow: cfDNA_preprocessing_workflow
+# cfDNA UniFlow - Unified Preprocessing Pipeline for cell-free DNA from liquid biopsies
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥6.4.1-brightgreen.svg)](https://snakemake.bitbucket.io)
-[![Build Status](https://travis-ci.org/snakemake-workflows/cfDNA_preprocessing_workflow.svg?branch=master)](https://travis-ci.org/snakemake-workflows/cfDNA_preprocessing_workflow)
+<div align="justify">
 
-This is the template for a new Snakemake workflow. Replace this text with a comprehensive description covering the purpose and domain.
-Insert your code into the respective folders, i.e. `scripts`, `rules`, and `envs`. Define the entry point of the workflow in the `Snakefile` and the main configuration in the `config.yaml` file.
+cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processing WGS cfDNA samples from liquid biopsies. It includes essential steps for pre-processing raw cfDNA samples, quality control and reporting. Additionally, several optional utility functions like bias correction and estimation of copy number state are included. Figure S1 gives a detailed overview of the workflow.
+</div>
 
-## Authors
+<figure>
+ <img loading="lazy" src="supplement/cfDNA_unifyed_preprocessing.drawio.png">
+ <figcaption>
+ <div align="justify">
+  <strong>Figure S1: Overview of cfDNA Uniflow.</strong>  Functionalities are color coded by task. Red boxes represents rules for the automatic download of public resources. Grey boxes are optional steps. Blue boxes containt the core functionailty of cfDNA Uniflow. Green boxes are optional, but highly recommended steps and yellow boxes summarize the Quality Control and reporting steps.
+ </div>
+ </figcaption>
+</figure>
+
+## Authors <!-- omit from toc -->
 
 * Sebastian Röner (@sroener)
 
-## Table of Contents
-- [Snakemake workflow: cfDNA_preprocessing_workflow](#snakemake-workflow-cfdna_preprocessing_workflow)
-    - [Authors](#authors)
-    - [Table of Contents](#table-of-contents)
-    - [Dependencies](#dependencies)
-    - [Notes](#notes)
-    - [Usage](#usage)
+## Table of Contents <!-- omit from toc -->
+
+- [cfDNA UniFlow - Unified Preprocessing Pipeline for cell-free DNA from liquid biopsies](#cfdna-uniflow---unified-preprocessing-pipeline-for-cell-free-dna-from-liquid-biopsies)
+    - [1 Dependencies](#1-dependencies)
+    - [2 Setup](#2-setup)
         - [Step 1: Obtain a copy of this workflow](#step-1-obtain-a-copy-of-this-workflow)
-        - [Step 2: Configure workflow](#step-2-configure-workflow)
-        - [Step 3: Install Snakemake](#step-3-install-snakemake)
+        - [Step 2: Install Snakemake](#step-2-install-snakemake)
+        - [Step 3: Configure Workflow](#step-3-configure-workflow)
         - [Step 4: Execute workflow](#step-4-execute-workflow)
         - [Step 5: Investigate results](#step-5-investigate-results)
-        - [Step 6: Commit changes](#step-6-commit-changes)
-        - [Step 7: Obtain updates from upstream](#step-7-obtain-updates-from-upstream)
-        - [Step 8: Contribute back](#step-8-contribute-back)
-    - [Testing](#testing)
+    - [3 Functional summary](#3-functional-summary)
+        - [3.1 Raw data processing](#31-raw-data-processing)
+        - [3.2 Quality control](#32-quality-control)
+        - [3.3 Utility functionality](#33-utility-functionality)
+        - [3.4 Report](#34-report)
+        - [3.5 Notes on resource requirements](#35-notes-on-resource-requirements)
+    - [4 Quickstart guide](#4-quickstart-guide)
+        - [4.1 Download test files](#41-download-test-files)
+        - [4.2 Check config files](#42-check-config-files)
+        - [4.3 Executing the workflow](#43-executing-the-workflow)
 
+<div align="justify">
 
-## Dependencies
+## 1 Dependencies
 
-Dependencies are automatically managed by conda environments. Only exception is [`NGmerge`](https://github.com/jsh58/NGmerge) (v.0.3.0; 09.06.21 ), which was build and included in the scripts folder.
+To minimize conflicts between packages, all dependencies for the workflow rules are managed via separate conda environments located in `./workflow/envs`. They get automatically installed and used when Snakemake is executed with the `--use-conda` flag. This is the recommended way of executing the workflow.
+
+The only exception is NGmerge, a read merging and adapter removal program, which is included in the GitHub repository due to an outdated bioconda recipe. The NGmerge executable was downloaded and compiled as described in the official documentation of NGmerge v0.3 and is located in the the scripts directory (./workflow/scripts/NGmerge). Additionally, we provide an adjusted quality profile for Phred+33 scores of Illumina 1.8+, which ranges from 0 to 41 instead of 0 to 40 in earlier versions. The quality profile file was modified by duplicating the last column and appending it as a new column.
+
+## 2 Setup
+
+### Step 1: Obtain a copy of this workflow
+
+1. Create a new github repository using this workflow [as a template](https://help.github.com/en/articles/creating-a-repository-from-a-template).
+2. [Clone](https://help.github.com/en/articles/cloning-a-repository) the newly created repository to your local system, into the place where you want to perform the data analysis.
+
+### Step 2: Install Snakemake
+
+For best compatibility, it is recommended to execute cfDNA UniFlow via conda and Snakemake. For this, it is required to first install conda. If conda is not installed yet, follow the [official documentation](https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html).
+
+After successful installation, set up an environment for Snakemake. This can be done by executing the following command:
 
 ```bash
-- NGmerge v0.3.0
+conda create -c bioconda -c conda-forge -n snakemake snakemake
 ```
 
-## Notes
+The environment can be activated via the `conda activate snakemake` command.
 
-- The indext creation of bwa-mem2 is resource intesive (needs quotation): 
+For installation details, see the instructions in the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
 
+### Step 3: Configure Workflow
+
+Configure the workflow according to your needs via editing the files in the config/ folder. Adjust `config.yaml` to configure the workflow execution, and `samples.tsv` to specify your sample setup.
+
+### Step 4: Execute workflow
+
+Activate the conda environment:
+
+```bash
+conda activate snakemake
 ```
+
+Test your configuration by performing a dry-run with `<CONFIGFILE>` representing the path to your modified config file via:
+
+```bash
+snakemake --use-conda --configfile <CONFIGFILE> -n
+```
+
+Execute the workflow locally using `$N` cores:
+
+```bash
+snakemake --use-conda --configfile <CONFIGFILE> --cores $N
+```
+
+See the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/executing/cluster.html) for further details on workflow execution.
+
+### Step 5: Investigate results
+
+After successful execution, you can create a self-contained interactive HTML report with all results via:
+
+```bash
+snakemake --configfile <CONFIGFILE> --report report.html
+```
+
+This report can, e.g., be forwarded to your collaborators.
+
+For better report performance, it is recommended to use `--report report.zip`, which creates a zipped directory structure with the needed information instead of saving it in the HTML file itself. More information on reporting can be found in the official [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/snakefiles/reporting.html).
+
+An example report in zip format can be found in the supplement directory. For viewing the zip file needs to be extracted.
+
+## 3 Functional summary
+
+### 3.1 Raw data processing
+
+The core functionality of cfDNA UniFlow is the processing of Whole Genome Sequencing (WGS) data from liquid biopsies. Input data is expected in either FASTQ or BAM format. If a BAM file was provided, it gets converted to FASTQ files using SAMTools. Afterwards, several steps for improving read quality and preparation for mapping are executed, for which two options are provided. Either the recommended merging of reads with NGmerge, which removes adapters and corrects sequencing errors, or trimming of adapters with Trimmomatic. In both cases, results are filtered for a specified minimum read length. Remaining reads are mapped to a reference genome via bwa-mem2. If NGmerge was used for adapter removal, it is possible to include reads in mapping for which only adapters were removed, when merging was not possible. The core processing is finalized by marking duplicates and creating a bam index with SAMTools markdup and index. Processed reads are then submitted for Quality Control and optional steps.
+
+### 3.2 Quality control
+
+In the quality control step, general post-alignment statistics and graphs are calculated for each sample via SAMTools stats and FastQC. Additionally, sample-wide coverage statistics and coverage at different genomic regions are calculated with Mosdepth, a fast BAM/CRAM depth calculation tool for WGS, exome, or targeted sequencing. The QC results are aggregated in HTML report via MultiQC.
+
+### 3.3 Utility functionality
+
+In addition to the preprocessing and quality control functionality, cfDNA UniFlow contains some utility functions. The first is the widely used tool IchorCNA, which can be used for predicting copy number alteration (CNA) states across the genome. Further, it uses this information for estimating tumor fractions if cfDNA samples.
+
+The second utility function is our [inhouse GC bias estimation method](https://github.com/kircherlab/cfDNA_GCcorrection). It can not only be used for estimating fragment length and GC-content dependent technical biases, but also includes the option of attaching correction values to the reads. These can be used downstream for a wide variety of signal extraction methods, while preserving the original read coverage patterns.
+
+### 3.4 Report
+
+Finally, all results and summary statistics for the specified samples are aggregated in one report, making a wide variety of information easily accessible. The report file is generated using Snakemake’s report feature. After the workflow finished, the report can be generated by executing `Snakemake –configfile <CONFIGFILE> --snakefile <SNAKEFILE> --report <REPORTNAME>.html`. For better report performance, it is recommended to use `--report <REPORTNAME>.zip`, which creates a zipped directory structure with the needed information instead of saving it in the HTML file itself. More information on reporting can be found in the official [Snakemake  documentation](https://snakemake.readthedocs.io/en/stable/snakefiles/reporting.html).
+
+### 3.5 Notes on resource requirements
+
+* The index creation of bwa-mem2 is resource intensive:
+
+```bash
 # Indexing the reference sequence (Requires 28N GB memory where N is the size of the reference sequence).
 ./bwa-mem2 index [-p prefix] <in.fasta>
 Where 
@@ -48,99 +141,54 @@ Where
 <prefix> is the prefix of the names of the files that store the resultant index. Default is in.fasta.
 ```
 
-- bwa-mem2 mem uses around 4GB memory per thread
+* bwa-mem2 mem uses around 4GB memory per thread
 
-- NGmerge merges/removes adapter from 3' end of the reads. The ends of the merged reads are defined by the 5' ends of the reads.
+## 4 Quickstart guide
 
-## Usage
+Our goal in developing cfDNA UniFlow is to provide a scalable, configurable and easy-to-use workflow specifically tailored towards the processing of cfDNA samples. Users only need to provide sequencing information in FASTQ or BAM format and optionally modify the configuration file to their needs. Here we provide an example with a small input file for testing the workflows functionality.
 
-If you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this (original) repository and, if available, its DOI (see above).
+**Note:** For simplicity, we expect a Unix system for this guide.
 
-### Step 1: Obtain a copy of this workflow
+### 4.1 Download test files
 
-1. Create a new github repository using this workflow [as a template](https://help.github.com/en/articles/creating-a-repository-from-a-template).
-2. [Clone](https://help.github.com/en/articles/cloning-a-repository) the newly created repository to your local system, into the place where you want to perform the data analysis.
+First, you should create the expected directory for the test files:
 
-### Step 2: Configure workflow
+```bash
+mkdir -p resources/testsample/
+```
 
-Configure the workflow according to your needs via editing the files in the `config/` folder. Adjust `config.yaml` to configure the workflow execution, and `samples.tsv` to specify your sample setup.
+Afterwards, download the files:
 
-### Step 3: Install Snakemake
+```bash
+curl -L -o resources/testsample/testsample_hg19_1x_chr20-22.bam <URL>
+```
 
-Install Snakemake using [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html):
+### 4.2 Check config files
 
-    conda create -c bioconda -c conda-forge -n snakemake snakemake
+There are two files that are used in this example:
 
-For installation details, see the [instructions in the Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
+- config/test-config.yaml
+- config/test-samples.tsv
 
-### Step 4: Execute workflow
+Both file don't need to be edited and are configured for a quick functionality test.
 
-Activate the conda environment:
+### 4.3 Executing the workflow
 
-    conda activate snakemake
+The last step is executing the Workflow. For this you need to be in the root directory of the cloned repository.
 
-Test your configuration by performing a dry-run via
+Test the configuration with a dry-run:
 
-    snakemake --use-conda -n
+```bash
+snakemake --use-conda --configfile config/test-config.yaml  -n
+```
 
-Execute the workflow locally via
+The workflow is executed locally with $N cores via:
 
-    snakemake --use-conda --cores $N
+```bash
+snakemake --use-conda --configfile config/test-config.yaml --cores $N
+```
 
-using `$N` cores or run it in a cluster environment via
-
-    snakemake --use-conda --cluster qsub --jobs 100
-
-or
-
-    snakemake --use-conda --drmaa --jobs 100
-
-If you not only want to fix the software stack but also the underlying OS, use
-
-    snakemake --use-conda --use-singularity
-
-in combination with any of the modes above.
-See the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/executable.html) for further details.
-
-### Step 5: Investigate results
-
-After successful execution, you can create a self-contained interactive HTML report with all results via:
-
-    snakemake --report report.html
-
-This report can, e.g., be forwarded to your collaborators.
-An example (using some trivial test data) can be seen [here](https://cdn.rawgit.com/snakemake-workflows/rna-seq-kallisto-sleuth/master/.test/report.html).
-
-### Step 6: Commit changes
-
-Whenever you change something, don't forget to commit the changes back to your github copy of the repository:
-
-    git commit -a
-    git push
-
-### Step 7: Obtain updates from upstream
-
-Whenever you want to synchronize your workflow copy with new developments from upstream, do the following.
-
-1. Once, register the upstream repository in your local copy: `git remote add -f upstream git@github.com:snakemake-workflows/cfDNA_preprocessing_workflow.git` or `git remote add -f upstream https://github.com/snakemake-workflows/cfDNA_preprocessing_workflow.git` if you do not have setup ssh keys.
-2. Update the upstream version: `git fetch upstream`.
-3. Create a diff with the current version: `git diff HEAD upstream/master workflow > upstream-changes.diff`.
-4. Investigate the changes: `vim upstream-changes.diff`.
-5. Apply the modified diff via: `git apply upstream-changes.diff`.
-6. Carefully check whether you need to update the config files: `git diff HEAD upstream/master config`. If so, do it manually, and only where necessary, since you would otherwise likely overwrite your settings and samples.
+For cluster execution, read the guidelines in the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/executing/cluster.html).
 
 
-### Step 8: Contribute back
-
-In case you have also changed or added steps, please consider contributing them back to the original repository:
-
-1. [Fork](https://help.github.com/en/articles/fork-a-repo) the original repo to a personal or lab account.
-2. [Clone](https://help.github.com/en/articles/cloning-a-repository) the fork to your local system, to a different place than where you ran your analysis.
-3. Copy the modified files from your analysis to the clone of your fork, e.g., `cp -r workflow path/to/fork`. Make sure to **not** accidentally copy config file contents or sample sheets. Instead, manually update the example config files if necessary.
-4. Commit and push your changes to your fork.
-5. Create a [pull request](https://help.github.com/en/articles/creating-a-pull-request) against the original repository.
-
-## Testing
-
-Test cases are in the subfolder `.test`. They are automatically executed via continuous integration with [Github Actions](https://github.com/features/actions).
-
+</div>

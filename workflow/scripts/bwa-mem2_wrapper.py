@@ -54,7 +54,7 @@ if snakemake.input.get("single_reads"):
 base_cmd = f"((bwa-mem2 mem -t {remaining_CPU} -R \"{{snakemake.params.RG}}\" {{snakemake.input.ref}} {{snakemake.input.reads}}; \
 {non_merged_cmd}\
 {singleton_cmd}\
-) | samtools view -b -@ {samtools_CPU} -o {{snakemake.output.mapped_reads}} - ) 2>{{snakemake.log}}"
+) | samtools sort -O bam -@ {samtools_CPU} -o {{snakemake.output.mapped_reads}} - ) 2>{{snakemake.log}}"
 
 #base_cmd = f"((bwa-mem2 mem -t {{snakemake.threads}} -R \"{{snakemake.params.RG}}\" {{snakemake.input.ref}} {{snakemake.input.reads}}; \
 #{non_merged_cmd}\
