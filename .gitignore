@@ -4,6 +4,8 @@
 !resources/blacklists/
 !resources/blacklists/**
 
+!supplement/
+!supplement/**
 
 !workflow/
 !workflow/envs/
