@@ -253,23 +253,24 @@ def get_mapping_input(wildcards):
     bam = samples.loc[sample].loc["bam"]
     mapping_input = dict()
     trimming_algorithm = config["trimming_algorithm"]
-    all_data = config["mapping"]["all_data"]
+    unmerged = config["mapping"]["unmerged"]
+    singleton = config["mapping"]["singleton"]
 
     if trimming_algorithm.lower() == "ngmerge":
         mapping_input[
             "reads"
         ] = "results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz"
-        if all_data:
+        if unmerged:
             mapping_input[
                 "noadapter_R1"
             ] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_1.filtered.fastq.gz"
             mapping_input[
                 "noadapter_R2"
             ] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_2.filtered.fastq.gz"
-            if ".bam" in bam.lower():
-                mapping_input[
-                    "single_reads"
-                ] = "results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz"
+        if singleton and ".bam" in bam.lower():
+            mapping_input[
+                "single_reads"
+            ] = "results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz"
     elif trimming_algorithm.lower() == "trimmomatic":
         mapping_input["reads"] = [
             "results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.fastq.gz",
