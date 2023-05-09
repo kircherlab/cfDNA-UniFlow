@@ -1,15 +1,17 @@
 # cfDNA UniFlow - Unified Preprocessing Pipeline for cell-free DNA from liquid biopsies
 
-<style>body {text-align: justify}</style>
-
 [![Snakemake](https://img.shields.io/badge/snakemake-≥6.4.1-brightgreen.svg)](https://snakemake.bitbucket.io)
+<div align="justify">
 
 cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processing WGS cfDNA samples from liquid biopsies. It includes essential steps for pre-processing raw cfDNA samples, quality control and reporting. Additionally, several optional utility functions like bias correction and estimation of copy number state are included. Figure S1 gives a detailed overview of the workflow.
+</div>
 
 <figure>
  <img loading="lazy" src="supplement/cfDNA_unifyed_preprocessing.drawio.png">
  <figcaption>
+ <div align="justify">
   <strong>Figure S1: Overview of cfDNA Uniflow.</strong>  Functionalities are color coded by task. Red boxes represents rules for the automatic download of public resources. Grey boxes are optional steps. Blue boxes containt the core functionailty of cfDNA Uniflow. Green boxes are optional, but highly recommended steps and yellow boxes summarize the Quality Control and reporting steps.
+ </div>
  </figcaption>
 </figure>
 
@@ -37,6 +39,8 @@ cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processi
         - [4.1 Download test files](#41-download-test-files)
         - [4.2 Check config files](#42-check-config-files)
         - [4.3 Executing the workflow](#43-executing-the-workflow)
+
+<div align="justify">
 
 ## 1 Dependencies
 
@@ -185,3 +189,6 @@ snakemake --use-conda --configfile config/test-config.yaml --cores $N
 ```
 
 For cluster execution, read the guidelines in the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/executing/cluster.html).
+
+
+</div>
