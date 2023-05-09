@@ -27,6 +27,8 @@
 !config/example.config.yaml
 !config/example.samples.tsv
 !config/multiqc_config.yaml
+!config/test-config.yaml
+!config/test-samples.tsv
 
 !resources/qual_profile.txt
 
