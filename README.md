@@ -7,9 +7,9 @@
 cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processing WGS cfDNA samples from liquid biopsies. It includes essential steps for pre-processing raw cfDNA samples, quality control and reporting. Additionally, several optional utility functions like bias correction and estimation of copy number state are included. Figure S1 gives a detailed overview of the workflow.
 
 <figure>
- <img loading="lazy" src="cfDNA_unifyed_preprocessing.drawio.png">
+ <img loading="lazy" src="supplement/cfDNA_unifyed_preprocessing.drawio.png">
  <figcaption>
-  Figure S1: Overview of cfDNA Uniflow. Functionalities are color coded by task. Red boxes represents rules for the automatic download of public resources. Grey boxes are optional steps. Blue boxes containt the core functionailty of cfDNA Uniflow. Green boxes are optional, but highly recommended steps and yellow boxes summarize the Quality Control and reporting steps.
+  <strong>Figure S1: Overview of cfDNA Uniflow.</strong>  Functionalities are color coded by task. Red boxes represents rules for the automatic download of public resources. Grey boxes are optional steps. Blue boxes containt the core functionailty of cfDNA Uniflow. Green boxes are optional, but highly recommended steps and yellow boxes summarize the Quality Control and reporting steps.
  </figcaption>
 </figure>
 
@@ -102,6 +102,8 @@ snakemake --configfile <CONFIGFILE> --report report.html
 This report can, e.g., be forwarded to your collaborators.
 
 For better report performance, it is recommended to use `--report report.zip`, which creates a zipped directory structure with the needed information instead of saving it in the HTML file itself. More information on reporting can be found in the official [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/snakefiles/reporting.html).
+
+An example report in zip format can be found in the supplement directory. For viewing the zip file needs to be extracted.
 
 ## 3 Functional summary
 
