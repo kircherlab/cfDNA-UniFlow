@@ -3,7 +3,7 @@
 [![Snakemake](https://img.shields.io/badge/snakemake-≥6.4.1-brightgreen.svg)](https://snakemake.bitbucket.io)
 <div align="justify">
 
-cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processing WGS cfDNA samples from liquid biopsies. It includes essential steps for pre-processing raw cfDNA samples, quality control and reporting. Additionally, several optional utility functions like bias correction and estimation of copy number state are included. Figure S1 gives a detailed overview of the workflow.
+cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processing WGS cfDNA samples from liquid biopsies. It includes essential steps for pre-processing raw cfDNA samples, quality control and reporting. Additionally, several optional utility functions like GC bias correction and estimation of copy number state are included. Figure S1 gives a detailed overview of the workflow.
 </div>
 
 <figure>
@@ -46,7 +46,7 @@ cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processi
 
 To minimize conflicts between packages, all dependencies for the workflow rules are managed via separate conda environments located in `./workflow/envs`. They get automatically installed and used when Snakemake is executed with the `--use-conda` flag. This is the recommended way of executing the workflow.
 
-The only exception is NGmerge, a read merging and adapter removal program, which is included in the GitHub repository due to an outdated bioconda recipe. The NGmerge executable was downloaded and compiled as described in the official documentation of NGmerge v0.3 and is located in the the scripts directory (./workflow/scripts/NGmerge). Additionally, we provide an adjusted quality profile for Phred+33 scores of Illumina 1.8+, which ranges from 0 to 41 instead of 0 to 40 in earlier versions. The quality profile file was modified by duplicating the last column and appending it as a new column.
+The only exception is NGmerge, a read merging and adapter removal program, which is included in the GitHub repository due to an outdated bioconda recipe. The NGmerge executable was downloaded and compiled as described in the official documentation of NGmerge v0.3 and is located in the scripts directory (./workflow/scripts/NGmerge). Additionally, we provide an adjusted quality profile for Phred+33 scores of Illumina 1.8+, which ranges from 0 to 41 instead of 0 to 40 in earlier versions. The quality profile file was modified by duplicating the last column and appending it as a new column.
 
 ## 2 Setup
 
@@ -71,7 +71,7 @@ For installation details, see the instructions in the [Snakemake documentation](
 
 ### Step 3: Configure Workflow
 
-Configure the workflow according to your needs via editing the files in the config/ folder. Adjust `config.yaml` to configure the workflow execution, and `samples.tsv` to specify your sample setup.
+Configure the workflow according to your needs via editing the files in the `config/` folder. Adjust `config.yaml` according to the included comments to configure the workflow execution, and `samples.tsv` to specify your sample setup. Both files will be automatically validated before workflow execution.
 
 ### Step 4: Execute workflow
 
@@ -93,7 +93,7 @@ Execute the workflow locally using `$N` cores:
 snakemake --use-conda --configfile <CONFIGFILE> --cores $N
 ```
 
-See the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/executing/cluster.html) for further details on workflow execution.
+See the Snakemake documentation on [workflow execution](https://snakemake.readthedocs.io/en/stable/executing/cli.html) and execution in [cluster environments](https://snakemake.readthedocs.io/en/stable/executing/cluster.html) for further details.
 
 ### Step 5: Investigate results
 
@@ -105,7 +105,7 @@ snakemake --configfile <CONFIGFILE> --report report.html
 
 This report can, e.g., be forwarded to your collaborators.
 
-For better report performance, it is recommended to use `--report report.zip`, which creates a zipped directory structure with the needed information instead of saving it in the HTML file itself. More information on reporting can be found in the official [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/snakefiles/reporting.html).
+A functional description of reporting can be found in [section 3.4](#34-report).
 
 An example report in zip format can be found in the supplement directory. For viewing the zip file needs to be extracted.
 
@@ -113,7 +113,7 @@ An example report in zip format can be found in the supplement directory. For vi
 
 ### 3.1 Raw data processing
 
-The core functionality of cfDNA UniFlow is the processing of Whole Genome Sequencing (WGS) data from liquid biopsies. Input data is expected in either FASTQ or BAM format. If a BAM file was provided, it gets converted to FASTQ files using SAMTools. Afterwards, several steps for improving read quality and preparation for mapping are executed, for which two options are provided. Either the recommended merging of reads with NGmerge, which removes adapters and corrects sequencing errors, or trimming of adapters with Trimmomatic. In both cases, results are filtered for a specified minimum read length. Remaining reads are mapped to a reference genome via bwa-mem2. If NGmerge was used for adapter removal, it is possible to include reads in mapping for which only adapters were removed, when merging was not possible. The core processing is finalized by marking duplicates and creating a bam index with SAMTools markdup and index. Processed reads are then submitted for Quality Control and optional steps.
+The core functionality of cfDNA UniFlow is the processing of Whole Genome Sequencing (WGS) data from liquid biopsies. Input data is expected in either FASTQ or BAM format. If a BAM file was provided, it gets converted to FASTQ files using SAMTools. Afterwards, several steps for improving read quality and preparation for mapping are executed, for which two options are provided. Either the recommended merging of reads with NGmerge, which removes adapters and corrects sequencing errors, or trimming of adapters with Trimmomatic. In both cases, results are filtered for a specified minimum read length. Remaining reads are mapped to a reference genome via bwa-mem2. If NGmerge was used for adapter removal, it is possible to include reads in mapping for which only adapters were removed when merging was not possible. The core processing is finalized by marking duplicates and creating a bam index with SAMTools markdup and index. Processed reads are then submitted for Quality Control and optional steps.
 
 ### 3.2 Quality control
 
@@ -121,7 +121,7 @@ In the quality control step, general post-alignment statistics and graphs are ca
 
 ### 3.3 Utility functionality
 
-In addition to the preprocessing and quality control functionality, cfDNA UniFlow contains some utility functions. The first is the widely used tool IchorCNA, which can be used for predicting copy number alteration (CNA) states across the genome. Further, it uses this information for estimating tumor fractions if cfDNA samples.
+In addition to the preprocessing and quality control functionality, cfDNA UniFlow contains some utility functions. The first is the widely used tool IchorCNA, which can be used for predicting copy number alteration (CNA) states across the genome. Further, it uses this information for estimating tumor fractions in cfDNA samples.
 
 The second utility function is our [inhouse GC bias estimation method](https://github.com/kircherlab/cfDNA_GCcorrection). It can not only be used for estimating fragment length and GC-content dependent technical biases, but also includes the option of attaching correction values to the reads. These can be used downstream for a wide variety of signal extraction methods, while preserving the original read coverage patterns.
 
@@ -170,7 +170,7 @@ There are two files that are used in this example:
 - config/test-config.yaml
 - config/test-samples.tsv
 
-Both file don't need to be edited and are configured for a quick functionality test.
+Both files don't need to be edited and are configured for a quick functionality test.
 
 ### 4.3 Executing the workflow
 
