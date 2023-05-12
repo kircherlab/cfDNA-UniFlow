@@ -1,7 +1,7 @@
 
 rule fastqc:
     input:
-        "results/{ID}/mapped_reads/{SAMPLE}.{GENOME}.bam",
+        "results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
     output:
         html="results/{ID}/qc/fastqc/{SAMPLE}.{GENOME}.html",
         zip="results/{ID}/qc/fastqc/{SAMPLE}.{GENOME}_fastqc.zip",
@@ -14,7 +14,7 @@ rule fastqc:
 
 rule samtools_stats:
     input:
-        bam="results/{ID}/mapped_reads/{SAMPLE}.{GENOME}.bam",
+        bam="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
     output:
         "results/{ID}/qc/samtools-stats/{SAMPLE}.{GENOME}.txt",
     log:
@@ -26,8 +26,8 @@ rule samtools_stats:
 
 rule mosdepth:
     input:
-        bam="results/{ID}/mapped_reads/{SAMPLE}.{GENOME}.bam",
-        bai="results/{ID}/mapped_reads/{SAMPLE}.{GENOME}.bam.bai",
+        bam="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
+        bai="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam.bai",
     output:
         "results/{ID}/qc/mosdepth/{SAMPLE}.{GENOME}.mosdepth.global.dist.txt",
         "results/{ID}/qc/mosdepth/{SAMPLE}.{GENOME}.mosdepth.region.dist.txt",
