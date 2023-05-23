@@ -5,7 +5,7 @@ rule get_fasta_reference:
     log:
         "logs/get-{GENOME}-reference.log",
     params:
-        url= lambda wc:get_ref_url(wc)
+        url= lambda wc:get_fasta_ref_url(wc)
     shell:
         "(curl -L {params.url:q} | gzip -d > {output}) 2> {log}"
 
@@ -15,7 +15,7 @@ rule get_twobit_reference:
     log:
         "logs/get-{GENOME}-reference.log",
     params:
-        url= lambda wc:get_ref_url(wc)
+        url=lambda wc:get_2bit_ref_url(wc)
     shell:
         "(curl -L -o {output} {params.url:q}) 2> {log}"
 

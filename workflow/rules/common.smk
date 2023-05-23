@@ -136,7 +136,7 @@ def get_reference(wildcards):
 
 
 ### provides download URLs for UCSC human reference files in fasta format
-def get_ref_url(wildcards):
+def get_fasta_ref_url(wildcards):
     genome_build = wildcards.GENOME
     url_dict = {
         "hg19": "ftp://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.fa.gz",
@@ -146,7 +146,7 @@ def get_ref_url(wildcards):
 
 
 ### provides download URLs for UCSC human reference files in twobit format
-def get_ref_url(wildcards):
+def get_2bit_ref_url(wildcards):
     genome_build = wildcards.GENOME
     url_dict = {
         "hg19": "ftp://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.2bit",
