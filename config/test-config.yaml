@@ -70,7 +70,7 @@ trimmers:
 # but are either not paired or not merged. Otherwise these reads are not further processed.
 mapping:
   unmerged: True # default is True
-  singleton: False # default is False
+  singleton: True # default is False
 
 ### Utility ###
 
