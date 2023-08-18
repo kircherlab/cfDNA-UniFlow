@@ -15,6 +15,7 @@ validate(samples, schema="../schemas/samples.schema.yaml")
 
 regions = pd.read_csv(config["regions"], sep="\t").set_index("target", drop=False)
 regions.index.names = ["region_id"]
+validate(samples, schema="../schemas/regions.schema.yaml")
 
 
 def get_final_output():
