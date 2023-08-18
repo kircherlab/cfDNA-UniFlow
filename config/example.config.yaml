@@ -25,6 +25,14 @@ TMPDIR: "./" # path to directory for writing TMP files
 
 SEED: 42 # seed for increased reproducibility. Mainly used in GCbias estimation
 
+### Utility options ###
+
+utility:
+  GCbias-plot: True
+  GCbias-correction: True
+  ichorCNA: True
+  case-control-plot: True
+
 ### trimming ###
 
 PE_trimming_algorithm: "NGmerge" #can be either NGmerge or trimmomatic
@@ -114,3 +122,24 @@ ichorCNA:
   scStates: '"c(1,3)"'
   txnE: 0.9999
   txnStrength: 10000
+
+#### Signal extraction ####
+
+minRL: 120 # minimum read length for calculating WPS
+maxRL: 180 # maximum read length for calculating WPS
+bpProtection: 120 # bp protection for calculating WPS
+lengthSR: 76 # length of single reads, if used for calculating WPS
+
+#### Signal processing ####
+
+overlay_mode: "mean" # Can be either "mean" or "median". Sets overlay mode, specifying how regions should be aggregated for each sample.
+smoothing: True # Activates smoothing with Savitzky-Golay filter.
+smooth_window: 21 # Sets windows size used for smoothing with Savitzky-Golay filter.
+smooth_polyorder: 2 # Sets order of polynomial used for smoothing with Savitzky-Golay filter.
+rolling: True # Activates trend removal with a rolling median filter.
+rolling_window: 1000 # Sets window size used in rolling median filter.
+flank_norm: True # Activates normalization by dividing the signals by the mean coverage in flanking intervals around the region of interest.
+flank: 2000 # Sets the size of the flanking intervals around the region of interest. Should be <= 0.5 of the extracted signals
+signal: "coverage" # can be either "coverage" or "WPS"
+display_window: [-1500,1500]
+aggregate_controls: True

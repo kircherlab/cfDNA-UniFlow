@@ -13,6 +13,9 @@ samples = pd.read_csv(config["samples"], sep="\t").set_index("sample", drop=Fals
 samples.index.names = ["sample_id"]
 validate(samples, schema="../schemas/samples.schema.yaml")
 
+regions = pd.read_csv(config["regions"], sep="\t").set_index("target", drop=False)
+regions.index.names = ["region_id"]
+
 
 def get_final_output():
     final_output = []
@@ -35,9 +38,26 @@ def get_final_output():
             GENOME=samples["genome_build"],
         )
     )
+
     final_output.extend(
         expand("results/{ID}/qc/multiqc.html", ID=samples["ID"].unique())
     )
+
+    if config["utility"]["GCbias-correction"]:
+        final_output.extend(
+            expand(
+                expand(
+                    "results/{ID}/signals/signal-corrected/{target_region}.{SAMPLE}-corrected_WPS.{GENOME}.csv.gz",
+                    zip,
+                    ID=samples["ID"],
+                    SAMPLE=samples["sample"],
+                    GENOME=samples["genome_build"],
+                    allow_missing=True,
+                ),
+                target_region=regions["target"],
+                #blacklist=["repeatmasker"],
+            )
+        )
 
     if config["utility"]["GCbias-plot"]:
         final_output.extend(
@@ -53,6 +73,25 @@ def get_final_output():
                 blacklist=["repeatmasker"],
             )
         )
+
+        final_output.extend(
+            set(
+                expand(
+                    expand(
+                         "results/{ID}/signals/GCcorrection-plots/{target_region}.{status_name}-GCcorrected_{signal}.{GENOME}.png",
+                        zip,
+                        ID=samples["ID"],
+                        GENOME=samples["genome_build"],
+                        status_name = samples["status"],#.loc[samples["status"] != config["control_name"]],
+                        allow_missing=True,
+                    ),
+                    signal = "COV" if config["signal"].lower() == "coverage" else "WPS",
+                    target_region=regions["target"],
+                )
+            )
+        )
+
+        # add uncorrected as target
 
     if config["utility"]["ichorCNA"]:
         final_output.extend(

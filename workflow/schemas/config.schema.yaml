@@ -52,7 +52,20 @@ properties:
   SEED:
     type: number
     description: seed for increased reproducibility
-  trimming_algorithm: 
+  utility:
+    GCbias-plot:
+      type: boolean
+      default: True
+    GCbias-correction:
+      type: boolean
+      default: True
+    ichorCNA:
+      type: boolean
+      default: True
+    case-control-plot:
+      type: boolean
+      default: True
+  PE_trimming_algorithm: 
     type: string
     default: NGmerge 
     enum:
@@ -112,16 +125,6 @@ properties:
     singleton:
       type: boolean
       default: False # default is False
-  utility:
-    GCbias-plot:
-      type: boolean
-      default: True
-    GCbias-correction:
-      type: boolean
-      default: True
-    ichorCNA:
-      type: boolean
-      default: True
   read_counter:
     window:
       type: number
@@ -221,7 +224,74 @@ properties:
     txnStrength:
       type: number
       default: 10000
-
+  minRL:
+    type: number
+    default: 120
+    description: minimum read length for calculating WPS
+  maxRL:
+    type: number
+    default: 180
+    description: maximum read length for calculating WPS
+  bpProtection:
+    type: number
+    default: 120
+    description: bp protection for calculating WPS
+  lengthSR:
+    type: number
+    default: 76
+    description: length of single reads, if used for calculating WPS
+  overlay_mode:
+    type: string
+    default: mean
+    enum:
+      - mean
+      - median
+    description: Can be either "mean" or "median". Sets overlay mode, specifying how regions should be aggregated for each sample.
+  smoothing:
+    type: boolean
+    default: True
+    description: Activates smoothing with Savitzky-Golay filter.
+  smooth_window:
+    type: number
+    default: 21
+    description: Sets windows size used for smoothing with Savitzky-Golay filter.
+  smooth_polyorder:
+    type: number
+    default: 2 
+    description: Sets order of polynomial used for smoothing with Savitzky-Golay filter.
+  rolling:
+    type: boolean
+    default: True
+    description: Activates trend removal with a rolling median filter.
+  rolling_window:
+    type: number
+    default: 1000
+    description: Sets window size used in rolling median filter.
+  flank_norm:
+    type: boolean
+    default: True
+    description: Activates normalization by dividing the signals by the mean coverage in flanking intervals around the region of interest.
+  flank:
+    type: number
+    default: 2000
+    description: Sets the size of the flanking intervals around the region of interest. Should be <= 0.5 of the extracted signals
+  signal:
+    type: string
+    default: "coverage"
+    enum:
+      - coverage
+      - WPS
+    description: can be either "coverage" or "WPS"
+  display_window:
+    type: array
+    default: [-1500,1500]
+    items:
+      type: number
+    description: Sets window around center of region of interest for plotting purposes.
+  aggregate_controls:
+    type: boolean
+    default: True
+    description: Switch between aggregating controls or plotting them seperately.
 required:
   - samples
   - hg19
