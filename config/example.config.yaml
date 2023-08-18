@@ -27,7 +27,7 @@ SEED: 42 # seed for increased reproducibility. Mainly used in GCbias estimation
 
 ### trimming ###
 
-trimming_algorithm: "NGmerge" #can be either NGmerge or trimmomatic
+PE_trimming_algorithm: "NGmerge" #can be either NGmerge or trimmomatic
 
 #### NGmerge specific options ####
 
@@ -35,7 +35,7 @@ length-filter:
   MINLEN: 30 # min lenght of reads in additional filter steps
 
 #### trimmomatic specific options ####
-
+phred-quality-encoding: # three options: empty = automatic detection, phred-33 and phred-64
 
 # Illuminaclip takes a fasta file with adapter sequences and removes them in the trimming step.
 # The adapter_files option takes either the path to a custom file </PATH/TO/CUSTOM/ADAPTER.fa>
@@ -66,19 +66,15 @@ trimmers:
 
 ### Mapping ###
 
-# This option lets you add unpaired/singleton reads in the mapping step that were filtered,
-# but are either not paired or not merged. Otherwise these reads are not further processed.
+# This option lets you add unmerged/singleton or single-end reads in the mapping step.
+# Unmerged or singleton reads are paired end reads that were filtered by samtools fastq or NGmerge.
+# Single-end reads are from single end libraries.These categories can be excluded for specialised analyses.
 mapping:
-  unmerged: True # default is True
-  singleton: False # default is False
-
-### Utility ###
-
-utility:
-  GCbias-plot: True
-  GCbias-correction: True
-  ichorCNA: True
-
+  paired_end:
+    unmerged: True # default is True. Reads not merged by NGmerge.
+    singleton: False # default is False. Reads that are from paired end libraries without a matching pair.
+  single_end:
+    SEreads: True # default is True. This option is essential for Single End libraries. Setting to true in PE libraries has no effect on the output.
 
 
 #### ichorCNA ####

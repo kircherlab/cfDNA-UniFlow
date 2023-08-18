@@ -1,4 +1,4 @@
-$schema: "http://json-schema.org/draft-04/schema#"
+$schema: "http://json-schema.org/draft-06/schema#"
 
 description: snakemake configuration file
 
@@ -64,6 +64,14 @@ properties:
       type: number
       default: 30
       description: min lenght of reads in additional filter steps
+  phred-quality-encoding:
+    type: ["string", "null"]
+    default: 
+    enum:
+      -
+      - phred-33 
+      - phred-64
+    description:  three options for setting trimmomatic quality score encoding; empty = automatic detection, phred-33 and phred-64
   trimmers:
     Illuminaclip: 
       adapter_files:
@@ -219,7 +227,7 @@ required:
   - hg19
   - hg38
   - TMPDIR
-  - trimming_algorithm
+  - PE_trimming_algorithm
   - length-filter
   - trimmers
   - mapping
