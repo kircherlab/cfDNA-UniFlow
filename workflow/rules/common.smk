@@ -7,6 +7,8 @@ import sys
 
 
 configfile: "config/config.yaml"
+
+
 validate(config, schema="../schemas/config.schema.yaml")
 
 samples = pd.read_csv(config["samples"], sep="\t").set_index("sample", drop=False)
@@ -56,7 +58,6 @@ def get_final_output():
                     allow_missing=True,
                 ),
                 target_region=regions["target"],
-                #blacklist=["repeatmasker"],
             )
         )
 
@@ -79,20 +80,18 @@ def get_final_output():
             set(
                 expand(
                     expand(
-                         "results/{ID}/signals/GCcorrection-plots/{target_region}.{status_name}-GCcorrected_{signal}.{GENOME}.png",
+                        "results/{ID}/signals/GCcorrection-plots/{target_region}.{status_name}-GCcorrected_{signal}.{GENOME}.png",
                         zip,
                         ID=samples["ID"],
                         GENOME=samples["genome_build"],
-                        status_name = samples["status"],#.loc[samples["status"] != config["control_name"]],
+                        status_name=samples["status"],
                         allow_missing=True,
                     ),
-                    signal = "COV" if config["signal"].lower() == "coverage" else "WPS",
+                    signal="COV" if config["signal"].lower() == "coverage" else "WPS",
                     target_region=regions["target"],
                 )
             )
         )
-
-        # add uncorrected as target
 
     if config["utility"]["ichorCNA"]:
         final_output.extend(
@@ -119,16 +118,20 @@ def get_final_output():
             set(
                 expand(
                     expand(
-                         "results/{ID}/signals/case-control-plots/{target_region}.{case_name}-vs-{control_name}-{correction}_{signal}.{GENOME}.png",
+                        "results/{ID}/signals/case-control-plots/{target_region}.{case_name}-vs-{control_name}-{correction}_{signal}.{GENOME}.png",
                         zip,
                         ID=samples["ID"],
                         GENOME=samples["genome_build"],
-                        case_name = samples["status"].loc[samples["status"] != config["control_name"]],
+                        case_name=samples["status"].loc[
+                            samples["status"] != config["control_name"]
+                        ],
                         allow_missing=True,
                     ),
-                    control_name = config["control_name"],
-                    signal = "COV" if config["signal"].lower() == "coverage" else "WPS",
-                    correction = "corrected" if config["utility"]["GCbias-correction"] else "uncorrected",
+                    control_name=config["control_name"],
+                    signal="COV" if config["signal"].lower() == "coverage" else "WPS",
+                    correction="corrected"
+                    if config["utility"]["GCbias-correction"]
+                    else "uncorrected",
                     target_region=regions["target"],
                 )
             )
@@ -174,6 +177,7 @@ def get_trimming_input(wildcards):
             f"Please check the your sample sheet."
         )
 
+
 def get_SEtrimming_input(wildcards):
     sample = wildcards.SAMPLE
     bam = samples.loc[sample].loc["bam"]
@@ -186,7 +190,7 @@ def get_SEtrimming_input(wildcards):
         return ["results/{ID}/fastq/{SAMPLE}_single_read.fastq.gz"]
     elif ".fastq" in fq1.lower() and not ".fastq" in fq2.lower():
         return [fq1]
-    elif ".fastq" in fq2.lower() and not ".fastq" in fq1.lower():  
+    elif ".fastq" in fq2.lower() and not ".fastq" in fq1.lower():
         return [fq2]
     else:
         raise ValueError(
@@ -327,6 +331,7 @@ def get_trimmomatic_trimmers():
 
     return trimmers
 
+
 def get_trimmomatic_extra():
     """Checks if phred-qualty-encoding is set to phred-33 or phred-64."""
     trimmomatic_extra = ""
@@ -353,7 +358,9 @@ def get_mapping_input(wildcards):
 
     if trimming_algorithm.lower() == "ngmerge":
         # these options are for Paired End sequencing libraries
-        if ".bam" in bam.lower() or (".fastq" in fq1.lower() and ".fastq" in fq2.lower()):
+        if ".bam" in bam.lower() or (
+            ".fastq" in fq1.lower() and ".fastq" in fq2.lower()
+        ):
             mapping_input[
                 "reads"
             ] = "results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz"
@@ -373,7 +380,7 @@ def get_mapping_input(wildcards):
             mapping_input[
                 "reads"
             ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}_single_read.filtered.fastq.gz"
-        elif SEreads and (".fastq" in fq2.lower() and not ".fastq" in fq1.lower()):  
+        elif SEreads and (".fastq" in fq2.lower() and not ".fastq" in fq1.lower()):
             mapping_input[
                 "reads"
             ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}_single_read.filtered.fastq.gz"
@@ -384,7 +391,9 @@ def get_mapping_input(wildcards):
 
     elif trimming_algorithm.lower() == "trimmomatic":
         # these options are for Paired End sequencing libraries
-        if ".bam" in bam.lower() or (".fastq" in fq1.lower() and ".fastq" in fq2.lower()):
+        if ".bam" in bam.lower() or (
+            ".fastq" in fq1.lower() and ".fastq" in fq2.lower()
+        ):
             mapping_input["reads"] = [
                 "results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.fastq.gz",
                 "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.fastq.gz",
@@ -401,7 +410,7 @@ def get_mapping_input(wildcards):
             mapping_input[
                 "reads"
             ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}_single_read.filtered.fastq.gz"
-        elif SEreads and (".fastq" in fq2.lower() and not ".fastq" in fq1.lower()):  
+        elif SEreads and (".fastq" in fq2.lower() and not ".fastq" in fq1.lower()):
             mapping_input[
                 "reads"
             ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}_single_read.filtered.fastq.gz"

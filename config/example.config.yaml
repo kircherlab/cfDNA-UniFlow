@@ -84,6 +84,7 @@ mapping:
   single_end:
     SEreads: True # default is True. This option is essential for Single End libraries. Setting to true in PE libraries has no effect on the output.
 
+### Utility parameters ###
 
 #### ichorCNA ####
 
