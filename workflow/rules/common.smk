@@ -113,6 +113,26 @@ def get_final_output():
             )
         )
 
+    if config["utility"]["case-control-plot"]:
+        final_output.extend(
+            set(
+                expand(
+                    expand(
+                         "results/{ID}/signals/case-control-plots/{target_region}.{case_name}-vs-{control_name}-{correction}_{signal}.{GENOME}.png",
+                        zip,
+                        ID=samples["ID"],
+                        GENOME=samples["genome_build"],
+                        case_name = samples["status"].loc[samples["status"] != config["control_name"]],
+                        allow_missing=True,
+                    ),
+                    control_name = config["control_name"],
+                    signal = "COV" if config["signal"].lower() == "coverage" else "WPS",
+                    correction = "corrected" if config["utility"]["GCbias-correction"] else "uncorrected",
+                    target_region=regions["target"],
+                )
+            )
+        )
+
     return final_output
 
 

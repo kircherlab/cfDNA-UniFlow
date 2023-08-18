@@ -11,6 +11,9 @@ type: object
 properties:
   samples: 
     type: string
+  control_name:
+    type: string
+    description: name of the control samples specified in the samples.tsv. Has to match the name in the status field.
   hg19:
     reference: 
       type: string 
