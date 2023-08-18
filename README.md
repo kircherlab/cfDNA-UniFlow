@@ -1,6 +1,4 @@
-# cfDNA UniFlow - Unified Preprocessing Pipeline for cell-free DNA from liquid biopsies
-
-[![Snakemake](https://img.shields.io/badge/snakemake-≥6.4.1-brightgreen.svg)](https://snakemake.bitbucket.io)
+# cfDNA UniFlow: A unified preprocessing pipeline for cell-free DNA from liquid biopsies
 <div align="justify">
 
 cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processing WGS cfDNA samples from liquid biopsies. It includes essential steps for pre-processing raw cfDNA samples, quality control and reporting. Additionally, several optional utility functions like GC bias correction and estimation of copy number state are included. Figure S1 gives a detailed overview of the workflow.
@@ -10,7 +8,7 @@ cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processi
  <img loading="lazy" src="supplement/cfDNA_unifyed_preprocessing.drawio.png">
  <figcaption>
  <div align="justify">
-  <strong>Figure S1: Overview of cfDNA Uniflow.</strong>  Functionalities are color coded by task. Red boxes represents rules for the automatic download of public resources. Grey boxes are optional steps. Blue boxes containt the core functionailty of cfDNA Uniflow. Green boxes are optional, but highly recommended steps and yellow boxes summarize the Quality Control and reporting steps.
+  <strong>Figure S1: Overview of cfDNA Uniflow.</strong>  Functionalities are color coded by task. Red boxes represent rules for the automatic download of public resources. Grey boxes are optional steps. Blue boxes contain the core functionalty of cfDNA Uniflow. Green boxes are optional, but highly recommended steps and yellow boxes summarize the Quality Control and reporting steps.
  </div>
  </figcaption>
 </figure>
@@ -23,7 +21,7 @@ cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processi
 
 ## Table of Contents <!-- omit from toc -->
 
-- [cfDNA UniFlow - Unified Preprocessing Pipeline for cell-free DNA from liquid biopsies](#cfdna-uniflow---unified-preprocessing-pipeline-for-cell-free-dna-from-liquid-biopsies)
+- [cfDNA UniFlow: A unified preprocessing pipeline for cell-free DNA from liquid biopsies](#cfdna-uniflow-a-unified-preprocessing-pipeline-for-cell-free-dna-from-liquid-biopsies)
     - [1 Dependencies](#1-dependencies)
     - [2 Setup](#2-setup)
         - [Step 1: Obtain a copy of this workflow](#step-1-obtain-a-copy-of-this-workflow)
@@ -56,7 +54,7 @@ The only exception is NGmerge, a read merging and adapter removal program, which
 
 ### Step 1: Obtain a copy of this workflow
 
-1. Create a new github repository using this workflow [as a template](https://help.github.com/en/articles/creating-a-repository-from-a-template).
+1. Create a new GitHub repository using this workflow [as a template](https://help.github.com/en/articles/creating-a-repository-from-a-template).
 2. [Clone](https://help.github.com/en/articles/cloning-a-repository) the newly created repository to your local system, into the place where you want to perform the data analysis.
 
 ### Step 2: Install Snakemake
@@ -125,7 +123,7 @@ In the quality control step, general post-alignment statistics and graphs are ca
 
 ### 3.3 Utility functionality
 
-In addition to the preprocessing and quality control functionality, cfDNA UniFlow contains some utility functions. The first is the widely used tool IchorCNA, which can be used for predicting copy number alteration (CNA) states across the genome. Further, it uses this information for estimating tumor fractions in cfDNA samples.
+In addition to the preprocessing and quality control functionality, cfDNA UniFlow contains some utility functions. The first is the widely used tool ichorCNA, which can be used for predicting copy number alteration (CNA) states across the genome. Further, it uses this information for estimating tumor fractions in cfDNA samples.
 
 The second utility function is our [inhouse GC bias estimation method](https://github.com/kircherlab/cfDNA_GCcorrection). It can not only be used for estimating fragment length and GC-content dependent technical biases, but also includes the option of attaching correction values to the reads. These can be used downstream for a wide variety of signal extraction methods, while preserving the original read coverage patterns.
 
@@ -141,15 +139,15 @@ Finally, all results and summary statistics for the specified samples are aggreg
 # Indexing the reference sequence (Requires 28N GB memory where N is the size of the reference sequence).
 ./bwa-mem2 index [-p prefix] <in.fasta>
 Where 
-<in.fasta> is the path to reference sequence fasta file and 
-<prefix> is the prefix of the names of the files that store the resultant index. Default is in.fasta.
+<in.fasta> is the path to reference sequence FASTA file and 
+<prefix> is the prefix of the names of the files that store the resultant index. Default is in.FASTA.
 ```
 
-* bwa-mem2 mem uses around 4GB memory per thread
+* bwa-mem2 mem uses around 4GB memory per thread.
 
 ## 4 Quickstart guide
 
-Our goal in developing cfDNA UniFlow is to provide a scalable, configurable and easy-to-use workflow specifically tailored towards the processing of cfDNA samples. Users only need to provide sequencing information in FASTQ or BAM format and optionally modify the configuration file to their needs. Here we provide an example with a small input file for testing the workflows functionality.
+Our goal in developing cfDNA UniFlow is to provide a scalable, configurable, and easy-to-use workflow specifically tailored towards the processing of cfDNA samples. Users only need to provide sequencing information in FASTQ or BAM format and optionally modify the configuration file to their needs. Here we provide an example with a small input file for testing the workflows functionality.
 
 **Note:** For simplicity, we expect a Unix system for this guide.
 
@@ -174,7 +172,7 @@ There are two files that are used in this example:
 - config/test-config.yaml
 - config/test-samples.tsv
 
-Both files don't need to be edited and are configured for a quick functionality test.
+Both files do not need to be edited and are configured for a quick functionality test.
 
 ### 4.3 Executing the workflow
 
@@ -193,5 +191,7 @@ snakemake --use-conda --configfile config/test-config.yaml --cores $N
 ```
 
 For cluster execution, read the guidelines in the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/executing/cluster.html).
+
+**Note:** Creating the index for bwa-mem2 requires 28N GB memory where N is the size of the reference sequence file. More information can be found in the [documentation](https://github.com/bwa-mem2/bwa-mem2#usage) or [this issue](https://github.com/bwa-mem2/bwa-mem2/issues/111).
 
 </div>
