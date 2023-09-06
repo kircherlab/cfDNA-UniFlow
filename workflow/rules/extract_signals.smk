@@ -138,7 +138,12 @@ rule plot_case_control:
         control_file= "results/{ID}/signals/controls/{target_region}.{control_name}-{correction}_{signal}.{GENOME}.tsv.gz",
         case_files = get_case_files,
     output:
-        "results/{ID}/signals/case-control-plots/{target_region}.{case_name}-vs-{control_name}-{correction}_{signal}.{GENOME}.png",
+            CaseControl_plot=report(
+            "results/{ID}/signals/case-control-plots/{target_region}.{case_name}-vs-{control_name}-{correction}_{signal}.{GENOME}.png",
+            caption="../report/Case-control_plot.rst",
+            category="Case-control",
+            labels={"Target region": "{target_region}", "Case": "{case_name}", "Control":"{control_name}", "Type": "Case-control overlay"},
+        ),
     params:
         signal = "{signal}",
         target = "{target_region}",
@@ -161,7 +166,7 @@ rule plot_case_control:
         """
         workflow/scripts/plot_overlay_case-control.py \
         --control_samples {input.control_file} \
-        --output {output} \
+        --output {output.CaseControl_plot} \
         --signal {params.signal} \
         --target {params.target} \
         --case_name {params.case_name} \

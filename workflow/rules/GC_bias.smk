@@ -191,7 +191,13 @@ rule plot_GC_overlay:
             allow_missing=True,
         ),
     output:
-        "results/{ID}/signals/GCcorrection-plots/{target_region}.{status_name}-GCcorrected_{signal}.{GENOME}.png",
+        report(
+            "results/{ID}/signals/GCcorrection-plots/{target_region}.{status_name}-GCcorrected_{signal}.{GENOME}.png",
+            caption="../report/GCbias_overlay.rst",
+            category="GCbias",
+            subcategory="GCbias-region-overlay",
+            labels={"Target region": "{target_region}", "Status": "{status_name}", "Type": "GCbias overlay"},
+        ),
     params:
         uncorrected_samples = get_uncorrected_signals,
         corrected_samples = get_corrected_signals,
