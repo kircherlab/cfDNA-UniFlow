@@ -116,7 +116,7 @@ def process_sample(
     rolling_window: int = 1000,
     edge_norm: bool = False,
     window: int = 1000,
-    flank:int = 500,
+    flank: int = 500,
 ) -> pd.DataFrame:
     """Process sample for plotting. This includes smoothing, normalization and the removal of edge regions to mitigate edge effects.
 
@@ -140,7 +140,7 @@ def process_sample(
         pd.DataFrame: Processed sample.
     """
 
-    #print(locals())
+    # print(locals())
     if window % 2 == 0:
         fstart = int(window / 2 + 1)
         fstop = int(-window / 2)
@@ -148,18 +148,15 @@ def process_sample(
         fstart = int(window / 2 - 0.5 + 1)
         fstop = int(-window / 2 + 0.5)
 
-
-
     if edge_norm:
-        flank_start, flank_end = get_window_slice(len(sample.columns),flank*2)
-        
-        
-        helper = abs(
-            sample.iloc[:, flank_start:flank_end].mean(axis=1)
-        )
-        if (helper==0).any():
-            zero_mask = (helper==0)
-            print(f"Regions with zero mean in Normalization slice [{flank_start}, {flank_end}] encountered. Removing respective regions.")
+        flank_start, flank_end = get_window_slice(len(sample.columns), flank * 2)
+
+        helper = abs(sample.iloc[:, flank_start:flank_end].mean(axis=1))
+        if (helper == 0).any():
+            zero_mask = helper == 0
+            print(
+                f"Regions with zero mean in Normalization slice [{flank_start}, {flank_end}] encountered. Removing respective regions."
+            )
             for zero_region in zero_mask[zero_mask].index:
                 print(f"Removing region: {zero_region}")
             helper.drop(helper[zero_mask].index, inplace=True)
@@ -167,46 +164,38 @@ def process_sample(
         sample = sample.div(helper, axis=0)
 
     if smoothing:
-         sample = sample.apply(
-             lambda x: pd.Series(savgol_filter(
-                 x, window_length=smooth_window, polyorder=smooth_polyorder
-            )), axis=1
-         )
-    
-    
+        sample = sample.apply(
+            lambda x: pd.Series(
+                savgol_filter(
+                    x, window_length=smooth_window, polyorder=smooth_polyorder
+                )
+            ),
+            axis=1,
+        )
 
-    #if rolling:
-    #    sample = (sample - sample.rolling(rolling_window, center=True, min_periods=1, axis=1).median())
-
-
-
-            
-            
     if overlay_mode.lower() == "mean":
         sample = pd.DataFrame(sample.mean(numeric_only=True))
     elif overlay_mode.lower() == "median":
         sample = pd.DataFrame(sample.median(numeric_only=True))
     else:
         raise ValueError(f"{overlay_mode} is not a valid keyword.")
-   
-        
+
     if rolling:
         if edge_norm:
             trend = sample.rolling(rolling_window, center=True, min_periods=1).median()
             sample = sample.div(trend)
         else:
-            print("yay")
-            flank_start, flank_end = get_window_slice(len(sample),flank*2)
+            flank_start, flank_end = get_window_slice(len(sample), flank * 2)
             norm_sample = sample.div(sample.iloc[flank_start:flank_end].mean())
-            print(norm_sample)
-            trend = norm_sample.rolling(rolling_window, center=True, min_periods=1).median()
+            trend = norm_sample.rolling(
+                rolling_window, center=True, min_periods=1
+            ).median()
             sample = sample.div(trend)
-        
-            
+
     sample["position"] = calculate_flanking_regions(len(sample))
     sample = sample.set_index("position")
-    
-    #sample = sample.iloc[fstop:fstart, :]
+
+    # sample = sample.iloc[fstop:fstart, :]
 
     return sample
 
@@ -218,6 +207,8 @@ def plot_correction_overlay(
     signal: str = "Coverage",
     target: str = "ROI",
     cmap: str = "tab20",
+    lower_limit: float = None,
+    upper_limit: float = None,
 ):
     ylab = f"Normalized {signal}"
 
@@ -236,6 +227,18 @@ def plot_correction_overlay(
     ax[0].set_xlabel("Position relative to target site [bp]", fontsize=14)
     ax[1].set_xlabel("Position relative to target site [bp]", fontsize=14)
     ax[0].set_ylabel(ylab, fontsize=14)
+
+    if lower_limit or upper_limit:
+        ax0_ylim = ax[0].get_ylim()
+        ax1_ylim = ax[1].get_ylim()
+        shared_ylim = (min(ax0_ylim[0], ax1_ylim[0]), max(ax0_ylim[1], ax1_ylim[1]))
+        if lower_limit:
+            shared_ylim = (min(shared_ylim[0], lower_limit), shared_ylim[1])
+        if upper_limit:
+            shared_ylim = (shared_ylim[0], max(shared_ylim[1], upper_limit))
+
+        ax[0].set_ylim(shared_ylim)
+        ax[1].set_ylim(shared_ylim)
 
     fig.suptitle(title, fontsize=16)
 
@@ -401,6 +404,22 @@ def plot_correction_overlay(
     show_default=True,
     help="""Figsize of the output plot.""",
 )
+@click.option(
+    "--lower_limit",
+    "lower_limit",
+    type=click.FLOAT,
+    default=None,
+    show_default=True,
+    help="Sets the lower limit of the Y axis displayed in plotting.",
+)
+@click.option(
+    "--upper_limit",
+    "upper_limit",
+    type=click.FLOAT,
+    default=None,
+    show_default=True,
+    help="Sets the upper limit of the Y axis displayed in plotting.",
+)
 def main(
     uncorrected_samples,
     corrected_samples,
@@ -418,8 +437,9 @@ def main(
     flank,
     display_window,
     figsize,
+    lower_limit,
+    upper_limit,
 ):
-
     if not name_regex:
         name_func = file_name_func
     else:
@@ -442,6 +462,7 @@ def main(
             flank=flank,
         )
         uncorrected_df[name] = tmpdf
+        del tmpdf
 
     corrected_df = pd.DataFrame()
     for sample in corrected_samples:
@@ -459,6 +480,7 @@ def main(
             flank=flank,
         )
         corrected_df[name] = tmpdf
+        del tmpdf
 
     if display_window:
         uncorr_min = uncorrected_df.index.min()
@@ -474,7 +496,6 @@ def main(
         uncorrected_df = uncorrected_df.loc[uncorr_lower:uncorr_upper]
         corrected_df = corrected_df.loc[corr_lower:corr_upper]
 
-
     sns.set_palette("hls", len(corrected_df.columns))
 
     Fig = plot_correction_overlay(
@@ -483,6 +504,8 @@ def main(
         figsize=figsize,
         signal=signal,
         target=target,
+        lower_limit=lower_limit,
+        upper_limit=upper_limit,
     )
     Fig.savefig(output, bbox_inches="tight")
 

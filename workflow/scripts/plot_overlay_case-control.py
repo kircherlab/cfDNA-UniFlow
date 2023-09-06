@@ -134,8 +134,7 @@ def process_sample(
 
     if edge_norm:
         flank_start, flank_end = get_window_slice(len(sample.columns),flank*2)
-        
-        
+
         helper = abs(
             sample.iloc[:, flank_start:flank_end].mean(axis=1)
         )
@@ -154,16 +153,7 @@ def process_sample(
                  x, window_length=smooth_window, polyorder=smooth_polyorder
             )), axis=1
          )
-    
-    
-
-    #if rolling:
-    #    sample = (sample - sample.rolling(rolling_window, center=True, min_periods=1, axis=1).median())
-
-
-
-            
-            
+             
     if overlay_mode.lower() == "mean":
         sample = pd.DataFrame(sample.mean(numeric_only=True))
     elif overlay_mode.lower() == "median":
@@ -177,10 +167,8 @@ def process_sample(
             trend = sample.rolling(rolling_window, center=True, min_periods=1).median()
             sample = sample.div(trend)
         else:
-            print("yay")
             flank_start, flank_end = get_window_slice(len(sample),flank*2)
             norm_sample = sample.div(sample.iloc[flank_start:flank_end].mean())
-            print(norm_sample)
             trend = norm_sample.rolling(rolling_window, center=True, min_periods=1).median()
             sample = sample.div(trend)
         
@@ -201,6 +189,8 @@ def plot_case_control_overlay(
     signal: str = "Coverage",
     target: str = "ROI",
     corrected: bool = False,
+    lower_limit:float = None,
+    upper_limit: float = None,
 ):
     ylab = f"Normalized {signal}"
 
@@ -238,6 +228,15 @@ def plot_case_control_overlay(
 
     ax.set_xlabel("Position relative to target site [bp]", fontsize=14)
     ax.set_ylabel(ylab, fontsize=14)
+
+    if lower_limit or upper_limit:
+        shared_ylim = ax.get_ylim()
+        if lower_limit:
+            shared_ylim = ( min(shared_ylim[0], lower_limit), shared_ylim[1])
+        if upper_limit:
+            shared_ylim = ( shared_ylim[0], max(shared_ylim[1], upper_limit) )
+        
+        ax.set_ylim(shared_ylim)
 
     fig.suptitle(title, fontsize=16)
 
@@ -398,6 +397,22 @@ def plot_case_control_overlay(
     show_default=True,
     help="""Figsize of the output plot.""",
 )
+@click.option(
+    "--lower_limit",
+    "lower_limit",
+    type=click.FLOAT,
+    default=None,
+    show_default=True,
+    help="Sets the lower limit of the Y axis displayed in plotting.",
+)
+@click.option(
+    "--upper_limit",
+    "upper_limit",
+    type=click.FLOAT,
+    default=None,
+    show_default=True,
+    help="Sets the upper limit of the Y axis displayed in plotting.",
+)
 def main(
     cases,
     control_samples,
@@ -417,6 +432,8 @@ def main(
     aggregate_controls,
     GC_corrected,
     figsize,
+    lower_limit,
+    upper_limit,
 ):
     """Takes aggregated control samples and case samples. Processes the cases and plots them together with the controls and saves the plot as image."""
 
@@ -469,6 +486,8 @@ def main(
         figsize=figsize,
         signal=signal,
         corrected=GC_corrected,
+        lower_limit=lower_limit,
+        upper_limit=upper_limit,
     )
     Fig.savefig(output, bbox_inches="tight")
 
