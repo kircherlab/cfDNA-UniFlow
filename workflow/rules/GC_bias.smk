@@ -102,12 +102,13 @@ rule plot_GCbias:
             "results/{ID}/GCBias/plots/{SAMPLE}-GCbias-plot_{blacklist}.{GENOME}.png",
             caption="../report/GCbias.rst",
             category="GCbias",
+            subcategory="GCbias-plot",
             labels={"Sample": "{SAMPLE}", "Type": "GCbias plot"},
         ),
     params:
         sample_name="{SAMPLE}",
         quantile_threshold="0.99",
-        figsize="15 12",
+        figsize="12 9",
     conda:
         "../envs/GC_bias.yaml"
     shell:
