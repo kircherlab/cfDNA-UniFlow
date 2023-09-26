@@ -160,6 +160,8 @@ rule plot_case_control:
         aggregate_controls = "--aggregate_controls" if config["aggregate_controls"] else "",
         GC_corrected = "--GC_corrected" if config["utility"]["GCbias-correction"] else "",
         figsize = (12, 9),
+        lower_limit="--lower_limit 0.8" if config["flank_norm"] else "", # these options should be made configurable
+        upper_limit="--upper_limit 1.2" if config["flank_norm"] else "", # these options should be made configurable
     conda:
         "../envs/GC_bias.yaml"
     shell:
@@ -182,6 +184,8 @@ rule plot_case_control:
         {params.aggregate_controls} \
         {params.GC_corrected} \
         --figsize {params.figsize} \
+        {params.lower_limit} \
+        {params.upper_limit} \
         {input.case_files}
         """
 
