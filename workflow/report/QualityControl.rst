@@ -1,1 +1,1 @@
-This is an aggregated QC reported created with multiQC. It aggregates information from FastQC, samtools stats and Mosdepth.
+This is an aggregated quality control (QC) report created with multiQC. It aggregates summary statistics, quality measures and visualizations from FastQC, Samtools stats and mosdepth for all provided samples.
