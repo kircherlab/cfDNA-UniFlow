@@ -145,18 +145,13 @@ def process_sample(
         sample = sample.div(helper, axis=0)
 
     if smoothing:
-         sample = sample.apply(
-             lambda x: pd.Series(savgol_filter(
-                 x, window_length=smooth_window, polyorder=smooth_polyorder
-            )), axis=1
-         )
-    
-    
-
-    #if rolling:
-    #    sample = (sample - sample.rolling(rolling_window, center=True, min_periods=1, axis=1).median())
-
-
+        sample = sample.apply(
+            lambda x: savgol_filter(
+                x, window_length=smooth_window, polyorder=smooth_polyorder
+            ),
+            axis=1,
+            result_type="broadcast",
+        )
 
             
             

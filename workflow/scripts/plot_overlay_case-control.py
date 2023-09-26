@@ -159,11 +159,13 @@ def process_sample(
         sample = sample.div(helper, axis=0)
 
     if smoothing:
-         sample = sample.apply(
-             lambda x: pd.Series(savgol_filter(
-                 x, window_length=smooth_window, polyorder=smooth_polyorder
-            )), axis=1
-         )
+        sample = sample.apply(
+            lambda x: savgol_filter(
+                x, window_length=smooth_window, polyorder=smooth_polyorder
+            ),
+            axis=1,
+            result_type="broadcast",
+        )
              
     if overlay_mode.lower() == "mean":
         sample = pd.DataFrame(sample.mean(numeric_only=True))
