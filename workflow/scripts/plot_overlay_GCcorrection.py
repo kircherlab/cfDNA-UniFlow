@@ -50,11 +50,22 @@ def load_table(path: str):
     Returns:
         pandas.DataFrame: DataFrame containing loaded data.
     """
-
+    ## determine dtypes
     if any([x in path for x in [".tsv", ".tsv.gz"]]):
-        df = pd.read_csv(path, sep="\t", header=None)
+        dtype_df = pd.read_csv(path, sep="\t", header=None, nrows=1000)
     else:
-        df = pd.read_csv(path, header=None)
+        dtype_df = pd.read_csv(path, header=None, nrows=1000)
+
+    non_numeric = dtype_df.select_dtypes(exclude=["float", "int"]).columns
+    numeric = dtype_df.select_dtypes(include=["float", "int"]).columns
+    dtype_dict = {key: str for key in non_numeric.values}
+    dtype_dict.update({col: np.float32 for col in numeric if col not in non_numeric})
+    del dtype_df
+    ## load actual data
+    if any([x in path for x in [".tsv", ".tsv.gz"]]):
+        df = pd.read_csv(path, sep="\t", header=None, dtype=dtype_dict)
+    else:
+        df = pd.read_csv(path, header=None, dtype=dtype_dict)
     if pd.api.types.is_string_dtype(df[0]):
         if pd.api.types.is_string_dtype(df[1]):
             df = df.set_index([0, 1])
