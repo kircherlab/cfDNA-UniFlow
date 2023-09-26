@@ -87,7 +87,11 @@ def calculate_signals(
 ):
     bam = bamHandler.openBam(bam)
     reference = py2bit.open(reference)
-    tbit_chrom = chr_name_bam_to_bit_mapping[chrom]
+    try:
+        tbit_chrom = chr_name_bam_to_bit_mapping[chrom]
+    except KeyError as e:
+        logger.error(f"Chromosome {chrom} not found in reference mapping. Skipping: {chrom}:{start}-{end}.")
+        return
     #logger.debug(f"chrom: {chrom}; mapped tbit_chrom: {tbit_chrom}")
     ID = f"{name}"
     coordinate = f"{chrom}:{start}-{end}"
@@ -534,7 +538,11 @@ def main(
     ) as cov, gzip.open(
         outfile.format("MEAN_WEIGHT"), "wt"
     ) as mean_weight:
-        for ID,coordinate, wps_list, cov_list, starts_list, mean_weight_list in imap_res:
+        for res in imap_res:
+            if not res:
+                continue
+            else:
+                ID,coordinate, wps_list, cov_list, starts_list, mean_weight_list = res
             if counter % 1000 == 0:
                 logger.info(ID)
             wps.write(
