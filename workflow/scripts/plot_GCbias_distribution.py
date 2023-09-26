@@ -131,7 +131,7 @@ def GC_plot_with_read_distribution(
     "--figsize",
     "figsize",
     type=(int, int),
-    default=(35, 30),
+    default=(12, 9),
     show_default=True,
     help="""Figsize of the output plot.""",
 )
@@ -168,7 +168,7 @@ def main(input_file, sample_name, quantile_threshold, filter, output_file, figsi
         quantile_threshold=quantile_threshold,
     )
     # save figure
-    fig.get_figure().savefig(output_file)
+    fig.get_figure().savefig(output_file, bbox_inches="tight")
 
 
 if __name__ == "__main__":
