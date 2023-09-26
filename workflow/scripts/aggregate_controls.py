@@ -94,7 +94,7 @@ def process_sample(
     rolling_window: int = 1000,
     edge_norm: bool = False,
     window: int = 1000,
-    flank:int = 500,
+    flank: int = 500,
 ) -> pd.DataFrame:
     """Process sample for plotting. This includes smoothing, normalization and the removal of edge regions to mitigate edge effects.
 
@@ -118,7 +118,7 @@ def process_sample(
         pd.DataFrame: Processed sample.
     """
 
-    #print(locals())
+    # print(locals())
     if window % 2 == 0:
         fstart = int(window / 2 + 1)
         fstop = int(-window / 2)
@@ -126,18 +126,15 @@ def process_sample(
         fstart = int(window / 2 - 0.5 + 1)
         fstop = int(-window / 2 + 0.5)
 
-
-
     if edge_norm:
-        flank_start, flank_end = get_window_slice(len(sample.columns),flank*2)
-        
-        
-        helper = abs(
-            sample.iloc[:, flank_start:flank_end].mean(axis=1)
-        )
-        if (helper==0).any():
-            zero_mask = (helper==0)
-            print(f"Regions with zero mean in Normalization slice [{flank_start}, {flank_end}] encountered. Removing respective regions.")
+        flank_start, flank_end = get_window_slice(len(sample.columns), flank * 2)
+
+        helper = abs(sample.iloc[:, flank_start:flank_end].mean(axis=1))
+        if (helper == 0).any():
+            zero_mask = helper == 0
+            print(
+                f"Regions with zero mean in Normalization slice [{flank_start}, {flank_end}] encountered. Removing respective regions."
+            )
             for zero_region in zero_mask[zero_mask].index:
                 print(f"Removing region: {zero_region}")
             helper.drop(helper[zero_mask].index, inplace=True)
@@ -153,33 +150,29 @@ def process_sample(
             result_type="broadcast",
         )
 
-            
-            
     if overlay_mode.lower() == "mean":
         sample = pd.DataFrame(sample.mean(numeric_only=True))
     elif overlay_mode.lower() == "median":
         sample = pd.DataFrame(sample.median(numeric_only=True))
     else:
         raise ValueError(f"{overlay_mode} is not a valid keyword.")
-   
-        
+
     if rolling:
         if edge_norm:
             trend = sample.rolling(rolling_window, center=True, min_periods=1).median()
             sample = sample.div(trend)
         else:
-            print("yay")
-            flank_start, flank_end = get_window_slice(len(sample),flank*2)
+            flank_start, flank_end = get_window_slice(len(sample), flank * 2)
             norm_sample = sample.div(sample.iloc[flank_start:flank_end].mean())
-            print(norm_sample)
-            trend = norm_sample.rolling(rolling_window, center=True, min_periods=1).median()
+            trend = norm_sample.rolling(
+                rolling_window, center=True, min_periods=1
+            ).median()
             sample = sample.div(trend)
-        
-            
+
     sample["position"] = calculate_flanking_regions(len(sample))
     sample = sample.set_index("position")
-    
-    #sample = sample.iloc[fstop:fstart, :]
+
+    # sample = sample.iloc[fstop:fstart, :]
 
     return sample
 
@@ -296,7 +289,7 @@ def main(
     logger.info("Parameters")
     logger.info(locals())
 
-    logger.info(f"Starting aggregation...")
+    logger.info("Starting aggregation...")
     control_df = pd.DataFrame()
     for i, control in enumerate(samples):
         logger.info(f"Loading {control_name}_{i}: {control}")
@@ -315,9 +308,11 @@ def main(
             flank=flank,
         )
         control_df[ID] = tmpdf
+        del tmpdf
     logger.info(f"Saving aggregated results to: {output}")
     control_df.to_csv(output, sep="\t")
     logger.info("Done.")
+
 
 if __name__ == "__main__":
     main()
