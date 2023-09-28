@@ -227,7 +227,7 @@ def plot_correction_overlay(
     fig, ax = plt.subplots(1, 2, figsize=figsize, sharey="row")
 
     for col in uncorrected:
-        ax[0].plot(uncorrected[col], label=col, alpha=0.7)
+        ax[0].plot(uncorrected[col], alpha=0.7)
 
     for col in corrected:
         ax[1].plot(corrected[col], label=col, alpha=0.7)
@@ -458,7 +458,7 @@ def main(
     uncorrected_df = pd.DataFrame()
     for sample in uncorrected_samples:
         name = name_func(sample)
-        print(name)
+        print(f"loading uncorrected sample: {name}")
         tmpdf = load_table(sample)
         tmpdf = process_sample(
             sample=tmpdf,
@@ -477,7 +477,7 @@ def main(
     corrected_df = pd.DataFrame()
     for sample in corrected_samples:
         name = name_func(sample)
-        print(name)
+        print(f"loading corrected sample: {name}")
         tmpdf = load_table(sample)
         tmpdf = process_sample(
             sample=tmpdf,
