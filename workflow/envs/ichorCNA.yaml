@@ -4,6 +4,6 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - r-base
+  - r-base=4.2.3
   - r-ichorcna=0.3.2
-  - hmmcopy
+  - hmmcopy=0.1.1
