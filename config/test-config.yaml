@@ -48,7 +48,7 @@ length-filter:
 
 #### trimmomatic specific options ####
 
-phred-quality-encoding: # three options: empty = automatic detection, phred-33 and phred-64
+phred-quality-encoding: phred-33 # three options: empty = automatic detection, phred-33 and phred-64
 
 # Illuminaclip takes a fasta file with adapter sequences and removes them in the trimming step.
 # The adapter_files option takes either the path to a custom file </PATH/TO/CUSTOM/ADAPTER.fa>
