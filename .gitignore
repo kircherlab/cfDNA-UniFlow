@@ -3,6 +3,8 @@
 !resources/
 !resources/blacklists/
 !resources/blacklists/**
+!resources/testregions/
+!resources/testregions/**
 
 !supplement/
 !supplement/**
@@ -26,9 +28,11 @@
 !config/
 !config/example.config.yaml
 !config/example.samples.tsv
+!config/example.regions.tsv
 !config/multiqc_config.yaml
 !config/test-config.yaml
 !config/test-samples.tsv
+!config/test-regions.tsv
 
 !resources/qual_profile.txt
 
