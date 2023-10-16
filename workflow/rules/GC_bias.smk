@@ -70,7 +70,6 @@ rule computeGCbias:
         bl=lambda wildcards: "-bl {}".format(get_blacklist(wildcards)["blacklist"])
         if get_blacklist(wildcards)
         else "",
-        #read_length = 150
     log:
         "logs/{ID}/computeGCbias/{SAMPLE}-GCbias_{blacklist}.{GENOME}.log",
     conda:
@@ -136,7 +135,6 @@ rule correctGCbias:
             "results/{ID}/corrected_reads/{SAMPLE}_GCcorrected_{blacklist}.{GENOME}.bam.bai"
         ),
     params:
-        GC_weights="-w",
         effectiveGenomeSize=lambda wildcards: config[wildcards.GENOME][
             "effectiveGenomeSize"
         ],
@@ -152,8 +150,8 @@ rule correctGCbias:
         -g {input.twobit_genome} \
         --GCbiasFrequenciesFile {input.GCfreqfile} \
         -p {threads} \
-        {params.GC_weights} \
-        -o {output.gc_weighted_bam}
+        -o {output.gc_weighted_bam} \
+        -v
         """
 
 
