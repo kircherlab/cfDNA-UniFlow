@@ -3,7 +3,7 @@
 # one row per sample. It can be parsed easily via pandas.
 samples: "config/test-samples.tsv" 
 
-regions: "config/regions_cfDNA-Uniflow.tsv"
+regions: "config/test-regions.tsv"
 
 control_name: "healthy" # name of the control samples specified in the samples.tsv. Has to match the name in the status field.
 
