@@ -25,7 +25,7 @@ hg38:
 
 ### global variables ###
 
-TMPDIR: "/fast/users/roeners_c/scratch/reads/" # path to directory for writing TMP files
+TMPDIR: "./" # path to directory for writing TMP files
 
 SEED: 42 # seed for increased reproducibility. Mainly used in GCbias estimation
 
