@@ -193,8 +193,7 @@ def calculate_signals(
                 if rstart >= regionStart and rstart <= regionEnd:
                     posRange[rstart][1] += tag  
         
-    if verbose:
-        sys.stderr.write("Evaluating posRange vector...\n")
+    logger.debug("Evaluating posRange vector...\n")
     # filename = outfile%cid
     # outfile = gzip.open(filename,'w')
     cov_sites = 0
