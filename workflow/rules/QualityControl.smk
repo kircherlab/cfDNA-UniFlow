@@ -64,7 +64,8 @@ rule multiqc:
         ),
     params:
         extra="--config config/multiqc_config.yaml",
+        use_input_files_only=True,
     log:
         "results/logs/{ID}/multiqc/multiqc.log",
     wrapper:
-        "v2.2.1/bio/multiqc"
+        "v2.6.0/bio/multiqc"
