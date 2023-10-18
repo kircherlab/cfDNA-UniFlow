@@ -8,3 +8,5 @@ max_table_rows: 600
 use_filename_as_sample_name:
   - fastqc/zip
   - fastqc/data
+
+show_analysis_paths: False
