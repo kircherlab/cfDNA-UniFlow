@@ -60,6 +60,7 @@ rule multiqc:
             "results/{ID}/qc/multiqc.html",
             caption="../report/QualityControl.rst",
             category="Quality control",
+            labels={"Quality control": "MultiQC report"}
         ),
     params:
         extra="--config config/multiqc_config.yaml",
