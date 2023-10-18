@@ -8,7 +8,7 @@ cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processi
  <img loading="lazy" src="supplement/cfDNA_unifyed_preprocessing.drawio.png">
  <figcaption>
  <div align="justify">
-  <strong>Figure S1: Overview of cfDNA Uniflow.</strong>  Functionalities are color coded by task. Red boxes represent rules for the automatic download of public resources. Grey boxes are optional steps. Blue boxes contain the core functionalty of cfDNA Uniflow. Green boxes are optional, but highly recommended steps and yellow boxes summarize the Quality Control and reporting steps.
+  <strong>Figure S1: Overview of cfDNA Uniflow.</strong> Functionalities are color coded by task. Red boxes represent rules for the automatic download of public resources. Grey boxes are optional steps. Blue boxes contain the core functionalty of cfDNA Uniflow. Green boxes are optional, but highly recommended steps and yellow boxes summarize the Quality Control and reporting steps.
  </div>
  </figcaption>
 </figure>
@@ -63,13 +63,60 @@ The core functionality of cfDNA UniFlow is the processing of Whole Genome Sequen
 
 In the quality control step, general post-alignment statistics and graphs are calculated for each sample via SAMtools stats and FastQC. Additionally, sample-wide coverage statistics and coverage at different genomic regions are calculated with Mosdepth, a fast BAM/CRAM depth calculation tool for WGS, exome, or targeted sequencing. The QC results are aggregated in HTML report via MultiQC.
 
+<figure>
+ <img loading="lazy" src="supplement/example_QC-report.png">
+ <figcaption>
+ <div align="justify">
+  <strong>Figure S2: Example section of a QC report.</strong> The QC report contains post-alignment statistics from SAMtools stats, FastQC and Mosdepth.
+ </div>
+ </figcaption>
+</figure>
+
 ### 2.3 Signal extraction and utility functionality
 
 In addition to the preprocessing and quality control functionality, cfDNA UniFlow contains some utility functions. The first is the widely used tool ichorCNA, which can be used for predicting copy number alteration (CNA) states across the genome. Further, it uses this information for estimating tumor fractions in cfDNA samples. By default, we use the recommended settings for ichorCNA, including profiles provided in the ichorCNA repository. However, it is possible to specify custom profiles and parameters in the configuration file.
 
+<figure>
+ <img loading="lazy" src="supplement/example_ichorCNA.png">
+ <figcaption>
+ <div align="justify">
+  <strong>Figure S3: ichorCNA plot of copy number alterations.</strong> The plot shows genome wide annotation of estimated copy number alterations, tumor fraction and other parameters used by ichorCNA.This example was generated using a breast cancer sample with an average GC content of 38%.
+ </div>
+ </figcaption>
+</figure>
+
+<div style="page-break-after: always;"></div>
+
 The second utility function is our [inhouse GC bias estimation method](https://github.com/kircherlab/cfDNA_GCcorrection). It can not only be used for estimating fragment length and GC-content dependent technical biases, but also includes the option of attaching correction values to the reads. These can be used downstream for a wide variety of signal extraction methods, while preserving the original read coverage patterns. Additionally, it is possible to include a visualization of the estimated biases in the report.
 
+<figure>
+ <img loading="lazy" src="supplement/example_GC-bias.png">
+ <figcaption>
+ <div align="justify">
+  <strong>Figure S4: Global GC bias estimate.</strong> The global GC bias was estimated using ratio between observed and expected fragments stratified by GC content [%] and fragment length [bp].This example was generated using a breast cancer sample with an average GC content of 38%.
+ </div>
+ </figcaption>
+</figure>
+
 Building on the GC bias estimation, we provide a method for extracting coverage derived signals around user defined regions. The resulting signals can be visualized for comparing biased vs corrected states and for comparing cases against controls.
+
+<figure>
+ <img loading="lazy" src="supplement/example_GC-overlay.png">
+ <figcaption>
+ <div align="justify">
+  <strong>Figure S5: Regional effects of GC bias correction.</strong> Composite coverage signal of 10000 LYL1 binding sites before and after GC bias correction. Accessibility of the binding sites, indicated by lower coveragem would have been overestimated before correction.  This example was generated using a breast cancer sample with an average GC content of 38%.
+ </div>
+ </figcaption>
+</figure>
+
+<figure>
+ <img loading="lazy" src="supplement/example_case-control-GRHL2.png">
+ <figcaption>
+ <div align="justify">
+  <strong>Figure S6: Case-control plot.</strong> GC corrected composite coverage signal of 10000 GRHL2 binding sites in a healthy control and a breast cancer sample. Lower central coverage in the cancer sample is consistent with increased GRHL2 activity in many cancer types.
+  </div>
+ </figcaption>
+</figure>
 
 ### 2.4 Report
 
