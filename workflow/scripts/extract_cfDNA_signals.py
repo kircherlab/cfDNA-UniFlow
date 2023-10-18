@@ -543,7 +543,7 @@ def main(
             else:
                 ID,coordinate, wps_list, cov_list, starts_list, mean_weight_list = res
             if counter % 1000 == 0:
-                logger.info(ID)
+                logger.debug(f"writing data for: {ID} {coordinate}")
             wps.write(
                 ID
                 + ","
