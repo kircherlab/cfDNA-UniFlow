@@ -80,7 +80,7 @@ In addition to the preprocessing and quality control functionality, cfDNA UniFlo
  <img loading="lazy" src="supplement/example_ichorCNA.png">
  <figcaption>
  <div align="justify">
-  <strong>Figure S3: ichorCNA plot of copy number alterations.</strong> The plot shows genome wide annotation of estimated copy number alterations, tumor fraction and other parameters used by ichorCNA.This example was generated using a breast cancer sample with an average GC content of 38%.
+  <strong>Figure S3: ichorCNA plot of copy number alterations.</strong> The plot shows genome wide annotation of estimated copy number alterations, tumor fraction and other parameters used by ichorCNA. This example was generated using a breast cancer sample with an average GC content of 38%.
  </div>
  </figcaption>
 </figure>
