@@ -110,7 +110,6 @@ rule plot_GCbias:
         ),
     params:
         sample_name="{SAMPLE}",
-        quantile_threshold="0.99",
         figsize="12 9",
     conda:
         "../envs/GC_bias.yaml"
@@ -119,7 +118,6 @@ rule plot_GCbias:
         workflow/scripts/plot_GCbias_distribution.py \
         -o {output.GCbias_plot} \
         -s {params.sample_name} \
-        -q {params.quantile_threshold} \
         --figsize {params.figsize} \
         {input.GCfreqfile}
         """
@@ -162,35 +160,55 @@ rule correctGCbias:
 def get_uncorrected_signals(wildcards):
     ID = wildcards.ID
     status_name = wildcards.status_name
-    paths = expand("-us results/{s.ID}/signals/signal-uncorrected/{target_region}.{s.sample}-uncorrected_{signal}.{s.genome_build}.csv.gz",
-            s=list(samples.loc[(samples["ID"] == ID) & (samples["status"] == status_name)].itertuples()),
-            allow_missing=True,
-            target_region = wildcards.target_region,
-            signal = wildcards.signal,
-        )
+    paths = expand(
+        "-us results/{s.ID}/signals/signal-uncorrected/{target_region}.{s.sample}-uncorrected_{signal}.{s.genome_build}.csv.gz",
+        s=list(
+            samples.loc[
+                (samples["ID"] == ID) & (samples["status"] == status_name)
+            ].itertuples()
+        ),
+        allow_missing=True,
+        target_region=wildcards.target_region,
+        signal=wildcards.signal,
+    )
     return paths
+
 
 def get_corrected_signals(wildcards):
     ID = wildcards.ID
     status_name = wildcards.status_name
-    paths = expand("-cs results/{s.ID}/signals/signal-corrected/{target_region}.{s.sample}-corrected_{signal}.{s.genome_build}.csv.gz",
-            s=list(samples.loc[(samples["ID"] == ID) & (samples["status"] == status_name) ].itertuples()),
-            target_region = wildcards.target_region,
-            signal = wildcards.signal,
-            allow_missing=True,
-        )
+    paths = expand(
+        "-cs results/{s.ID}/signals/signal-corrected/{target_region}.{s.sample}-corrected_{signal}.{s.genome_build}.csv.gz",
+        s=list(
+            samples.loc[
+                (samples["ID"] == ID) & (samples["status"] == status_name)
+            ].itertuples()
+        ),
+        target_region=wildcards.target_region,
+        signal=wildcards.signal,
+        allow_missing=True,
+    )
     return paths
+
 
 rule plot_GC_overlay:
     input:
-        uncorrected_signals = lambda wc: expand(
-                "results/{ID}/signals/signal-uncorrected/{target_region}.{s.sample}-uncorrected_{signal}.{s.genome_build}.csv.gz",
-            s=list(samples.loc[(samples["ID"] == wc.ID) & (samples["status"] == wc.status_name) ].itertuples()),
+        uncorrected_signals=lambda wc: expand(
+            "results/{ID}/signals/signal-uncorrected/{target_region}.{s.sample}-uncorrected_{signal}.{s.genome_build}.csv.gz",
+            s=list(
+                samples.loc[
+                    (samples["ID"] == wc.ID) & (samples["status"] == wc.status_name)
+                ].itertuples()
+            ),
             allow_missing=True,
         ),
-        corrected_signals = lambda wc: expand(
-                "results/{ID}/signals/signal-corrected/{target_region}.{s.sample}-corrected_{signal}.{s.genome_build}.csv.gz",
-            s=list(samples.loc[(samples["ID"] == wc.ID) & (samples["status"] == wc.status_name) ].itertuples()),
+        corrected_signals=lambda wc: expand(
+            "results/{ID}/signals/signal-corrected/{target_region}.{s.sample}-corrected_{signal}.{s.genome_build}.csv.gz",
+            s=list(
+                samples.loc[
+                    (samples["ID"] == wc.ID) & (samples["status"] == wc.status_name)
+                ].itertuples()
+            ),
             allow_missing=True,
         ),
     output:
@@ -199,26 +217,30 @@ rule plot_GC_overlay:
             caption="../report/GCbias_overlay.rst",
             category="GCbias",
             subcategory="GCbias-region-overlay",
-            labels={"Target region": "{target_region}", "Status": "{status_name}", "Type": "GCbias overlay"},
+            labels={
+                "Target region": "{target_region}",
+                "Status": "{status_name}",
+                "Type": "GCbias overlay",
+            },
         ),
     params:
-        uncorrected_samples = get_uncorrected_signals,
-        corrected_samples = get_corrected_signals,
-        name_regex = "'.*\.(.*?)-[un]*corrected_.*'", # matches everything between a '.' and '-[un]corrected_'
-        signal = "{signal}",
-        target = "{target_region}",
+        uncorrected_samples=get_uncorrected_signals,
+        corrected_samples=get_corrected_signals,
+        name_regex="'.*\.(.*?)-[un]*corrected_.*'",  # matches everything between a '.' and '-[un]corrected_'
+        signal="{signal}",
+        target="{target_region}",
         overlay_mode=config["overlay_mode"],
-        smoothing= "--smoothing" if config["smoothing"] else "",
+        smoothing="--smoothing" if config["smoothing"] else "",
         smooth_window=config["smooth_window"],
         smooth_polyorder=config["smooth_polyorder"],
         rolling="--rolling" if config["rolling"] else "",
         rolling_window=config["rolling_window"],
         flank_norm="--flank_norm" if config["flank_norm"] else "",
         flank=config["flank"],
-        display_window = config["display_window"],
-        figsize = (12, 9),
-        lower_limit="--lower_limit 0.8" if config["flank_norm"] else "", # these options should be made configurable
-        upper_limit="--upper_limit 1.2" if config["flank_norm"] else "", # these options should be made configurable
+        display_window=config["display_window"],
+        figsize=(12, 9),
+        lower_limit="--lower_limit 0.8" if config["flank_norm"] else "",  # these options should be made configurable
+        upper_limit="--upper_limit 1.2" if config["flank_norm"] else "",  # these options should be made configurable
     conda:
         "../envs/GC_bias.yaml"
     shell:
