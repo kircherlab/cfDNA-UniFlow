@@ -13,6 +13,7 @@ include: "rules/filtering.smk"
 include: "rules/mapping.smk"
 include: "rules/ichorCNA.smk"
 include: "rules/GC_bias.smk"
+include: "rules/extract_signals.smk"
 include: "rules/QualityControl.smk"
 
 

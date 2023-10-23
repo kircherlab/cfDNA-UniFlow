@@ -71,7 +71,7 @@ rule trimmomatic_pe:
         # list of trimmers (see manual)
         trimmer=get_trimmomatic_trimmers(),
         # optional parameters
-        extra="",
+        extra=get_trimmomatic_extra(),
         compression_level="-9",
     threads: 32
     # optional specification of memory usage of the JVM that snakemake will respect with global
@@ -81,15 +81,15 @@ rule trimmomatic_pe:
     resources:
         mem_mb=1024,
     wrapper:
-        "v1.1.0/bio/trimmomatic/pe"
+        "v2.3.2/bio/trimmomatic/pe"
 
 
 rule trimmomatic_se:
     input:
-        "reads/{sample}.fastq.gz",  # input and output can be uncompressed or compressed
+        unpack(get_SEtrimming_input)
     output:
         temp(
-            "results/{ID}/trimmed/trimmomatic/{SAMPLE}.trimmed.fastq.gz",
+            "results/{ID}/trimmed/trimmomatic/{SAMPLE}_single_read.trimmed.fastq.gz",
         ),
     log:
         "logs/{ID}/trimmomatic/{SAMPLE}.log",
@@ -97,7 +97,7 @@ rule trimmomatic_se:
         # list of trimmers (see manual)
         trimmer=get_trimmomatic_trimmers(),
         # optional parameters
-        extra="",
+        extra=get_trimmomatic_extra(),
         # optional compression levels from -0 to -9 and -11
         compression_level="-9",
     threads: 32
@@ -108,4 +108,4 @@ rule trimmomatic_se:
     resources:
         mem_mb=1024,
     wrapper:
-        "v1.1.0/bio/trimmomatic/se"
+        "v2.3.2/bio/trimmomatic/se"

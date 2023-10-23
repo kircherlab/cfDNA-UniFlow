@@ -7,11 +7,17 @@ import sys
 
 
 configfile: "config/config.yaml"
+
+
 validate(config, schema="../schemas/config.schema.yaml")
 
 samples = pd.read_csv(config["samples"], sep="\t").set_index("sample", drop=False)
 samples.index.names = ["sample_id"]
 validate(samples, schema="../schemas/samples.schema.yaml")
+
+regions = pd.read_csv(config["regions"], sep="\t").set_index("target", drop=False)
+regions.index.names = ["region_id"]
+validate(regions, schema="../schemas/regions.schema.yaml")
 
 
 def get_final_output():
@@ -35,9 +41,25 @@ def get_final_output():
             GENOME=samples["genome_build"],
         )
     )
+
     final_output.extend(
         expand("results/{ID}/qc/multiqc.html", ID=samples["ID"].unique())
     )
+
+    if config["utility"]["GCbias-correction"]:
+        final_output.extend(
+            expand(
+                expand(
+                    "results/{ID}/signals/signal-corrected/{target_region}.{SAMPLE}-corrected_WPS.{GENOME}.csv.gz",
+                    zip,
+                    ID=samples["ID"],
+                    SAMPLE=samples["sample"],
+                    GENOME=samples["genome_build"],
+                    allow_missing=True,
+                ),
+                target_region=regions["target"],
+            )
+        )
 
     if config["utility"]["GCbias-plot"]:
         final_output.extend(
@@ -51,6 +73,23 @@ def get_final_output():
                     allow_missing=True,
                 ),
                 blacklist=["repeatmasker"],
+            )
+        )
+
+        final_output.extend(
+            set(
+                expand(
+                    expand(
+                        "results/{ID}/signals/GCcorrection-plots/{target_region}.{status_name}-GCcorrected_{signal}.{GENOME}.png",
+                        zip,
+                        ID=samples["ID"],
+                        GENOME=samples["genome_build"],
+                        status_name=samples["status"],
+                        allow_missing=True,
+                    ),
+                    signal="COV" if config["signal"].lower() == "coverage" else "WPS",
+                    target_region=regions["target"],
+                )
             )
         )
 
@@ -71,6 +110,30 @@ def get_final_output():
                 ID=samples["ID"],
                 SAMPLE=samples["sample"],
                 GENOME=samples["genome_build"],
+            )
+        )
+
+    if config["utility"]["case-control-plot"]:
+        final_output.extend(
+            set(
+                expand(
+                    expand(
+                        "results/{ID}/signals/case-control-plots/{target_region}.{case_name}-vs-{control_name}-{correction}_{signal}.{GENOME}.png",
+                        zip,
+                        ID=samples["ID"],
+                        GENOME=samples["genome_build"],
+                        case_name=samples["status"].loc[
+                            samples["status"] != config["control_name"]
+                        ],
+                        allow_missing=True,
+                    ),
+                    control_name=config["control_name"],
+                    signal="COV" if config["signal"].lower() == "coverage" else "WPS",
+                    correction="corrected"
+                    if config["utility"]["GCbias-correction"]
+                    else "uncorrected",
+                    target_region=regions["target"],
+                )
             )
         )
 
@@ -111,6 +174,27 @@ def get_trimming_input(wildcards):
     else:
         raise ValueError(
             f"No raw fastq files or bam file found for sample: {sample} (bam: {bam}; fq1: {fq1}; fq2: {fq2})."
+            f"Please check the your sample sheet."
+        )
+
+
+def get_SEtrimming_input(wildcards):
+    sample = wildcards.SAMPLE
+    bam = samples.loc[sample].loc["bam"]
+    fq1 = samples.loc[sample].loc["fq1"]
+    fq2 = samples.loc[sample].loc["fq2"]
+
+    if ".bam" in bam.lower():
+        return ["results/{ID}/fastq/{SAMPLE}_single_read.fastq.gz"]
+    elif ".fastq" in fq1.lower() and ".fastq" in fq2.lower():
+        return ["results/{ID}/fastq/{SAMPLE}_single_read.fastq.gz"]
+    elif ".fastq" in fq1.lower() and not ".fastq" in fq2.lower():
+        return [fq1]
+    elif ".fastq" in fq2.lower() and not ".fastq" in fq1.lower():
+        return [fq2]
+    else:
+        raise ValueError(
+            f"Something went wrong for sample: {sample} (bam: {bam}; fq1: {fq1}; fq2: {fq2})."
             f"Please check the your sample sheet."
         )
 
@@ -248,42 +332,92 @@ def get_trimmomatic_trimmers():
     return trimmers
 
 
+def get_trimmomatic_extra():
+    """Checks if phred-qualty-encoding is set to phred-33 or phred-64."""
+    trimmomatic_extra = ""
+    if config["phred-quality-encoding"] == "phred-33":
+        trimmomatic_extra = "-phred33"
+    elif config["phred-quality-encoding"] == "phred-64":
+        trimmomatic_extra = "-phred64"
+
+    return trimmomatic_extra
+
+
 def get_mapping_input(wildcards):
     sample = wildcards.SAMPLE
     bam = samples.loc[sample].loc["bam"]
+    fq1 = samples.loc[sample].loc["fq1"]
+    fq2 = samples.loc[sample].loc["fq2"]
     mapping_input = dict()
-    trimming_algorithm = config["trimming_algorithm"]
-    unmerged = config["mapping"]["unmerged"]
-    singleton = config["mapping"]["singleton"]
+    # Paired End parameters
+    trimming_algorithm = config["PE_trimming_algorithm"]
+    unmerged = config["mapping"]["paired_end"]["unmerged"]
+    singleton = config["mapping"]["paired_end"]["singleton"]
+    # Single End parameter
+    SEreads = config["mapping"]["single_end"]["SEreads"]
 
     if trimming_algorithm.lower() == "ngmerge":
-        mapping_input[
-            "reads"
-        ] = "results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz"
-        if unmerged:
+        # these options are for Paired End sequencing libraries
+        if ".bam" in bam.lower() or (
+            ".fastq" in fq1.lower() and ".fastq" in fq2.lower()
+        ):
             mapping_input[
-                "noadapter_R1"
-            ] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_1.filtered.fastq.gz"
+                "reads"
+            ] = "results/{ID}/NGmerge/merged/{SAMPLE}_merged.filtered.fastq.gz"
+            if unmerged:
+                mapping_input[
+                    "noadapter_R1"
+                ] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_1.filtered.fastq.gz"
+                mapping_input[
+                    "noadapter_R2"
+                ] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_2.filtered.fastq.gz"
+            if singleton and ".bam" in bam.lower():
+                mapping_input[
+                    "PEsingleton"
+                ] = "results/{ID}/fastq/{SAMPLE}_PEsingleton.filtered.fastq.gz"
+        # this option is for reads in Single End sequencing libraries
+        if SEreads and (".fastq" in fq1.lower() and not ".fastq" in fq2.lower()):
             mapping_input[
-                "noadapter_R2"
-            ] = "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_2.filtered.fastq.gz"
-        if singleton and ".bam" in bam.lower():
+                "reads"
+            ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}_single_read.filtered.fastq.gz"
+        elif SEreads and (".fastq" in fq2.lower() and not ".fastq" in fq1.lower()):
+            mapping_input[
+                "reads"
+            ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}_single_read.filtered.fastq.gz"
+        elif SEreads and not (".fastq" in fq1.lower() and ".fastq" in fq2.lower()):
             mapping_input[
                 "single_reads"
-            ] = "results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz"
-    elif trimming_algorithm.lower() == "trimmomatic":
-        mapping_input["reads"] = [
-            "results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.fastq.gz",
-            "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.fastq.gz",
-        ]
-        if all_data:
-            mapping_input[
-                "noadapter_R1"
-            ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.unpaired.fastq.gz"
-            mapping_input[
-                "noadapter_R2"
-            ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.unpaired.fastq.gz"
+            ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}_single_read.filtered.fastq.gz"
 
+    elif trimming_algorithm.lower() == "trimmomatic":
+        # these options are for Paired End sequencing libraries
+        if ".bam" in bam.lower() or (
+            ".fastq" in fq1.lower() and ".fastq" in fq2.lower()
+        ):
+            mapping_input["reads"] = [
+                "results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.fastq.gz",
+                "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.fastq.gz",
+            ]
+            if unmerged:
+                mapping_input[
+                    "noadapter_R1"
+                ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}.1.unpaired.fastq.gz"
+                mapping_input[
+                    "noadapter_R2"
+                ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.unpaired.fastq.gz"
+        # this option is for reads in Single End sequencing libraries
+        if SEreads and (".fastq" in fq1.lower() and not ".fastq" in fq2.lower()):
+            mapping_input[
+                "reads"
+            ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}_single_read.filtered.fastq.gz"
+        elif SEreads and (".fastq" in fq2.lower() and not ".fastq" in fq1.lower()):
+            mapping_input[
+                "reads"
+            ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}_single_read.filtered.fastq.gz"
+        elif SEreads and not (".fastq" in fq1.lower() and ".fastq" in fq2.lower()):
+            mapping_input[
+                "single_reads"
+            ] = "results/{ID}/trimmed/trimmomatic/{SAMPLE}_single_read.filtered.fastq.gz"
     return mapping_input
 
 

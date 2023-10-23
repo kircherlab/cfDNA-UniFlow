@@ -25,12 +25,23 @@ rule filter_noadapter:
     shell:
         'awk \'BEGIN {{FS = "\\t" ; OFS = "\\n"}} {{header = $0 ; getline seq ; getline qheader ; getline qseq ; if (length(seq) >= {params.min_RL}) {{print header, seq, qheader, qseq}}}}\' <( zcat {input.unfiltered} ) |  gzip -c > {output.filtered}'
 
+rule filter_PE_singleton:
+    input:
+        unfiltered="results/{ID}/fastq/{SAMPLE}_PEsingleton.fastq.gz",
+    output:
+        filtered=temp("results/{ID}/fastq/{SAMPLE}_PEsingleton.filtered.fastq.gz"),
+    params:
+        min_RL=config["length-filter"]["MINLEN"],
+    conda:
+        "../envs/cfDNA_prep.yaml"
+    shell:
+        'awk \'BEGIN {{FS = "\\t" ; OFS = "\\n"}} {{header = $0 ; getline seq ; getline qheader ; getline qseq ; if (length(seq) >= {params.min_RL}) {{print header, seq, qheader, qseq}}}}\' <( zcat {input.unfiltered} ) |  gzip -c > {output.filtered}'
 
 rule filter_single_read:
     input:
-        unfiltered="results/{ID}/fastq/{SAMPLE}_single_read.fastq.gz",
+        unfiltered="results/{ID}/trimmed/trimmomatic/{SAMPLE}_single_read.trimmed.fastq.gz",
     output:
-        filtered=temp("results/{ID}/fastq/{SAMPLE}_single_read.filtered.fastq.gz"),
+        filtered=temp("results/{ID}/trimmed/trimmomatic/{SAMPLE}_single_read.filtered.fastq.gz"),
     params:
         min_RL=config["length-filter"]["MINLEN"],
     conda:

@@ -1,4 +1,4 @@
-$schema: "http://json-schema.org/draft-04/schema#"
+$schema: "http://json-schema.org/draft-06/schema#"
 
 description: an entry in the sample sheet
 
@@ -31,6 +31,9 @@ properties:
   platform:
     type: string
     description: platform used for sequencing (e.g. Illumina NextSeq 500)
+  status:
+    type: string
+    description: status of the sample (e.g. Case/Control or Healthy/Cancer)
   info:
     type: string
     description: additional information that should be included in read group ID (e.g. condition)

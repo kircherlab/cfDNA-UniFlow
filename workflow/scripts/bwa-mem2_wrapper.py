@@ -36,6 +36,7 @@ if not isinstance(snakemake.input.reads, str) and len(snakemake.input.reads) not
 
 non_merged_cmd = ""
 singleton_cmd = ""
+singleEnd_cmd = ""
 
 
 ### it is okay, that all bwa-mem2 commands get the same number of CPUs, as they are run sequentially.
@@ -46,14 +47,18 @@ if snakemake.input.get("noadapter_R1") and snakemake.input.get("noadapter_R2"):
     non_merged_cmd = f"bwa-mem2 mem -t {remaining_CPU} -R \"{{snakemake.params.RG}}\" {{snakemake.input.ref}} {{snakemake.input.noadapter_R1}} {{snakemake.input.noadapter_R2}}| grep -v \"^@\" || true ; "
 #    non_merged_cmd = "bwa-mem2 mem -t {snakemake.threads} -R \"{snakemake.params.RG}\" {snakemake.input.ref} {snakemake.input.noadapter_R1} {snakemake.input.noadapter_R2}| grep -v \"^@\" || true ; "
 
+if snakemake.input.get("PEsingleton"):
+    singleton_cmd = f"bwa-mem2 mem -t {remaining_CPU} -R \"{{snakemake.params.RG}}\" {{snakemake.input.ref}} {{snakemake.input.PEsingleton}} | grep -v \"^@\" || true ; "
+
 if snakemake.input.get("single_reads"):
-    singleton_cmd = f"bwa-mem2 mem -t {remaining_CPU} -R \"{{snakemake.params.RG}}\" {{snakemake.input.ref}} {{snakemake.input.single_reads}} | grep -v \"^@\" || true ; "
+    singleEnd_cmd = f"bwa-mem2 mem -t {remaining_CPU} -R \"{{snakemake.params.RG}}\" {{snakemake.input.ref}} {{snakemake.input.single_reads}} | grep -v \"^@\" || true ; "
     #singleton_cmd = "bwa-mem2 mem -t {snakemake.threads} -R \"{snakemake.params.RG}\" {snakemake.input.ref} {snakemake.input.single_reads} | grep -v \"^@\" || true ; "
 
 
 base_cmd = f"((bwa-mem2 mem -t {remaining_CPU} -R \"{{snakemake.params.RG}}\" {{snakemake.input.ref}} {{snakemake.input.reads}}; \
 {non_merged_cmd}\
 {singleton_cmd}\
+{singleEnd_cmd}\
 ) | samtools sort -O bam -@ {samtools_CPU} -o {{snakemake.output.mapped_reads}} - ) 2>{{snakemake.log}}"
 
 #base_cmd = f"((bwa-mem2 mem -t {{snakemake.threads}} -R \"{{snakemake.params.RG}}\" {{snakemake.input.ref}} {{snakemake.input.reads}}; \

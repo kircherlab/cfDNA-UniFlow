@@ -4,8 +4,8 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - bedtools
+  - bedtools=2.31.0
   - python=3.8
-  - bwa-mem2
+  - bwa-mem2=2.2.1
   - samtools=1.17
 
