@@ -227,6 +227,11 @@ properties:
     txnStrength:
       type: number
       default: 10000
+  GCbias_estimation:
+    normalized_interpolation: 
+      type: boolean
+      default: True
+      description: If True, the smooth parameter is normalized such that results are invariant to xdata range and less sensitive to nonuniformity of weights and xdata clumping.
   minRL:
     type: number
     default: 120

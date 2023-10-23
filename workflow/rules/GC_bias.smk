@@ -70,6 +70,9 @@ rule computeGCbias:
         bl=lambda wildcards: "-bl {}".format(get_blacklist(wildcards)["blacklist"])
         if get_blacklist(wildcards)
         else "",
+        normalized_interpolation="--normalized_interpolation"
+        if config["GCbias_estimation"]["normalized_interpolation"]
+        else "",
     log:
         "logs/{ID}/computeGCbias/{SAMPLE}-GCbias_{blacklist}.{GENOME}.log",
     conda:
@@ -82,6 +85,7 @@ rule computeGCbias:
         computeGCBias_readlen -b {input.BAMFILE} \
         -g {input.twobit_genome} \
         -i \
+        {params.normalized_interpolation} \
         {params.bl} \
         --precomputed_background {input.background} \
         -p {threads} \

@@ -130,6 +130,13 @@ ichorCNA:
   txnE: 0.9999
   txnStrength: 10000
 
+#### GCbias ####
+
+##### GCbias estimation #####
+
+GCbias_estimation:
+  normalized_interpolation: True # boolean, True or False. If True, the smooth parameter is normalized such that results are invariant to xdata range and less sensitive to nonuniformity of weights and xdata clumping.
+
 
 #### Signal extraction ####
 
