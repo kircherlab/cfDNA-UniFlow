@@ -1,4 +1,3 @@
-
 rule fastqc:
     input:
         "results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
@@ -8,6 +7,8 @@ rule fastqc:
     log:
         "results/logs/{ID}/fastqc/{SAMPLE}_all.{GENOME}.log",
     threads: 8
+    resources:
+        mem_mb = lambda wildcards,threads: 1024*threads
     wrapper:
         "v2.2.1/bio/fastqc"
 
