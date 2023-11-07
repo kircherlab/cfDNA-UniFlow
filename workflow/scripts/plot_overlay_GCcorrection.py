@@ -150,14 +150,6 @@ def process_sample(
         pd.DataFrame: Processed sample.
     """
 
-    # logger.info(locals())
-    if window % 2 == 0:
-        fstart = int(window / 2 + 1)
-        fstop = int(-window / 2)
-    elif window % 2 == 1:
-        fstart = int(window / 2 - 0.5 + 1)
-        fstop = int(-window / 2 + 0.5)
-
     if edge_norm:
         flank_start, flank_end = get_window_slice(len(sample.columns), flank * 2)
 
@@ -203,8 +195,6 @@ def process_sample(
 
     sample["position"] = calculate_flanking_regions(len(sample))
     sample = sample.set_index("position")
-
-    # sample = sample.iloc[fstop:fstart, :]
 
     return sample
 
