@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import click
-import matplotlib
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -151,25 +150,17 @@ def process_sample(
         pd.DataFrame: Processed sample.
     """
 
-    # print(locals())
-    if window % 2 == 0:
-        fstart = int(window / 2 + 1)
-        fstop = int(-window / 2)
-    elif window % 2 == 1:
-        fstart = int(window / 2 - 0.5 + 1)
-        fstop = int(-window / 2 + 0.5)
-
     if edge_norm:
         flank_start, flank_end = get_window_slice(len(sample.columns), flank * 2)
 
         helper = abs(sample.iloc[:, flank_start:flank_end].mean(axis=1))
         if (helper == 0).any():
             zero_mask = helper == 0
-            print(
+            logger.info(
                 f"Regions with zero mean in Normalization slice [{flank_start}, {flank_end}] encountered. Removing respective regions."
             )
             for zero_region in zero_mask[zero_mask].index:
-                print(f"Removing region: {zero_region}")
+                logger.info(f"Removing region: {zero_region}")
             helper.drop(helper[zero_mask].index, inplace=True)
             sample.drop(sample[zero_mask].index, inplace=True)
         sample = sample.div(helper, axis=0)
@@ -204,8 +195,6 @@ def process_sample(
 
     sample["position"] = calculate_flanking_regions(len(sample))
     sample = sample.set_index("position")
-
-    # sample = sample.iloc[fstop:fstart, :]
 
     return sample
 
@@ -455,10 +444,11 @@ def main(
     else:
         name_func = make_name_regex_func(name_regex)
 
+    logger.info("Loading uncorrected samples.")
     uncorrected_df = pd.DataFrame()
     for sample in uncorrected_samples:
         name = name_func(sample)
-        print(f"loading uncorrected sample: {name}")
+        logger.info(f"Loading uncorrected sample: {name}")
         tmpdf = load_table(sample)
         tmpdf = process_sample(
             sample=tmpdf,
@@ -474,10 +464,11 @@ def main(
         uncorrected_df[name] = tmpdf
         del tmpdf
 
+    logger.info("Loading corrected samples.")
     corrected_df = pd.DataFrame()
     for sample in corrected_samples:
         name = name_func(sample)
-        print(f"loading corrected sample: {name}")
+        logger.info(f"loading corrected sample: {name}")
         tmpdf = load_table(sample)
         tmpdf = process_sample(
             sample=tmpdf,
@@ -492,6 +483,7 @@ def main(
         corrected_df[name] = tmpdf
         del tmpdf
 
+    logger.info("Adjusting display window.")
     if display_window:
         uncorr_min = uncorrected_df.index.min()
         uncorr_max = uncorrected_df.index.max()
@@ -508,6 +500,7 @@ def main(
 
     sns.set_palette("hls", len(corrected_df.columns))
 
+    logger.info("Plotting figure.")
     Fig = plot_correction_overlay(
         uncorrected=uncorrected_df,
         corrected=corrected_df,
@@ -517,6 +510,7 @@ def main(
         lower_limit=lower_limit,
         upper_limit=upper_limit,
     )
+    logger.info("Saving figure.")
     Fig.savefig(output, bbox_inches="tight")
 
 

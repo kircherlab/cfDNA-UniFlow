@@ -5,7 +5,7 @@ cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processi
 </div>
 
 <figure>
- <img loading="lazy" src="supplement/cfDNA_unifyed_preprocessing.drawio.png">
+ <img loading="lazy" src="supplement/cfDNA_unified_preprocessing_overview.png">
  <figcaption>
  <div align="justify">
   <strong>Figure S1: Overview of cfDNA Uniflow.</strong> Functionalities are color coded by task. Red boxes represent rules for the automatic download of public resources. Grey boxes are optional steps. Blue boxes contain the core functionalty of cfDNA Uniflow. Green boxes are optional, but highly recommended steps and yellow boxes summarize the Quality Control and reporting steps.
