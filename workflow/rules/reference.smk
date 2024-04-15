@@ -7,7 +7,7 @@ rule get_fasta_reference:
     params:
         url= lambda wc:get_fasta_ref_url(wc)
     shell:
-        "(curl -L {params.url:q} | gzip -d > {output}) 2> {log}"
+        "(rsync -avzP {params.url:q} {output}.gz; gzip -d -f {output}.gz > {output})2> {log}"
 
 rule get_twobit_reference:
     output:
@@ -17,7 +17,7 @@ rule get_twobit_reference:
     params:
         url=lambda wc:get_twobit_ref_url(wc)
     shell:
-        "(curl -L -o {output} {params.url:q}) 2> {log}"
+        "(rsync -avzP {params.url:q} {output})2> {log}"
 
 
 rule bwa_mem2_index:

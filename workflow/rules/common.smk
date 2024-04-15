@@ -223,8 +223,8 @@ def get_reference(wildcards):
 def get_fasta_ref_url(wildcards):
     genome_build = wildcards.GENOME
     url_dict = {
-        "hg19": "ftp://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.fa.gz",
-        "hg38": "ftp://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa.gz",
+    "hg19": "rsync://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.fa.gz",
+    "hg38": "rsync://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa.gz",
     }
     return url_dict[genome_build]
 
@@ -233,8 +233,8 @@ def get_fasta_ref_url(wildcards):
 def get_twobit_ref_url(wildcards):
     genome_build = wildcards.GENOME
     url_dict = {
-        "hg19": "ftp://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.2bit",
-        "hg38": "ftp://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.2bit",
+        "hg19": "rsync://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.2bit",
+        "hg38": "rsync://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.2bit",
     }
     return url_dict[genome_build]
 
