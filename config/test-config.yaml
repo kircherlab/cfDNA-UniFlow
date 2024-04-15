@@ -25,7 +25,7 @@ hg38:
 
 ### global variables ###
 
-TMPDIR: "$TMPDIR" # path to directory for writing TMP files
+TMPDIR: "$TMPDIR/" # path to directory for writing TMP files
 
 SEED: 42 # seed for increased reproducibility. Mainly used in GCbias estimation
 
