@@ -27,7 +27,7 @@ def GC_plot_with_read_distribution(
 
     # calculate min,max values for coloring
     if quantile_threshold:
-        R_GC_min, R_GC_max = np.nanmin(R_GC), np.quantile(R_GC, quantile_threshold)
+        R_GC_min, R_GC_max = np.nanmin(R_GC), np.nanquantile(R_GC, quantile_threshold)
     else:
         R_GC_min, R_GC_max = np.nanmin(R_GC), np.nanmax(R_GC)
 
