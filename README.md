@@ -156,7 +156,7 @@ For best compatibility, it is recommended to execute cfDNA UniFlow via conda and
 After successful installation, set up an environment for Snakemake. This can be done by executing the following command:
 
 ```bash
-conda create -c conda-forge -c bioconda -n snakemake snakemake
+conda create -c conda-forge -c bioconda -n snakemake "snakemake>=7,<8"
 ```
 
 The environment can be activated via the `conda activate snakemake` command.
