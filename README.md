@@ -47,6 +47,7 @@ cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processi
             - [Step 1: Configure Workflow](#step-1-configure-workflow)
             - [Step 2: Execute workflow](#step-2-execute-workflow)
             - [Step 3: Investigate results](#step-3-investigate-results)
+    - [4 Contribution guidelines](#4-contribution-guidelines)
 
 <div style="page-break-after: always;"></div>
 
@@ -357,3 +358,13 @@ A functional description of reporting can be found in [section 2.4](#24-report).
 An example report in zip format can be found in the [supplement directory](https://github.com/kircherlab/cfDNA-UniFlow/tree/main/supplement). For viewing, the zip file needs to be extracted.
 
 </div>
+
+## 4 Contribution guidelines
+
+In case you want to contribute to the development of cfDNA UniFlow and its core functionalities, please follow these steps:
+
+1. [Fork](https://help.github.com/en/articles/fork-a-repo) the original repo to a personal or lab account.
+2. [Clone](https://help.github.com/en/articles/cloning-a-repository) the fork to your local system, to a different place than where you ran your analysis.
+3. Modify the code according to the intended changes.
+4. Commit and push your changes to your fork.
+5. Create a [pull request](https://help.github.com/en/articles/creating-a-pull-request) against the original repository.
