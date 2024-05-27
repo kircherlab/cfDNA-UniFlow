@@ -149,6 +149,11 @@ More information can be found in the [documentation](https://github.com/bwa-mem2
 
 ### 3.1 Setup
 
+The goal of cfDNA Uniflow is to provide essential and standardized preprocessing steps in a reproducible and scalable way, with the option to include additional steps as needed. Therefore, we encourage users to use this workflow [as a template](https://help.github.com/en/articles/creating-a-repository-from-a-template) and build their own analysis on top of it. The following steps guide you through the setup of the workflow.
+
+**Note 1:** If you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this (original) repository.
+**Note 2:** If you want to contribute to the development of cfDNA UniFlow, please follow the guidelines in [section 4](#4-contribution-guidelines).
+
 #### Step 1: Obtain a copy of this workflow
 
 1. Create a new GitHub repository using this workflow [as a template](https://help.github.com/en/articles/creating-a-repository-from-a-template).
