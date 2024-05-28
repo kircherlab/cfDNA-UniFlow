@@ -5,9 +5,9 @@ cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processi
 </div>
 
 <figure>
- <img loading="lazy" src="supplement/cfDNA_unified_preprocessing_overview.png">
+ <img loading="eager" src="supplement/cfDNA_unified_preprocessing_overview.png">
  <figcaption>
- <div align="justify">
+ <div align="justify" style="page-break-inside: avoid;">
   <strong>Figure S1: Overview of cfDNA Uniflow.</strong> Functionalities are color coded by task. Red boxes represent rules for the automatic download of public resources. Grey boxes are optional steps. Blue boxes contain the core functionalty of cfDNA Uniflow. Green boxes are optional, but highly recommended steps and yellow boxes summarize the Quality Control and reporting steps.
  </div>
  </figcaption>
@@ -26,9 +26,10 @@ cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processi
     - [2 Functional summary](#2-functional-summary)
         - [2.1 Raw data processing](#21-raw-data-processing)
         - [2.2 Quality control](#22-quality-control)
-        - [2.3 Signal extraction and utility functionality](#23-signal-extraction-and-utility-functionality)
+        - [2.3 Signal extraction and sequence analysis functionality](#23-signal-extraction-and-sequence-analysis-functionality)
         - [2.4 Report](#24-report)
-        - [2.5 Notes on resource requirements](#25-notes-on-resource-requirements)
+        - [2.5 Comparison of fragment based GC bias correction methods for cfDNA](#25-comparison-of-fragment-based-gc-bias-correction-methods-for-cfdna)
+        - [2.6 Notes on resource requirements](#26-notes-on-resource-requirements)
     - [3 Quick-start Guide](#3-quick-start-guide)
         - [3.1 Setup](#31-setup)
             - [Step 1: Obtain a copy of this workflow](#step-1-obtain-a-copy-of-this-workflow)
@@ -48,6 +49,7 @@ cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processi
             - [Step 2: Execute workflow](#step-2-execute-workflow)
             - [Step 3: Investigate results](#step-3-investigate-results)
     - [4 Contribution guidelines](#4-contribution-guidelines)
+    - [5. References](#5-references)
 
 <div style="page-break-after: always;"></div>
 
@@ -70,22 +72,22 @@ The core functionality of cfDNA UniFlow is the processing of Whole Genome Sequen
 In the quality control step, general post-alignment statistics and graphs are calculated for each sample via SAMtools stats and FastQC. Additionally, sample-wide coverage statistics and coverage at different genomic regions are calculated with Mosdepth, a fast BAM/CRAM depth calculation tool for WGS, exome, or targeted sequencing. The QC results are aggregated in HTML report via MultiQC.
 
 <figure>
- <img loading="lazy" src="supplement/example_QC-report.png">
+ <img loading="eager" src="supplement/example_QC-report.png">
  <figcaption>
- <div align="justify">
+ <div align="justify" style="page-break-inside: avoid;">
   <strong>Figure S2: Example section of a QC report.</strong> The QC report contains post-alignment statistics from SAMtools stats, FastQC and Mosdepth.
  </div>
  </figcaption>
 </figure>
 
-### 2.3 Signal extraction and utility functionality
+### 2.3 Signal extraction and sequence analysis functionality
 
-In addition to the preprocessing and quality control functionality, cfDNA UniFlow contains some utility functions. The first is the widely used tool ichorCNA, which can be used for predicting copy number alteration (CNA) states across the genome. Further, it uses this information for estimating tumor fractions in cfDNA samples. By default, we use the recommended settings for ichorCNA, including profiles provided in the ichorCNA repository. However, it is possible to specify custom profiles and parameters in the configuration file.
+In addition to the preprocessing and quality control functionality, cfDNA UniFlow contains some sequence analysis functions. The first is the widely used tool ichorCNA, which can be used for predicting copy number alteration (CNA) states across the genome. Further, it uses this information for estimating tumor fractions in cfDNA samples. By default, we use the recommended settings for ichorCNA, including profiles provided in the ichorCNA repository. However, it is possible to specify custom profiles and parameters in the configuration file.
 
 <figure>
- <img loading="lazy" src="supplement/example_ichorCNA.png">
+ <img loading="eager" src="supplement/example_ichorCNA.png">
  <figcaption>
- <div align="justify">
+ <div align="justify" style="page-break-inside: avoid;">
   <strong>Figure S3: ichorCNA plot of copy number alterations.</strong> The plot shows genome wide annotation of estimated copy number alterations, tumor fraction and other parameters used by ichorCNA. This example was generated using a breast cancer sample with an average GC content of 38%.
  </div>
  </figcaption>
@@ -96,9 +98,9 @@ In addition to the preprocessing and quality control functionality, cfDNA UniFlo
 The second utility function is our [inhouse GC bias estimation method](https://github.com/kircherlab/cfDNA_GCcorrection). It can not only be used for estimating fragment length and GC-content dependent technical biases, but also includes the option of attaching correction values to the reads. These can be used downstream for a wide variety of signal extraction methods, while preserving the original read coverage patterns. Additionally, it is possible to include a visualization of the estimated biases in the report.
 
 <figure>
- <img loading="lazy" src="supplement/example_GC-bias.png">
+ <img loading="eager" src="supplement/example_GC-bias.png">
  <figcaption>
- <div align="justify">
+ <div align="justify" style="page-break-inside: avoid;">
   <strong>Figure S4: Global GC bias estimate.</strong> The global GC bias was estimated using ratio between observed and expected fragments stratified by GC content [%] and fragment length [bp].This example was generated using a breast cancer sample with an average GC content of 38%.
  </div>
  </figcaption>
@@ -107,18 +109,18 @@ The second utility function is our [inhouse GC bias estimation method](https://g
 Building on the GC bias estimation, we provide a method for extracting coverage derived signals around user defined regions. The resulting signals can be visualized for comparing biased vs corrected states and for comparing cases against controls.
 
 <figure>
- <img loading="lazy" src="supplement/example_GC-overlay.png">
+ <img loading="eager" src="supplement/example_GC-overlay.png">
  <figcaption>
- <div align="justify">
+ <div align="justify" style="page-break-inside: avoid;">
   <strong>Figure S5: Regional effects of GC bias correction.</strong> Composite coverage signal of 10000 LYL1 binding sites before and after GC bias correction. Accessibility of the binding sites, indicated by lower coveragem would have been overestimated before correction.  This example was generated using a breast cancer sample with an average GC content of 38%.
  </div>
  </figcaption>
 </figure>
 
 <figure>
- <img loading="lazy" src="supplement/example_case-control-GRHL2.png">
+ <img loading="eager" src="supplement/example_case-control-GRHL2.png">
  <figcaption>
- <div align="justify">
+ <div align="justify" style="page-break-inside: avoid;">
   <strong>Figure S6: Case-control plot.</strong> GC corrected composite coverage signal of 10000 GRHL2 binding sites in a healthy control and a breast cancer sample. Lower central coverage in the cancer sample is consistent with increased GRHL2 activity in many cancer types.
   </div>
  </figcaption>
@@ -130,7 +132,20 @@ Finally, all results and summary statistics for the specified samples are aggreg
 
 **Note:** An example report can be found [here](https://github.com/kircherlab/cfDNA-UniFlow/tree/main/supplement)
 
-### 2.5 Notes on resource requirements
+### 2.5 Comparison of fragment based GC bias correction methods for cfDNA
+
+The figure below shows a comparison of fragment based GC bias correction methods for cfDNA. We compared our inhouse method (ID: cfDNA Uniflow) with the methods from GCparagon [[1]](#GCparagon) and scores extracted from the Griffin workflow [[2]](#Griffin). Expected and measured fragment distributions were sampled from 1e5 random regions of 1 kilobase (kb) width, covering 1e8 base pair (bp) in total. The expected fragment distribution is based on all possible fragments of size 20 to 550 bp and their respective GC content based on the human genome reference hg38. The measured fragment distribution is based on the actual fragments in the cfDNA sample.
+
+<figure>
+ <img loading="eager" src="supplement/Comparison_GC_correction_Methods_300DPI.png">
+ <figcaption>
+  <div align="justify" style="page-break-inside: avoid;">
+   <strong>Figure S7: Comparison of three fragment-based GC bias correction methods for cfDNA.</strong> The expected fragment distribution is based on all possible fragments of size 20 to 550 bp and their respective GC content based on the human genome reference hg38. The measured fragment distribution is based on the actual fragments in the cfDNA sample. Both distributions were sampled from 1e5 random regions of 1 kilobase (kb) width, covering 1e8 base pair (bp) in total. Corrected fragment distributions were calculated by multiplying the fragment counts with GC correction factors of the respective methods. Subfigure A) show the effects for the tested sample B01 (38% average GC), B) for sample H01 (41% average GC) and C) for sample P01 (47% average GC).
+  </div>
+ </figcaption>
+</figure>
+
+### 2.6 Notes on resource requirements
 
 * The index creation of bwa-mem2 is resource intensive:
 
@@ -162,7 +177,6 @@ The goal of cfDNA Uniflow is to provide essential and standardized preprocessing
 
 #### Step 2: Install Snakemake
 
-For best compatibility, it is recommended to execute cfDNA UniFlow via conda and Snakemake. For this, it is required to first install conda. If conda is not installed yet, follow the [official documentation](https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html).
 
 After successful installation, set up an environment for Snakemake. This can be done by executing the following command:
 
@@ -357,7 +371,6 @@ A functional description of reporting can be found in [section 2.4](#24-report).
 
 An example report in zip format can be found in the [supplement directory](https://github.com/kircherlab/cfDNA-UniFlow/tree/main/supplement). For viewing, the zip file needs to be extracted.
 
-</div>
 
 ## 4 Contribution guidelines
 
@@ -368,3 +381,13 @@ In case you want to contribute to the development of cfDNA UniFlow and its core 
 3. Modify the code according to the intended changes.
 4. Commit and push your changes to your fork.
 5. Create a [pull request](https://help.github.com/en/articles/creating-a-pull-request) against the original repository.
+
+## 5. References
+
+<a id="GCparagon">[1]</a>
+Spiegl B, Kapidzic F, Röner S, Kircher M, Speicher MR. GCparagon: evaluating and correcting GC biases in cell-free DNA at the fragment level. NAR Genomics Bioinforma. 2023; doi: 10.1093/nargab/lqad102.
+
+<a id="Griffin">[2]</a>
+Doebley A-L, Ko M, Liao H, Cruikshank AE, Santos K, Kikawa C, et al.. A framework for clinical cancer subtyping from nucleosome profiling of cell-free DNA. Nat Commun. 2022; doi: 10.1038/s41467-022-35076-w.
+
+</div>
