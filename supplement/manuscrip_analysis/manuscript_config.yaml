@@ -1,0 +1,157 @@
+# This file should contain everything to configure the workflow on a global scale.
+# In case of sample based data, it should be complemented by a samples.tsv file that contains
+# one row per sample. It can be parsed easily via pandas.
+samples: "supplement/manuscrip_analysis/manuscript_samples.tsv" 
+regions: "config/test-regions.tsv"
+
+control_name: "healthy" # name of the control samples specified in the samples.tsv. Has to match the name in the status field.
+
+### genome build specific options ###
+
+hg19:
+  reference: "resources/reference/hg19.fa" #path to reference genome in fasta format
+  2bit_ref: "resources/reference/hg19.2bit" #path to reference genome in twobit format
+  repeatmasker: "resources/blacklists/repeatmasker.hg19.merged.bed.gz" #for more details see file location
+  effectiveGenomeSize: 2864785220 #for more details see https://deeptools.readthedocs.io/en/latest/content/feature/effectiveGenomeSize.html
+
+hg38:
+  reference: "resources/reference/hg38.fa" #path to reference genome in fasta format
+  2bit_ref: "resources/reference/hg38.2bit" #path to reference genome in twobit format
+  repeatmasker: "resources/blacklists/repeatmasker.hg38.merged.bed.gz" #for more details see file location
+  effectiveGenomeSize: 2913022398 #for more details see https://deeptools.readthedocs.io/en/latest/content/feature/effectiveGenomeSize.html
+
+
+### global variables ###
+
+TMPDIR: "/fast/users/roeners_c/scratch/reads/" # path to directory for writing TMP files
+
+SEED: 42 # seed for increased reproducibility. Mainly used in GCbias estimation
+
+### Utility ###
+
+utility:
+  GCbias-plot: True
+  GCbias-correction: True
+  ichorCNA: True
+  case-control-plot: True
+
+### trimming ###
+
+PE_trimming_algorithm: "NGmerge" #can be either NGmerge or trimmomatic
+
+#### NGmerge specific options ####9
+
+length-filter:
+  MINLEN: 30 # min lenght of reads in additional filter steps
+
+#### trimmomatic specific options ####
+
+phred-quality-encoding: "phred-33" # three options: empty = automatic detection, phred-33 and phred-64
+
+
+# Illuminaclip takes a fasta file with adapter sequences and removes them in the trimming step.
+# The adapter_files option takes either the path to a custom file </PATH/TO/CUSTOM/ADAPTER.fa>
+# or one of the following default files provided by Illumina and Trimmomatic:
+    # "NexteraPE-PE.fa",
+    # "TruSeq2-PE.fa",
+    # "TruSeq2-SE.fa",
+    # "TruSeq3-PE-2.fa",
+    # "TruSeq3-PE.fa",
+    # "TruSeq3-SE.fa",
+# For more information on Trimmomatic and its functionality can be found at:
+# http://www.usadellab.org/cms/?page=trimmomatic
+trimmers:
+  Illuminaclip: 
+    adapter_files: "TruSeq3-PE.fa" # filter not used if empty/invalid; can be either a path to a fasta file or the name of the default files;
+    seedMismatches: 2 # if not provided, defaults to 4
+    palindromeClipThreshold: 30 # if not provided, defaults to 30
+    simpleClipThreshold: 10 # if not provided, defaults to 10
+    minAdapterLength: 8 #optional argument, default ist 8
+    keepBothReads: True # if not provided, defaults to False
+  LEADING: 3  #(LEADING:3) Remove leading low quality or N bases (below quality 3); deactivated when set to 0
+  TRAILING: 3 #(TRAILING:3) Remove trailing low quality or N bases (below quality 3); deactivated when set to 0
+  SLIDINGWINDOW: #(SLIDINGWINDOW:4:15) Scan the read with a 4-base wide sliding window, cutting when the average quality per base drops below 15; deactivated when set to 0
+    window: 4 # deactivated when set to 0
+    quality_threshold: 15 
+  MINLEN: 30 #Drop reads below a ceartain length (e.g. 36 bp)  (MINLEN:36); deactivated when set to 0
+
+### Mapping ###
+
+# This option lets you add unmerged/singleton or single-end reads in the mapping step.
+# Unmerged or singleton reads are paired end reads that were filtered by samtools fastq or NGmerge.
+# Single-end reads are from single end libraries.These categories can be excluded for specialised analyses.
+mapping:
+  paired_end:
+    unmerged: True # default is True. Reads not merged by NGmerge.
+    singleton: False # default is False. Reads that are from paired end libraries without a matching pair.
+  single_end:
+    SEreads: True # default is True. This option is essential for Single End libraries. Setting to true in PE libraries has no effect on the output.
+
+### Utility parameters ###
+
+#### ichorCNA ####
+
+# These are the default options used by the authors of IcorCNA! Change at own risk.
+
+read_counter:
+  window: 1000000
+  quality: 20
+  chroms: 
+    autoselect_chroms: True # boolean, True or False. It is recommended to use this option, because chrom_list has to match the chromosome in the bam file!
+    autoselect_strict: True # boolean, True or False. Only selects chromosomes with mapped reads.
+    chrom_list: "chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY"
+
+ichorCNA:
+  ploidy: '"c(2,3)"'
+  normal: '"c(0.5,0.6,0.7,0.8,0.9)"'
+  maxCN: 5
+  gcWIG: 
+    hg19: "resources/ichorCNA/gc_hg19_1000kb.wig"
+    hg38: "resources/ichorCNA/gc_hg38_1000kb.wig"
+  mapWIG: 
+    hg19: "resources/ichorCNA/map_hg19_1000kb.wig"
+    hg38: "resources/ichorCNA/map_hg38_1000kb.wig"
+  centro:
+    hg19: "resources/ichorCNA/GRCh37.p13_centromere_UCSC-gapTable.txt"
+    hg38: "resources/ichorCNA/GRCh38.GCA_000001405.2_centromere_acen.txt"
+  normalPanel: 
+    hg19: "resources/ichorCNA/HD_ULP_PoN_1Mb_median_normAutosome_mapScoreFiltered_median.rds"
+    hg38: "resources/ichorCNA/HD_ULP_PoN_hg38_1Mb_median_normAutosome_median.rds"
+  includeHOMD: "False"
+  chrs: "'c(1:22,\"X\")'" # this schould be fine, because ichorCNA evaluates these expressions and maps chromosome names"
+  chrTrain: '"c(1:22)"'  # this schould be fine, because ichorCNA evaluates these expressions and maps chromosome names"
+  estimateNormal: "True"
+  estimatePloidy: "True"
+  estimateScPrevalence: "True"
+  scStates: '"c(1,3)"'
+  txnE: 0.9999
+  txnStrength: 10000
+
+#### GCbias ####
+
+##### GCbias estimation #####
+
+GCbias_estimation:
+  normalized_interpolation: True # boolean, True or False. If True, the smooth parameter is normalized such that results are invariant to xdata range and less sensitive to nonuniformity of weights and xdata clumping.
+
+
+#### Signal extraction ####
+
+minRL: 120 # minimum read length for calculating WPS
+maxRL: 180 # maximum read length for calculating WPS
+bpProtection: 120 # bp protection for calculating WPS
+lengthSR: 76 # length of single reads, if used for calculating WPS
+
+##### Signal processing #####
+
+overlay_mode: "mean" # Can be either "mean" or "median". Sets overlay mode, specifying how regions should be aggregated for each sample.
+smoothing: True # Activates smoothing with Savitzky-Golay filter.
+smooth_window: 21 # Sets windows size used for smoothing with Savitzky-Golay filter.
+smooth_polyorder: 2 # Sets order of polynomial used for smoothing with Savitzky-Golay filter.
+rolling: True # Activates trend removal with a rolling median filter.
+rolling_window: 1000 # Sets window size used in rolling median filter.
+flank_norm: True # Activates normalization by dividing the signals by the mean coverage in flanking intervals around the region of interest.
+flank: 2000 # Sets the size of the flanking intervals around the region of interest. Should be <= 0.5 of the extracted signals
+signal: "coverage" # can be either "coverage" or "WPS"
+display_window: [-1500,1500]
+aggregate_controls: True

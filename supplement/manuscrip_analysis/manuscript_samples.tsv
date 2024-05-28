@@ -1,0 +1,4 @@
+ID	sample	bam	fq1	fq2	genome_build	library_name	platform	status	info
+manuscript_samples	H01	"resources/manuscript_samples/EGAF00007957154.bam"	-	-	hg38	GCparagon_library	Illumina_NovaSeq_6000	healthy	healthy
+manuscript_samples	P01	"resources/manuscript_samples/EGAF00007957155.bam"	-	-	hg38	GCparagon_library	Illumina_NovaSeq_6000	prostate_cancer	prostate_cancer
+manuscript_samples	B01	"resources/manuscript_samples/EGAF00007957152.bam"	-	-	hg38	GCparagon_library	Illumina_NovaSeq_6000	breast_cancer	breast_cancer
