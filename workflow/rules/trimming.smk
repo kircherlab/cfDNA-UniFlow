@@ -10,11 +10,11 @@ rule NGmerge:
         non_merged_2=temp(
             "results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged_2.fastq.gz"
         ),
+    log:
+        "logs/{ID}/NGmerge/NGmerge_{SAMPLE}.log",
     params:
         non_merged_prefix="results/{ID}/NGmerge/nonmerged/{SAMPLE}_nonmerged",
         minlen=20,
-    log:
-        "logs/{ID}/NGmerge/{SAMPLE}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
     threads: 64
@@ -37,11 +37,11 @@ rule NGmerge_adapter:
         R2_noadapters=temp(
             "results/{ID}/NGmerge/nonmerged/unfiltered.{SAMPLE}_noadapters_2.fastq.gz"
         ),
+    log:
+        "logs/{ID}/NGmerge-adapter/NGmerge_adapter_{SAMPLE}.log",
     params:
         adapt_minlen=1,
         output_prefix="results/{ID}/NGmerge/nonmerged/unfiltered.{SAMPLE}_noadapters",
-    log:
-        "logs/{ID}/NGmerge-adapter/{SAMPLE}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
     threads: 64
@@ -66,7 +66,7 @@ rule trimmomatic_pe:
             "results/{ID}/trimmed/trimmomatic/{SAMPLE}.2.unpaired.fastq.gz"
         ),
     log:
-        "logs/{ID}/trimmomatic/{SAMPLE}.log",
+        "logs/{ID}/trimmomatic_pe/trimmomatic_pe_{SAMPLE}.log",
     params:
         # list of trimmers (see manual)
         trimmer=get_trimmomatic_trimmers(),
@@ -92,7 +92,7 @@ rule trimmomatic_se:
             "results/{ID}/trimmed/trimmomatic/{SAMPLE}_single_read.trimmed.fastq.gz",
         ),
     log:
-        "logs/{ID}/trimmomatic/{SAMPLE}.log",
+        "logs/{ID}/trimmomatic_se/trimmomatic_se_{SAMPLE}.log",
     params:
         # list of trimmers (see manual)
         trimmer=get_trimmomatic_trimmers(),

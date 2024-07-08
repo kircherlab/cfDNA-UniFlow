@@ -5,7 +5,7 @@ rule fastqc:
         html="results/{ID}/qc/fastqc/{SAMPLE}.{GENOME}.html",
         zip="results/{ID}/qc/fastqc/{SAMPLE}.{GENOME}_fastqc.zip",
     log:
-        "results/logs/{ID}/fastqc/{SAMPLE}_all.{GENOME}.log",
+        "logs/{ID}/fastqc/fastqc_{SAMPLE}_all.{GENOME}.log",
     threads: 8
     resources:
         mem_mb = lambda wildcards,threads: 1024*threads
@@ -19,7 +19,7 @@ rule samtools_stats:
     output:
         "results/{ID}/qc/samtools-stats/{SAMPLE}.{GENOME}.txt",
     log:
-        "results/logs/{ID}/fastqc/{SAMPLE}.{GENOME}.log",
+        "logs/{ID}/samtools_stats/samtools_stats_{SAMPLE}.{GENOME}.log",
     threads: 8
     wrapper:
         "v2.2.1/bio/samtools/stats"
@@ -35,7 +35,7 @@ rule mosdepth:
         "results/{ID}/qc/mosdepth/{SAMPLE}.{GENOME}.regions.bed.gz",
         summary="results/{ID}/qc/mosdepth/{SAMPLE}.{GENOME}.mosdepth.summary.txt",  # this named output is required for prefix parsing
     log:
-        "results/logs/{ID}/mosdepth/{SAMPLE}.{GENOME}.log",
+        "logs/{ID}/mosdepth/mosdepth_{SAMPLE}.{GENOME}.log",
     params:
         extra="--no-per-base",  # optional
         by="500",
@@ -63,10 +63,10 @@ rule multiqc:
             category="Quality control",
             labels={"Quality control": "MultiQC report"}
         ),
+    log:
+        "logs/{ID}/multiqc/multiqc.log",
     params:
         extra="--config config/multiqc_config.yaml",
         use_input_files_only=True,
-    log:
-        "results/logs/{ID}/multiqc/multiqc.log",
     wrapper:
         "v2.6.0/bio/multiqc"
