@@ -177,7 +177,6 @@ The goal of cfDNA Uniflow is to provide essential and standardized preprocessing
 
 #### Step 2: Install Snakemake
 
-
 After successful installation, set up an environment for Snakemake. This can be done by executing the following command:
 
 ```bash
@@ -187,6 +186,8 @@ conda create -c bioconda -c conda-forge -n snakemake snakemake
 The environment can be activated via the `conda activate snakemake` command.
 
 For installation details, see the instructions in the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
+
+Installation instructions for conda can be found in the official [conda documentation](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html).
 
 #### Step 3: Activate conda environment
 
