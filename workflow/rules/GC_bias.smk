@@ -241,8 +241,8 @@ rule plot_GC_overlay:
         flank=config["flank"],
         display_window=config["display_window"],
         figsize=(12, 9),
-        lower_limit="--lower_limit 0.8" if config["flank_norm"] else "",  # these options should be made configurable
-        upper_limit="--upper_limit 1.2" if config["flank_norm"] else "",  # these options should be made configurable
+        lower_limit="--lower_limit 0.8" if config["flank_norm"] else "",
+        upper_limit="--upper_limit 1.2" if config["flank_norm"] else "",
     conda:
         "../envs/GC_bias.yaml"
     shell:

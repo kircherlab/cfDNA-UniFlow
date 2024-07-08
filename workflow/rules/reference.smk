@@ -25,7 +25,6 @@ rule bwa_mem2_index:
         ref="resources/reference/{GENOME}.fa",
     output:
         ref=multiext( "resources/reference/{GENOME}.fa", ".amb", ".ann", ".pac", ),
-        #ref=multiext( "resources/reference/{GENOME}.fa", ".amb", ".ann", ".bwt", ".pac", ".sa"),
     log:
        "logs/bwa_mem2_index-{GENOME}.log",
     conda:
