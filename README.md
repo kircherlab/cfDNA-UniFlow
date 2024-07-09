@@ -145,7 +145,134 @@ The figure below shows a comparison of fragment based GC bias correction methods
  </figcaption>
 </figure>
 
-### 2.6 Notes on resource requirements
+### 2.6 Comparison of cfDNA Uniflow with other methods
+
+The table S1 shows a comparison of cfDNA Uniflow with the cfDNApipe workflow. Both workflows are designed for the preprocessing of cfDNA samples from liquid biopsies, but follow different design principles.
+
+<table>
+    <caption>Table S1: Comparison cfDNA Uniflow vs cfDNApipe.</caption>
+  <thead>
+    <tr>
+      <th style="text-align: center; font-weight: bold">Characteristic</th>
+      <th style="text-align: center; font-weight: bold">cfDNA Uniflow</th>
+      <th style="text-align: center; font-weight: bold">cfDNApipe</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan=3  style="text-align: center; font-weight: bold; border-bottom: solid thin;" >Workflow characteristics</td>
+    </tr>
+    <tr>
+      <td>package management</td>
+      <td>conda</td>
+      <td>conda</td>
+    </tr>
+    <tr>
+      <td>language</td>
+      <td>Snakemake</td>
+      <td>Python</td>
+    </tr>
+    <tr>
+      <td>modularity</td>
+      <td>yes</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>multiprocessing support</td>
+      <td>yes</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>configurability</td>
+      <td>config files</td>
+      <td>custom python scripts</td>
+    </tr>
+    <tr>
+      <td>scalability</td>
+      <td>single machine to compute clusters</td>
+      <td>single machine</td>
+    </tr>
+    <tr>
+      <td colspan=3  style="text-align: center; font-weight: bold; border-bottom: solid thin; border-top: solid thin;">Core functionality</td>
+    </tr>
+    <tr>
+      <td>Adapter removal</td>
+      <td>Ngmerge or Trimmomatic</td>
+      <td>adapterremoval</td>
+    </tr>
+    <tr>
+      <td>Mapping</td>
+      <td>bwa-mem2</td>
+      <td>Bowtie2/Bismark</td>
+    </tr>
+    <tr>
+      <td>Length filtering</td>
+      <td>Yes</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Sequencing error correction</td>
+      <td>Ngmerge</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>GC correction</td>
+      <td>Fragment level</td>
+      <td>Bin or arm level (CNV only)</td>
+    </tr>
+    <tr>
+      <td>Quality Control</td>
+      <td>FastQC, Samtools stats, Mosdepth</td>
+      <td>FastQC, Qualimap</td>
+    </tr>
+    <tr>
+      <td>Reporting</td>
+      <td>Snakemake + integrated MultiQC report</td>
+      <td>Custom html report</td>
+    </tr>
+    <tr>
+      <td colspan=3  style="text-align: center; font-weight: bold; border-bottom: solid thin; border-top: solid thin;">Analyses</td>
+    </tr>
+    <tr>
+      <td>CNV analysis</td>
+      <td>IchorCNA</td>
+      <td>Jiang P. et al.  (2015)</td>
+    </tr>
+    <tr>
+      <td>Tumor fraction estimation</td>
+      <td>IchorCNA</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Methylation analysis</td>
+      <td>-</td>
+      <td>case-control + tissue deconvolution</td>
+    </tr>
+    <tr>
+      <td>Fragmentomic analysis</td>
+      <td>yes</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>Nucleosome analysis</td>
+      <td>yes</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>SNV/InDel analysis</td>
+      <td>possible extension</td>
+      <td>yes (calling only)</td>
+    </tr>
+    <tr>
+      <td>Virus detection</td>
+      <td>possible extension</td>
+      <td>yes</td>
+    </tr>
+</tbody></table>
+
+
+
+### 2.7 Notes on resource requirements
 
 * The index creation of bwa-mem2 is resource intensive:
 
