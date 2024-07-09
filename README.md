@@ -450,9 +450,11 @@ status: string
 info: string
 ```
 
-If FASTQ files are used, either single-end or paired-end sequencing can be specified, depending on how many FASTQ files are provided. If BAM files are used, the FASTQ columns should be filled with "-" and vice versa. 
+If FASTQ files are used, either single-end or paired-end sequencing can be specified, depending on how many FASTQ files are provided. If BAM files are used, the FASTQ columns should be filled with "-" and vice versa.
 
-The `regions.tsv` file should contain the following columns:
+#### Step 2: Configure regions
+
+The `regions.tsv` file contains names and paths to the bed files for regions of interest. It should contain the following columns:
 
 ```yaml
 # region name/identifier
@@ -461,9 +463,63 @@ target: string
 path: string
 ```
 
-**Note:** All three files will be automatically validated before workflow execution.
+#### Step 3: Configure workflow
 
-#### Step 2: Execute workflow
+The `config.yaml` is the main configuration file for the workflow. It contains options for the workflow execution and paths to the configuration files. We provide sensible defaults and document the purpose of most options via comments in the `config.yaml`, but the user can adjust them according to their needs.
+
+In the following examples, we cover the most important options:
+
+```yaml
+samples: "config/test-samples.tsv" 
+regions: "config/test-regions.tsv"
+control_name: "healthy" 
+```
+
+The first section of the config file should be used to specify the paths to the samples and regions files. The `control_name` option is used to specify the name of the control samples in the samples file, which will be used for the case-control plot.
+
+```yaml
+### genome build specific options ###
+
+hg19:
+  reference: "resources/reference/hg19.fa"
+  2bit_ref: "resources/reference/hg19.2bit" 
+  repeatmasker: "resources/blacklists/repeatmasker.hg19.merged.bed.gz"
+  effectiveGenomeSize: 2864785220
+
+hg38:
+  reference: "resources/reference/hg38.fa"
+  2bit_ref: "resources/reference/hg38.2bit"
+  repeatmasker: "resources/blacklists/repeatmasker.hg38.merged.bed.gz"
+  effectiveGenomeSize: 2913022398
+```
+
+The second section of the config file contains genome build specific options. The paths to the reference genome, 2bit reference, repeatmasker blacklist, and effective genome size are specified for both hg19 and hg38. If defaults are used, the workflow will download the necessary files automatically. If these files are already available, the paths should be adjusted accordingly.
+
+```yaml
+### global variables ###
+
+TMPDIR: "$TMPDIR" # path to directory for writing TMP files
+
+SEED: 42 # seed for increased reproducibility. Mainly used in GCbias estimation
+
+### Utility options ###
+
+utility:
+  GCbias-plot: True
+  GCbias-correction: True
+  ichorCNA: True
+  case-control-plot: True
+
+### trimming ###
+
+PE_trimming_algorithm: "NGmerge" #can be either NGmerge or trimmomatic
+```
+
+The third section of the config file contains global variables and configuration of optional steps in the workflow. The `TMPDIR` variable specifies the path to the directory for writing temporary files. The `SEED` variable is used for increased reproducibility and is mainly used in the GC bias estimation. The `utility` section is used to enable or disable optional steps in the workflow using either `True` or `False`. Finally, `PE_trimming_algorithm` variable specifies the algorithm used for trimming paired-end reads. It can be either `NGmerge` or `trimmomatic`. All subsequent options are specific options rules/programs in the workflow and do not need to be adjusted for most use cases.
+
+**Note:** The configuration file is validated before the workflow execution. If essential information is missing or false values are provided, the workflow will not start.
+
+#### Step 4: Execute workflow
 
 Activate the conda environment:
 
@@ -485,7 +541,7 @@ snakemake --use-conda --configfile <CONFIGFILE> --cores $N
 
 See the Snakemake documentation on [workflow execution](https://snakemake.readthedocs.io/en/stable/executing/cli.html) and execution in [cluster environments](https://snakemake.readthedocs.io/en/stable/executing/cluster.html) for further details.
 
-#### Step 3: Investigate results
+#### Step 5: Investigate results
 
 After successful execution, you can create a self-contained interactive HTML report with all results via:
 
