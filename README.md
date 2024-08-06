@@ -177,6 +177,7 @@ In the following section, plots are shown that were generated using the cfDNA Un
 
 <div style="page-break-after: always;"></div>
 
+
 <figure>
  <img loading="eager" src="supplement/Snyder-et-al_Cell2016_analysis/geneic_features_CELL_vs_UniFlow.png" style="page-break-inside: avoid;">
  <figcaption>
@@ -185,6 +186,7 @@ In the following section, plots are shown that were generated using the cfDNA Un
   </div>
  </figcaption>
 </figure>
+
 
 <figure>
  <img loading="eager" src="supplement/Snyder-et-al_Cell2016_analysis/expression_TSS_CELL_vs_UniFlow.png">
