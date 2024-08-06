@@ -37,7 +37,7 @@ rule computeGCbias_background:
         if get_blacklist(wildcards)
         else "",
     log:
-        "logs/{ID}/computeGCbias_background/precomputed_background_{blacklist}.{GENOME}.log",
+        "logs/{ID}/computeGCbias_background/computeGCbias_background_{blacklist}.{GENOME}.log",
     conda:
         "../envs/GC_bias.yaml"
     threads: 48
@@ -52,7 +52,7 @@ rule computeGCbias_background:
         --output {output.background} \
         --seed {params.seed} \
         --standard_chroms \
-        -v
+        -v &> {log}
         """
 
 
@@ -74,12 +74,10 @@ rule computeGCbias:
         if config["GCbias_estimation"]["normalized_interpolation"]
         else "",
     log:
-        "logs/{ID}/computeGCbias/{SAMPLE}-GCbias_{blacklist}.{GENOME}.log",
+        "logs/{ID}/computeGCbias/computeGCbias_{SAMPLE}-GCbias_{blacklist}.{GENOME}.log",
     conda:
         "../envs/GC_bias.yaml"
     threads: 48
-    benchmark:
-        "results/benchmarks/{ID}/benchmark_whole_genome/computeGCbias_interpolated_CSAPS_precomputed_background_{blacklist}-{GENOME}_{SAMPLE}-resources.tsv"
     shell:
         """
         computeGCBias_readlen -b {input.BAMFILE} \
@@ -108,6 +106,8 @@ rule plot_GCbias:
             subcategory="GCbias-plot",
             labels={"Sample": "{SAMPLE}", "Type": "GCbias plot"},
         ),
+    log:
+        "logs/{ID}/plot_GCbias/plot_GCbias_{SAMPLE}-GCbias-plot_{blacklist}.{GENOME}.log",
     params:
         sample_name="{SAMPLE}",
         figsize="12 9",
@@ -119,7 +119,7 @@ rule plot_GCbias:
         -o {output.GCbias_plot} \
         -s {params.sample_name} \
         --figsize {params.figsize} \
-        {input.GCfreqfile}
+        {input.GCfreqfile} &> {log}
         """
 
 
@@ -141,7 +141,7 @@ rule correctGCbias:
             "effectiveGenomeSize"
         ],
     log:
-        "logs/{ID}/correctGCbias/{SAMPLE}-GCbias_{blacklist}.{GENOME}.log",
+        "logs/{ID}/correctGCbias/correctGCbias_{SAMPLE}-GCbias_{blacklist}.{GENOME}.log",
     conda:
         "../envs/GC_bias.yaml"
     threads: 48
@@ -153,7 +153,7 @@ rule correctGCbias:
         --GCbiasFrequenciesFile {input.GCfreqfile} \
         -p {threads} \
         -o {output.gc_weighted_bam} \
-        -v
+        -v &> {log}
         """
 
 
@@ -223,6 +223,8 @@ rule plot_GC_overlay:
                 "Type": "GCbias overlay",
             },
         ),
+    log:
+        "logs/{ID}/plot_GC_overlay/plot_GC_overlay_{target_region}.{status_name}-GCcorrected_{signal}.{GENOME}.log",
     params:
         uncorrected_samples=get_uncorrected_signals,
         corrected_samples=get_corrected_signals,
@@ -239,8 +241,8 @@ rule plot_GC_overlay:
         flank=config["flank"],
         display_window=config["display_window"],
         figsize=(12, 9),
-        lower_limit="--lower_limit 0.8" if config["flank_norm"] else "",  # these options should be made configurable
-        upper_limit="--upper_limit 1.2" if config["flank_norm"] else "",  # these options should be made configurable
+        lower_limit="--lower_limit 0.8" if config["flank_norm"] else "",
+        upper_limit="--upper_limit 1.2" if config["flank_norm"] else "",
     conda:
         "../envs/GC_bias.yaml"
     shell:
@@ -263,5 +265,5 @@ rule plot_GC_overlay:
         {params.lower_limit} \
         {params.upper_limit} \
         {params.uncorrected_samples} \
-        {params.corrected_samples}
+        {params.corrected_samples} &> {log}
         """

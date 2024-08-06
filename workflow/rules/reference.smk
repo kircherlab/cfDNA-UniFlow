@@ -3,7 +3,7 @@ rule get_fasta_reference:
     output:
         "resources/reference/{GENOME}.fa",
     log:
-        "logs/get-{GENOME}-reference.log",
+        "logs/get_fasta_reference_{GENOME}.log",
     params:
         url= lambda wc:get_fasta_ref_url(wc)
     shell:
@@ -13,7 +13,7 @@ rule get_twobit_reference:
     output:
         "resources/reference/{GENOME}.2bit",
     log:
-        "logs/get-{GENOME}-reference.log",
+        "logs/get_twobit_reference_{GENOME}.log",
     params:
         url=lambda wc:get_twobit_ref_url(wc)
     shell:
@@ -25,9 +25,8 @@ rule bwa_mem2_index:
         ref="resources/reference/{GENOME}.fa",
     output:
         ref=multiext( "resources/reference/{GENOME}.fa", ".amb", ".ann", ".pac", ),
-        #ref=multiext( "resources/reference/{GENOME}.fa", ".amb", ".ann", ".bwt", ".pac", ".sa"),
     log:
-       "logs/bwa_index-{GENOME}.log",
+       "logs/bwa_mem2_index-{GENOME}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
     threads: 16

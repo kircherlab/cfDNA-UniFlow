@@ -8,7 +8,7 @@ rule map_reads_bwa2:
     params:
         RG=lambda wc: get_read_group(wc.SAMPLE),
     log:
-        "logs/{ID}/map_reads_bwa2/{SAMPLE}_all.{GENOME}.log",
+        "logs/{ID}/map_reads_bwa2/map_reads_bwa2_{SAMPLE}_all.{GENOME}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
     threads: 32
@@ -24,7 +24,7 @@ rule mark_duplicates:
     params:
         TMPDIR=config["TMPDIR"],
     log:
-        "logs/{ID}/markdup/{SAMPLE}.{GENOME}.log",
+        "logs/{ID}/mark_duplicates/mark_duplicates_{SAMPLE}.{GENOME}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
     threads: 64
@@ -40,8 +40,10 @@ rule index_bam:
         "{path}.bam",
     output:
         "{path}.bam.bai",
+    log:
+        "logs/{ID}/index_bam/index_bam_{SAMPLE}.{GENOME}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
     threads: 32
     shell:
-        "samtools index -@ {threads} {input} {output}"
+        "samtools index -@ {threads} {input} {output} 2>{log}"

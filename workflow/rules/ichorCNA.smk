@@ -18,15 +18,15 @@ rule get_chroms:
         if config["read_counter"]["chroms"]["autoselect_strict"]
         else "",
     log:
-        "results/logs/{ID}/get_chroms/{SAMPLE}_processed.{GENOME}.log",
+        "logs/{ID}/get_chroms/get_chroms_{SAMPLE}_processed.{GENOME}.chromosomes.log",
     conda:
         "../envs/cfDNA_prep.yaml"
     shell:
-        r"""samtools idxstats {input.bam} | \
+        r"""(samtools idxstats {input.bam} | \
         {params.strict_filter} \
         cut -f 1 | grep -w 'chr[1-9]\|chr[1-2][0-9]\|chr[X,Y]\|^[1-2][0-9]\|^[0-9]\|^[X,Y]' \
         | sort -k1,1 -V -s | tr '\n' ','| sed 's/,*\r*$//' \
-        1> {output.chroms} 2>{log}"""
+        1> {output.chroms}) 2>{log}"""
 
 
 rule read_counter:
@@ -37,7 +37,7 @@ rule read_counter:
     output:
         wig="results/{ID}/icorCNA/readcounts/{SAMPLE}_processed.{GENOME}.wig",
     log:
-        "results/logs/{ID}/mapping/{SAMPLE}_all.{GENOME}.log",
+        "logs/{ID}/read_counter/read_counter_{SAMPLE}_processed.{GENOME}.log",
     params:
         window=config["read_counter"]["window"],
         quality=config["read_counter"]["quality"],
@@ -74,6 +74,8 @@ rule ichorCNA:
             labels={"Sample": "{SAMPLE}", "Type": "CNA-TumorFraction plot"},
         ),
         summary="results/{ID}/icorCNA/{SAMPLE}_processed_{GENOME}/{SAMPLE}_processed.params.txt",
+    log:
+        "logs/{ID}/ichorCNA/ichorCNA_{SAMPLE}_processed.{GENOME}.log",
     params:
         genome="{GENOME}",
         plot_format="png",
@@ -94,8 +96,6 @@ rule ichorCNA:
         scStates=config["ichorCNA"]["scStates"],
         txnE=config["ichorCNA"]["txnE"],
         txnStrength=config["ichorCNA"]["txnStrength"],
-    log:
-        "results/logs/{ID}/mapping/{SAMPLE}_all.{GENOME}.log",
     conda:
         "../envs/ichorCNA.yaml"
     shell:
@@ -109,5 +109,5 @@ rule ichorCNA:
         --estimatePloidy {params.estimatePloidy} \
         --estimateScPrevalence {params.estimateScPrevalence} --scStates {params.scStates} \
         --txnE {params.txnE} --txnStrength {params.txnStrength} --plotFileType {params.plot_format} \
-        --outDir {output.outDir}
+        --outDir {output.outDir} 2>{log}
         """

@@ -2,7 +2,6 @@
 
 rule extract_counts:
     input:
-        #target="results/regions/{GENOME}/target_region/{target_region}.blacklist-excluded.bed.gz",
         target=lambda wildcards: regions["path"][wildcards.target_region],
         BAMFILE="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
         BAIFILE="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam.bai",
@@ -11,6 +10,8 @@ rule extract_counts:
         WPS="results/{ID}/signals/signal-uncorrected/{target_region}.{SAMPLE}-uncorrected_WPS.{GENOME}.csv.gz",
         COV="results/{ID}/signals/signal-uncorrected/{target_region}.{SAMPLE}-uncorrected_COV.{GENOME}.csv.gz",
         MEAN_WEIGHT="results/{ID}/signals/signal-uncorrected/{target_region}.{SAMPLE}-uncorrected_MEAN_WEIGHT.{GENOME}.csv.gz",
+    log:
+        "logs/{ID}/extract_counts/extract_counts_{target_region}.{SAMPLE}.{GENOME}.log",
     params:
         minRL=config["minRL"],
         maxRL=config["maxRL"],
@@ -20,7 +21,6 @@ rule extract_counts:
         out_pre="results/{ID}/signals/signal-uncorrected/{target_region}.{SAMPLE}-uncorrected_%s.{GENOME}.csv.gz",
     threads: 30
     conda:
-        #"../envs/cfDNA_rework.yml"
         "../envs/GC_bias.yaml"
     shell:
         """
@@ -40,16 +40,16 @@ rule extract_counts:
 
 rule extract_GCcorrected_counts:
     input:
-        #target="results/regions/{GENOME}/target_region/{target_region}.blacklist-excluded.bed.gz",
         target=lambda wildcards: regions["path"][wildcards.target_region],
         BAMFILE="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam",
         BAIFILE="results/{ID}/mapped_reads/{SAMPLE}_processed.{GENOME}.bam.bai",
         twobit_genome=lambda wildcards: config[wildcards.GENOME]["2bit_ref"],
-        #GCfreqfile="results/{ID}/GCBias/bias_table/{SAMPLE}-{computation}_GCbias_interpolated_{analysis}.{GENOME}.tsv.gz",
     output:
         WPS="results/{ID}/signals/signal-corrected/{target_region}.{SAMPLE}-corrected_WPS.{GENOME}.csv.gz",
         COV="results/{ID}/signals/signal-corrected/{target_region}.{SAMPLE}-corrected_COV.{GENOME}.csv.gz",
         MEAN_WEIGHT="results/{ID}/signals/signal-corrected/{target_region}.{SAMPLE}-corrected_MEAN_WEIGHT.{GENOME}.csv.gz",
+    log:
+        "logs/{ID}/extract_GCcorrected_counts/extract_GCcorrected_counts_{target_region}.{SAMPLE}.{GENOME}.log",
     params:
         minRL=config["minRL"],
         maxRL=config["maxRL"],
@@ -91,10 +91,10 @@ def get_control_files(wildcards):
 rule aggregate_controls:
     input:
         control_files=get_control_files,
-        #control_files=["results/cfDNA_UniFlow/signals/signal-corrected/LYL1.EGAF00002727162-corrected_COV.hg38.csv.gz",
-        #        "results/cfDNA_UniFlow/signals/signal-corrected/LYL1.EGAF00002727163-corrected_COV.hg38.csv.gz"]
     output:
         "results/{ID}/signals/controls/{target_region}.{control_name}-{correction}_{signal}.{GENOME}.tsv.gz",
+    log:
+        "logs/{ID}/aggregate_controls/aggregate_controls_{target_region}.{control_name}-{correction}_{signal}.{GENOME}.log",
     params:
         control_name=config["control_name"],
         overlay_mode=config["overlay_mode"],
@@ -144,6 +144,8 @@ rule plot_case_control:
             category="Case-control",
             labels={"Target region": "{target_region}", "Case": "{case_name}", "Control":"{control_name}", "Type": "Case-control overlay"},
         ),
+    log:
+        "logs/{ID}/plot_case_control/plot_case_control_{target_region}.{case_name}-vs-{control_name}-{correction}_{signal}.{GENOME}.log",
     params:
         signal = "{signal}",
         target = "{target_region}",

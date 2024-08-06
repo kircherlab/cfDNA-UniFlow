@@ -1,7 +1,9 @@
 # cfDNA UniFlow: A unified preprocessing pipeline for cell-free DNA from liquid biopsies
+
 <div align="justify">
 
 cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processing whole genome sequencing (WGS) cfDNA samples from liquid biopsies. It includes essential steps for pre-processing raw cfDNA samples, quality control and reporting. Additionally, several optional utility functions like GC bias correction and estimation of copy number state are included. Finally, we provide specialized methods for extracting coverage derived signals and visualizations comparing cases and controls. Figure S1 gives a detailed overview of the workflow.
+
 </div>
 
 <figure>
@@ -15,41 +17,56 @@ cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processi
 
 ## Authors <!-- omit from toc -->
 
-* Sebastian Röner (@sroener)
+- Sebastian Röner (@sroener)
 
 <div style="page-break-after: always;"></div>
 
 ## Table of Contents <!-- omit from toc -->
 
 - [cfDNA UniFlow: A unified preprocessing pipeline for cell-free DNA from liquid biopsies](#cfdna-uniflow-a-unified-preprocessing-pipeline-for-cell-free-dna-from-liquid-biopsies)
-    - [1 Dependencies](#1-dependencies)
-    - [2 Functional summary](#2-functional-summary)
-        - [2.1 Raw data processing](#21-raw-data-processing)
-        - [2.2 Quality control](#22-quality-control)
-        - [2.3 Signal extraction and sequence analysis functionality](#23-signal-extraction-and-sequence-analysis-functionality)
-        - [2.4 Report](#24-report)
-        - [2.5 Comparison of fragment based GC bias correction methods for cfDNA](#25-comparison-of-fragment-based-gc-bias-correction-methods-for-cfdna)
-        - [2.6 Notes on resource requirements](#26-notes-on-resource-requirements)
-    - [3 Quick-start Guide](#3-quick-start-guide)
-        - [3.1 Setup](#31-setup)
-            - [Step 1: Obtain a copy of this workflow](#step-1-obtain-a-copy-of-this-workflow)
-            - [Step 2: Install Snakemake](#step-2-install-snakemake)
-            - [Step 3: Activate conda environment](#step-3-activate-conda-environment)
-        - [3.2 Integration test](#32-integration-test)
-            - [Step 1: Download test files](#step-1-download-test-files)
-            - [Step 2: Check config files](#step-2-check-config-files)
-            - [Step 3: Executing the workflow](#step-3-executing-the-workflow)
-        - [3.3 Running the workflow with the data used in the manuscript](#33-running-the-workflow-with-the-data-used-in-the-manuscript)
-            - [Step 1: Download files from EGA](#step-1-download-files-from-ega)
-            - [Step 2: Check manuscript config files](#step-2-check-manuscript-config-files)
-            - [Step 3: Executing the workflow](#step-3-executing-the-workflow-1)
-            - [Step 4: Reproducing figures 2 and 3](#step-4-reproducing-figures-2-and-3)
-        - [3.4 Running the workflow with your own data](#34-running-the-workflow-with-your-own-data)
-            - [Step 1: Configure Workflow](#step-1-configure-workflow)
-            - [Step 2: Execute workflow](#step-2-execute-workflow)
-            - [Step 3: Investigate results](#step-3-investigate-results)
-    - [4 Contribution guidelines](#4-contribution-guidelines)
-    - [5. References](#5-references)
+  - [1 Dependencies](#1-dependencies)
+  - [2 Functional summary](#2-functional-summary)
+    - [2.1 Raw data processing](#21-raw-data-processing)
+    - [2.2 Quality control](#22-quality-control)
+    - [2.3 Signal extraction and sequence analysis functionality](#23-signal-extraction-and-sequence-analysis-functionality)
+    - [2.4 Report](#24-report)
+    - [2.5 Comparison of fragment based GC bias correction methods for cfDNA](#25-comparison-of-fragment-based-gc-bias-correction-methods-for-cfdna)
+    - [2.6 Reproducing Signals from Snyder et al. Cell 2016](#26-reproducing-signals-from-snyder-et-al-cell-2016)
+    - [2.7 Comparison of cfDNA Uniflow with other methods](#27-comparison-of-cfdna-uniflow-with-other-methods)
+    - [2.8 Notes on resource requirements](#28-notes-on-resource-requirements)
+  - [3 Quick-start Guide](#3-quick-start-guide)
+    - [3.1 Setup](#31-setup)
+      - [Step 1: Obtain a copy of this workflow](#step-1-obtain-a-copy-of-this-workflow)
+      - [Step 2: Install Snakemake](#step-2-install-snakemake)
+      - [Step 3: Activate conda environment](#step-3-activate-conda-environment)
+    - [3.2 Integration test](#32-integration-test)
+      - [Step 1: Download test files](#step-1-download-test-files)
+      - [Step 2: Check config files](#step-2-check-config-files)
+      - [Step 3: Executing the workflow](#step-3-executing-the-workflow)
+    - [3.3 Running the workflow with the data used in the manuscript](#33-running-the-workflow-with-the-data-used-in-the-manuscript)
+      - [Step 1: Download files from EGA](#step-1-download-files-from-ega)
+      - [Step 2: Check manuscript config files](#step-2-check-manuscript-config-files)
+      - [Step 3: Executing the workflow on the manuscript data](#step-3-executing-the-workflow-on-the-manuscript-data)
+      - [Step 4: Reproducing figures 2 and 3](#step-4-reproducing-figures-2-and-3)
+    - [3.4 Running the workflow with data from Snyder et al. Cell 2016](#34-running-the-workflow-with-data-from-snyder-et-al-cell-2016)
+      - [Step 1: Download and prepare files](#step-1-download-and-prepare-files)
+      - [Step 2: Check config files for Snyder et al. data](#step-2-check-config-files-for-snyder-et-al-data)
+      - [Step 3: Executing the workflow for Snyder et al. data](#step-3-executing-the-workflow-for-snyder-et-al-data)
+      - [Step 4: Reproducing Figure S8-10](#step-4-reproducing-figure-s8-10)
+    - [3.5 Running the workflow with your own data](#35-running-the-workflow-with-your-own-data)
+      - [Step 1: Configure samples](#step-1-configure-samples)
+      - [Step 2: Configure regions](#step-2-configure-regions)
+      - [Step 3: Configure workflow](#step-3-configure-workflow)
+      - [Step 4: Execute workflow](#step-4-execute-workflow)
+      - [Step 5: Investigate results](#step-5-investigate-results)
+  - [4 Project structure](#4-project-structure)
+    - [4.1 Config](#41-config)
+    - [4.2 Logs](#42-logs)
+    - [4.3 Resources](#43-resources)
+    - [4.4 Results](#44-results)
+    - [4.5 Workflow](#45-workflow)
+  - [5 Contribution guidelines](#5-contribution-guidelines)
+  - [6 References](#6-references)
 
 <div style="page-break-after: always;"></div>
 
@@ -145,21 +162,181 @@ The figure below shows a comparison of fragment based GC bias correction methods
  </figcaption>
 </figure>
 
-### 2.6 Notes on resource requirements
+### 2.6 Reproducing Signals from Snyder et al. Cell 2016
 
-* The index creation of bwa-mem2 is resource intensive:
+In the following section, plots are shown that were generated using the cfDNA UniFlow workflow and the data from the Snyder et al. Cell 2016 paper. The figures demonstrate that the workflow, even though a different processing, additional bias correction steps and refinement of raw signals were used, can reproduce the signals from the original publication. Figure S8 shows signals around transcription factor binding sites (TFBS) of CTCF, MAFK, and ETS, as shown in Snyder et al. [[3]](#Cell2016). Additionally, Figure S9 shows the signals around genomic features like Transcription Start Sites (TSSs), Transcription End Sites (TESs), splice sites, and start- and stop codons. Finally, Figure S10 shows signals around TSSs stratified by expression levels, as shown in Snyder et al. [[3]](#Cell2016).
+
+<figure>
+ <img loading="eager" src="supplement/Snyder-et-al_Cell2016_analysis/TFBS_CELL_vs_UniFlow.png">
+ <figcaption>
+  <div align="justify" style="page-break-inside: avoid;">
+   <strong>Figure S8: Nucleosome phasing around aggregated transcription factor binding sites.</strong> Each panel shows two plots. One showing signals extracted from data as shown in Snyder et al. using the original processing steps and one showing signals extracted using cfDNA UniFlow. Panel a) shows signals around CTCF binding sites, panel b) shows signals around MAFK binding sites and panel c) shows signals around ETS binding sites. In all cases, signals are reproducible between the original and the cfDNA UniFlow processing, even though the processing was different.
+  </div>
+ </figcaption>
+</figure>
+
+<div style="page-break-after: always;"></div>
+
+
+<figure>
+ <img loading="eager" src="supplement/Snyder-et-al_Cell2016_analysis/geneic_features_CELL_vs_UniFlow.png" style="page-break-inside: avoid;">
+ <figcaption>
+  <div align="justify" style="page-break-inside: avoid;">
+   <strong>Figure S9: Nucleosome phasing around aggregated genic features.</strong> Each panel shows two plots. One showing signals extracted from data as shown in Snyder et al. using the original processing steps and one showing signals extracted using cfDNA UniFlow. Panel a) shows signals around TSSs, panel b) shows signals around TESs, panel c) shows signals around splice sites, panel d) shows signals around start codons and panel e) shows signals around stop codons. Strong phasing around TSSs and splice sites are visible in both processing steps. Weaker phasing around TESs, start and stop codons are visible, but less pronounced in the cfDNA UniFlow processing.
+  </div>
+ </figcaption>
+</figure>
+
+
+<figure>
+ <img loading="eager" src="supplement/Snyder-et-al_Cell2016_analysis/expression_TSS_CELL_vs_UniFlow.png">
+ <figcaption>
+  <div align="justify" style="page-break-inside: avoid;">
+   <strong>Figure S10: Nucleosome phasing around TSSs stratified by expression.</strong> Panel a) shows signals extracted from data as shown in Snyder et al. and panel b) shows signals extracted using cfDNA UniFlow. In both cases, signals are stratified by expression levels, showing stronger phasing around highly expressed genes.
+  </div>
+ </figcaption>
+</figure>
+
+### 2.7 Comparison of cfDNA Uniflow with other methods
+
+The table S1 shows a comparison of cfDNA Uniflow with the cfDNApipe workflow. Both workflows are designed for the preprocessing of cfDNA samples from liquid biopsies, but follow different design principles.
+
+<table>
+    <caption>Table S1: Comparison cfDNA Uniflow vs cfDNApipe.</caption>
+  <thead>
+    <tr>
+      <th style="text-align: center; font-weight: bold">Characteristic</th>
+      <th style="text-align: center; font-weight: bold">cfDNA Uniflow</th>
+      <th style="text-align: center; font-weight: bold">cfDNApipe</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan=3  style="text-align: center; font-weight: bold; border-bottom: solid thin;" >Workflow characteristics</td>
+    </tr>
+    <tr>
+      <td>package management</td>
+      <td>conda</td>
+      <td>conda</td>
+    </tr>
+    <tr>
+      <td>language</td>
+      <td>Snakemake</td>
+      <td>Python</td>
+    </tr>
+    <tr>
+      <td>modularity</td>
+      <td>yes</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>multiprocessing support</td>
+      <td>yes</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>configurability</td>
+      <td>config files</td>
+      <td>custom python scripts</td>
+    </tr>
+    <tr>
+      <td>scalability</td>
+      <td>single machine to compute clusters</td>
+      <td>single machine</td>
+    </tr>
+    <tr>
+      <td colspan=3  style="text-align: center; font-weight: bold; border-bottom: solid thin; border-top: solid thin;">Core functionality</td>
+    </tr>
+    <tr>
+      <td>Adapter removal</td>
+      <td>Ngmerge or Trimmomatic</td>
+      <td>adapterremoval</td>
+    </tr>
+    <tr>
+      <td>Mapping</td>
+      <td>bwa-mem2</td>
+      <td>Bowtie2/Bismark</td>
+    </tr>
+    <tr>
+      <td>Length filtering</td>
+      <td>Yes</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Sequencing error correction</td>
+      <td>Ngmerge</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>GC correction</td>
+      <td>Fragment level</td>
+      <td>Bin or arm level (CNV only)</td>
+    </tr>
+    <tr>
+      <td>Quality Control</td>
+      <td>FastQC, Samtools stats, Mosdepth</td>
+      <td>FastQC, Qualimap</td>
+    </tr>
+    <tr>
+      <td>Reporting</td>
+      <td>Snakemake + integrated MultiQC report</td>
+      <td>Custom html report</td>
+    </tr>
+    <tr>
+      <td colspan=3  style="text-align: center; font-weight: bold; border-bottom: solid thin; border-top: solid thin;">Analyses</td>
+    </tr>
+    <tr>
+      <td>CNV analysis</td>
+      <td>IchorCNA</td>
+      <td>Jiang P. et al.  (2015)</td>
+    </tr>
+    <tr>
+      <td>Tumor fraction estimation</td>
+      <td>IchorCNA</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Methylation analysis</td>
+      <td>-</td>
+      <td>case-control + tissue deconvolution</td>
+    </tr>
+    <tr>
+      <td>Fragmentomic analysis</td>
+      <td>yes</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>Nucleosome analysis</td>
+      <td>yes</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>SNV/InDel analysis</td>
+      <td>possible extension</td>
+      <td>yes (calling only)</td>
+    </tr>
+    <tr>
+      <td>Virus detection</td>
+      <td>possible extension</td>
+      <td>yes</td>
+    </tr>
+</tbody></table>
+
+### 2.8 Notes on resource requirements
+
+- The index creation of bwa-mem2 is resource intensive:
 
 ```bash
 # Indexing the reference sequence (Requires 28N GB memory where N is the size of the reference sequence).
 ./bwa-mem2 index [-p prefix] <in.fasta>
-Where 
-<in.fasta> is the path to reference sequence FASTA file and 
+Where
+<in.fasta> is the path to reference sequence FASTA file and
 <prefix> is the prefix of the names of the files that store the resultant index. Default is in.FASTA.
 ```
 
 More information can be found in the [documentation](https://github.com/bwa-mem2/bwa-mem2#usage) or [this issue](https://github.com/bwa-mem2/bwa-mem2/issues/111).
 
-* bwa-mem2 mem uses around 4GB memory per thread.
+- bwa-mem2 mem uses around 4GB memory per thread.
 
 ## 3 Quick-start Guide
 
@@ -168,6 +345,7 @@ More information can be found in the [documentation](https://github.com/bwa-mem2
 The goal of cfDNA Uniflow is to provide essential and standardized preprocessing steps in a reproducible and scalable way, with the option to include additional steps as needed. Therefore, we encourage users to use this workflow [as a template](https://help.github.com/en/articles/creating-a-repository-from-a-template) and build their own analysis on top of it. The following steps guide you through the setup of the workflow.
 
 **Note 1:** If you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this (original) repository.
+
 **Note 2:** If you want to contribute to the development of cfDNA UniFlow, please follow the guidelines in [section 4](#4-contribution-guidelines).
 
 #### Step 1: Obtain a copy of this workflow
@@ -176,7 +354,6 @@ The goal of cfDNA Uniflow is to provide essential and standardized preprocessing
 2. [Clone](https://help.github.com/en/articles/cloning-a-repository) the newly created repository to your local system, into the place where you want to perform the data analysis.
 
 #### Step 2: Install Snakemake
-
 
 After successful installation, set up an environment for Snakemake. This can be done by executing the following command:
 
@@ -187,6 +364,8 @@ conda create -c bioconda -c conda-forge -n snakemake snakemake
 The environment can be activated via the `conda activate snakemake` command.
 
 For installation details, see the instructions in the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
+
+Installation instructions for conda can be found in the official [conda documentation](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html).
 
 #### Step 3: Activate conda environment
 
@@ -267,7 +446,7 @@ We provide a configuration file for the manuscript data in the `supplement/manus
 
 **Note:** Please check the paths/file names in the `manuscript_samples.tsv` file and adjust them if necessary.
 
-#### Step 3: Executing the workflow
+#### Step 3: Executing the workflow on the manuscript data
 
 This step is similar to the integration test, but with the manuscript data.
 
@@ -289,15 +468,71 @@ If possible, we highly encourage the execution of the workflow in a cluster envi
 
 To reproduce the figures 2 and 3 from the manuscript, you need to execute the Jupyter notebook `cfDNA_Uniflow_figure2-3.ipynb` located in the `supplement/manuscript_analysis` directory. The notebook contains the code for generating the figures and is based on the results generated by the workflow.
 
-### 3.4 Running the workflow with your own data
+### 3.4 Running the workflow with data from Snyder et al. Cell 2016
 
-After running the integration test, you can start using the workflow with your own data. For this, you need to modify the configuration files and provide your own data.
+#### Step 1: Download and prepare files
 
-#### Step 1: Configure Workflow
+The aligned reads from the Snyder et al. Cell 2016 [[3]](#Cell2016) paper are deposited in the NCBI Gene Expression Omnibus (GEO) with accession [GSE71378](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE71378) and can be downloaded via SRA. A copy of the original BAM files is also provided on the [Kircherlab webserver](https://kircherlab.bihealth.org/download/cfDNA/) for convenience.
 
-Configure the workflow according to your needs via editing the files in the `config/` folder. Adjust `config.yaml` according to the included comments to configure the workflow execution. The most important options are the path to the respective `samples.tsv` and `regions.tsv` files. All other default files are either included, or will be downloaded and generated automatically. 
+The files can be downloaded with the following commands:
 
-The `samples.tsv` file should contain the following columns:
+```bash
+# Create the expected directory
+mkdir -p resources/snyder_et_al_2016/
+# Download the files
+wget -r -nd --directory-prefix=resources/snyder_et_al_2016/ --reject="index.html*" --no-parent --tries=inf --continue https://kircherlab.bihealth.org/download/cfDNA/
+```
+
+To reproduce the plots described in section [2.6](#26-reproducing-signals-from-snyder-et-al-cell-2016), the sample `CH01.bam` needs to be created by merging the samples `BH01.bam`, `IH01.bam` and `IH02.bam`:
+
+```bash
+samtools merge -o resources/snyder_et_al_2016/CH01.bam resources/snyder_et_al_2016/BH01.bam resources/snyder_et_al_2016/IH01.bam resources/snyder_et_al_2016/IH02.bam
+```
+
+Afterwards, the respective entry has to be added to the `CELL2016_samples.tsv` file.
+
+#### Step 2: Check config files for Snyder et al. data
+
+Configuration files for the Snyder et al. data are provided in the `supplement/Snyder-et-al_Cell2016_analysis` directory. The directory contains the following files:
+
+- CELL2016_config.yaml
+- CELL2016_samples.tsv
+- CELL2016_regions.tsv
+- CELL2016_region_files
+- Snyder-et-al_Cell2016_report.zip
+- Snyder-et-al_Cell2016_plots.ipynb
+
+**Note:** Please check the paths/file names in the `CELL2016_samples.tsv` file and adjust them if necessary.
+
+#### Step 3: Executing the workflow for Snyder et al. data
+
+Test the configuration with a dry-run:
+
+```bash
+snakemake --use-conda --configfile supplement/Snyder-et-al_Cell2016_analysis/CELL2016_config.yaml -n
+```
+
+The workflow is executed locally with $N cores via:
+
+```bash
+snakemake --use-conda --configfile supplement/Snyder-et-al_Cell2016_analysis/CELL2016_config.yaml --cores $N
+```
+
+If possible, we highly encourage the execution of the workflow in a cluster environment. The detailed configuration depends on the available infrastructure. More information can be found in the respective subsection of the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/executing/cluster.html).
+
+#### Step 4: Reproducing Figure S8-10
+
+To reproduce the figures S8-10, the workflow in [step 3](#step-3-executing-the-workflow-for-snyder-et-al-data) needs to be executed and finished. Afterwards, plots can be generated using the provided Jupyter notebook `cfDNA_Uniflow_figure2-3.ipynb` located in the `supplement/Snyder-et-al_Cell2016_analysis` directory.
+
+### 3.5 Running the workflow with your own data
+
+After running the integration test, you can start using the workflow with your own data. For this, you need to modify the configuration files and provide your own data. All three configuration files (`samples.tsv`, `regions.tsv`, `config.yaml`) should be located in the `config/` directory and will be automatically validated before workflow execution. All other default files are either included, or will be downloaded and generated automatically.
+
+**Note:** Names of the configuration files are arbitrary and can be changed according to your needs, but have to be referenced correctly in the Snakemake command and `config.yaml`.
+
+#### Step 1: Configure samples
+
+The `samples.tsv` file should contain the relevant information for each sample in an experiment. It should contain the following columns:
 
 ```yaml
 # Identifier of the cohort/experiment
@@ -305,7 +540,7 @@ ID: string
 # Sample name/identifier
 sample: string
 # Path to the BAM file (for reprocessing); insert "-" if FASTQ files are used
-bam: string 
+bam: string
 # Path to the R1 FASTQ file; insert "-" if bam is used
 fq1: string
 # Path to the R2 FASTQ file; insert "-" if bam is used
@@ -322,9 +557,11 @@ status: string
 info: string
 ```
 
-If FASTQ files are used, either single-end or paired-end sequencing can be specified, depending on how many FASTQ files are provided. If BAM files are used, the FASTQ columns should be filled with "-" and vice versa. 
+If FASTQ files are used, either single-end or paired-end sequencing can be specified, depending on how many FASTQ files are provided. If BAM files are used, the FASTQ columns should be filled with "-" and vice versa.
 
-The `regions.tsv` file should contain the following columns:
+#### Step 2: Configure regions
+
+The `regions.tsv` file contains names and paths to the bed files for regions of interest. It should contain the following columns:
 
 ```yaml
 # region name/identifier
@@ -333,9 +570,65 @@ target: string
 path: string
 ```
 
-**Note:** All three files will be automatically validated before workflow execution.
+#### Step 3: Configure workflow
 
-#### Step 2: Execute workflow
+The `config.yaml` is the main configuration file for the workflow. It contains options for the workflow execution and paths to the configuration files. We provide sensible defaults and document the purpose of most options via comments in the `config.yaml`, but the user can adjust them according to their needs.
+
+In the following examples, we cover the most important options:
+
+```yaml
+samples: "config/test-samples.tsv"
+regions: "config/test-regions.tsv"
+control_name: "healthy"
+```
+
+The first section of the config file should be used to specify the paths to the samples and regions files. The `control_name` option is used to specify the name of the control samples in the samples file, which will be used for the case-control plot.
+
+```yaml
+### genome build specific options ###
+
+hg19:
+  reference: "resources/reference/hg19.fa"
+  2bit_ref: "resources/reference/hg19.2bit"
+  repeatmasker: 
+    "resources/blacklists/repeatmasker.hg19.merged.bed.gz"
+  effectiveGenomeSize: 2864785220
+
+hg38:
+  reference: "resources/reference/hg38.fa"
+  2bit_ref: "resources/reference/hg38.2bit"
+  repeatmasker: 
+    "resources/blacklists/repeatmasker.hg38.merged.bed.gz"
+  effectiveGenomeSize: 2913022398
+```
+
+The second section of the config file contains genome build specific options. The paths to the reference genome, 2bit reference, repeatmasker blacklist, and effective genome size are specified for both hg19 and hg38. If defaults are used, the workflow will download the necessary files automatically. If these files are already available, the paths should be adjusted accordingly.
+
+```yaml
+### global variables ###
+
+TMPDIR: "$TMPDIR" # path to directory for writing TMP files
+
+SEED: 42 # seed for increased reproducibility. Mainly used in GCbias estimation
+
+### Utility options ###
+
+utility:
+  GCbias-plot: True
+  GCbias-correction: True
+  ichorCNA: True
+  case-control-plot: True
+
+### trimming ###
+
+PE_trimming_algorithm: "NGmerge" #can be either NGmerge or trimmomatic
+```
+
+The third section of the config file contains global variables and configuration of optional steps in the workflow. The `TMPDIR` variable specifies the path to the directory for writing temporary files. The `SEED` variable is used for increased reproducibility and is mainly used in the GC bias estimation. The `utility` section is used to enable or disable optional steps in the workflow using either `True` or `False`. Finally, `PE_trimming_algorithm` variable specifies the algorithm used for trimming paired-end reads. It can be either `NGmerge` or `trimmomatic`. All subsequent options are specific options rules/programs in the workflow and do not need to be adjusted for most use cases.
+
+**Note:** The configuration file is validated before the workflow execution. If essential information is missing or false values are provided, the workflow will report an error and not be executed.
+
+#### Step 4: Execute workflow
 
 Activate the conda environment:
 
@@ -357,7 +650,7 @@ snakemake --use-conda --configfile <CONFIGFILE> --cores $N
 
 See the Snakemake documentation on [workflow execution](https://snakemake.readthedocs.io/en/stable/executing/cli.html) and execution in [cluster environments](https://snakemake.readthedocs.io/en/stable/executing/cluster.html) for further details.
 
-#### Step 3: Investigate results
+#### Step 5: Investigate results
 
 After successful execution, you can create a self-contained interactive HTML report with all results via:
 
@@ -371,8 +664,125 @@ A functional description of reporting can be found in [section 2.4](#24-report).
 
 An example report in zip format can be found in the [supplement directory](https://github.com/kircherlab/cfDNA-UniFlow/tree/main/supplement). For viewing, the zip file needs to be extracted.
 
+## 4 Project structure
 
-## 4 Contribution guidelines
+The workflow produces a typical project structure:
+
+```bash
+.
+├── config
+├── logs
+├── resources
+├── results
+└── workflow
+```
+
+Each of the listed directories has a specific purpose, as described in the respective subsections:
+
+### 4.1 Config
+
+The `config` directory typically contains the configuration files for the workflow. The files are used to specify the [samples](#step-1-configure-samples), [regions of interest](#step-2-configure-regions), and [workflow settings](#step-3-configure-workflow). Each of these can be reused for multiple runs if desired.
+
+### 4.2 Logs
+
+The `logs` directory contains log files generated by workflow rules during execution, documenting the progress and potential errors. Log files are placed in subdirectories according to ID and rule names.
+
+```bash
+.
+├── logs
+│   ├── <EXPERIMENT ID1>
+│   │   ├── <RULE NAME1>
+│   │   ├── <RULE NAME2>
+│   │   ├── ...
+```
+
+### 4.3 Resources
+
+The `resources` directory contains all files that are needed for the workflow, but not specific for an experiment/run. Most of the necessary files are downloaded automatically, including reference genomes, adapter sequences, and blacklists. The directory is structured as follows:
+
+```bash
+.
+├── resources
+│   ├── adapter
+│   ├── blacklists
+│   ├── ichorCNA
+│   ├── reference
+│   ├── testregions
+│   └── testsample
+```
+
+### 4.4 Results
+
+The `results` directory contains all results generated by the workflow. The directory is structured as follows:
+
+```bash
+.
+├── results
+│   ├── <Experiment ID1>
+│   │   ├── corrected_reads
+│   │   ├── fastq
+│   │   ├── GCBias
+│   │   │   ├── bias_table
+│   │   │   └── plots
+│   │   ├── GCBias_background
+│   │   ├── ichorCNA
+│   │   │   ├── <SAMPLE ID1>_processed_<GENOME_BUILD>
+│   │   │   │   └── <SAMPLE ID1>_processed
+│   │   │   ├── chroms
+│   │   │   └── readcounts
+│   │   ├── mapped_reads
+│   │   ├── NGmerge
+│   │   │   ├── merged
+│   │   │   └── nonmerged
+│   │   ├── qc
+│   │   │   ├── fastqc
+│   │   │   ├── mosdepth
+│   │   │   ├── multiqc_data
+│   │   │   └── samtools-stats
+│   │   ├── signals
+│   │   │   ├── case-control-plots
+│   │   │   ├── controls
+│   │   │   ├── GCcorrection-plots
+│   │   │   ├── signal-corrected
+│   │   │   └── signal-uncorrected
+│   │   └── trimmed
+│   │       └── trimmomatic
+│   ├── <Experiment ID2>
+│   │   ├── ...
+```
+
+The results are structured by experiment ID and contain subdirectories for each step of the workflow. To save disk space, intermediate results (e.g. trimmed reads) are removed after they are no longer needed by downstream tasks. If all intermediate results should be kept, the `--notemp` flag can be used in the Snakemake command.
+
+**Note:** The easiest way to aggregate results is to use the integrated [report feature](#step-5-investigate-results).
+
+### 4.5 Workflow
+
+The `workflow` directory contains all scripts, environments, schemas and rules for the workflow, with the Snakefile as main entry point. The directory is structured as follows:
+
+```bash
+.
+└── workflow
+    ├── envs
+    ├── report
+    ├── rules
+    ├── schemas
+    ├── scripts
+    └── Snakefile
+```
+
+The `envs` subdirectory contains all conda environments used in the workflow. If a new environment is needed, it should be created here.
+
+The `report` subdirectory contains the templates for the report generation. The templates are written in Jinja2 and can be customized according to the user's needs.
+
+The `rules` subdirectory contains all rules for the workflow. Rules are grouped by functionality and are written in the Snakemake language. The `common.smk` file contains utility functions used throughout the workflow. If new rules are needed, they should be added here.
+
+The `schemas` subdirectory contains the JSON schemas used for validating the configuration files.
+
+The `scripts` subdirectory contains all scripts used in the workflow which are not installed via conda environments. If new scripts are needed, or existing scripts need to be modified, they should be added or changed here.
+
+The `Snakefile` is the main entry point for the workflow. It contains target rule for the workflow execution and imports all rules from the `rules` directory.
+
+## 5 Contribution guidelines
 
 In case you want to contribute to the development of cfDNA UniFlow and its core functionalities, please follow these steps:
 
@@ -382,12 +792,15 @@ In case you want to contribute to the development of cfDNA UniFlow and its core 
 4. Commit and push your changes to your fork.
 5. Create a [pull request](https://help.github.com/en/articles/creating-a-pull-request) against the original repository.
 
-## 5. References
+## 6 References
 
 <a id="GCparagon">[1]</a>
 Spiegl B, Kapidzic F, Röner S, Kircher M, Speicher MR. GCparagon: evaluating and correcting GC biases in cell-free DNA at the fragment level. NAR Genomics Bioinforma. 2023; doi: 10.1093/nargab/lqad102.
 
 <a id="Griffin">[2]</a>
-Doebley A-L, Ko M, Liao H, Cruikshank AE, Santos K, Kikawa C, et al.. A framework for clinical cancer subtyping from nucleosome profiling of cell-free DNA. Nat Commun. 2022; doi: 10.1038/s41467-022-35076-w.
+Doebley A-L, Ko M, Liao H, Cruikshank AE, Santos K, Kikawa C, et al. A framework for clinical cancer subtyping from nucleosome profiling of cell-free DNA. Nat Commun. 2022; doi: 10.1038/s41467-022-35076-w.
+
+<a id="Cell2016">[3]</a>
+Snyder MW, Kircher M, Hill AJ, Daza RM, Shendure J. Cell-free DNA Comprises an In Vivo Nucleosome Footprint that Informs Its Tissues-Of-Origin. Cell. 2016; doi: 10.1016/j.cell.2015.11.050.
 
 </div>

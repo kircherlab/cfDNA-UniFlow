@@ -12,7 +12,7 @@ rule bam_to_fastq:
         s1=temp("results/{ID}/fastq/{SAMPLE}_PEsingleton.fastq.gz"), # Singletons (paired, but only one read present) in Paired End Sequencing
         SR=temp("results/{ID}/fastq/{SAMPLE}_single_read.fastq.gz"), # File for Single End Sequencing (flags for both R1 and R2 set, or both unset)
     log:
-        "results/logs/{ID}/bam_to_fastq/{SAMPLE}.log",
+        "logs/{ID}/bam_to_fastq/bam_to_fastq_{SAMPLE}.log",
     params:
         TMPDIR=config["TMPDIR"]+"{SAMPLE}",
     conda:
