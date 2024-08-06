@@ -17,41 +17,56 @@ cfDNA UniFlow is a unified, standardized, and ready-to-use workflow for processi
 
 ## Authors <!-- omit from toc -->
 
-* Sebastian Röner (@sroener)
+- Sebastian Röner (@sroener)
 
 <div style="page-break-after: always;"></div>
 
 ## Table of Contents <!-- omit from toc -->
 
 - [cfDNA UniFlow: A unified preprocessing pipeline for cell-free DNA from liquid biopsies](#cfdna-uniflow-a-unified-preprocessing-pipeline-for-cell-free-dna-from-liquid-biopsies)
-    - [1 Dependencies](#1-dependencies)
-    - [2 Functional summary](#2-functional-summary)
-        - [2.1 Raw data processing](#21-raw-data-processing)
-        - [2.2 Quality control](#22-quality-control)
-        - [2.3 Signal extraction and sequence analysis functionality](#23-signal-extraction-and-sequence-analysis-functionality)
-        - [2.4 Report](#24-report)
-        - [2.5 Comparison of fragment based GC bias correction methods for cfDNA](#25-comparison-of-fragment-based-gc-bias-correction-methods-for-cfdna)
-        - [2.6 Notes on resource requirements](#26-notes-on-resource-requirements)
-    - [3 Quick-start Guide](#3-quick-start-guide)
-        - [3.1 Setup](#31-setup)
-            - [Step 1: Obtain a copy of this workflow](#step-1-obtain-a-copy-of-this-workflow)
-            - [Step 2: Install Snakemake](#step-2-install-snakemake)
-            - [Step 3: Activate conda environment](#step-3-activate-conda-environment)
-        - [3.2 Integration test](#32-integration-test)
-            - [Step 1: Download test files](#step-1-download-test-files)
-            - [Step 2: Check config files](#step-2-check-config-files)
-            - [Step 3: Executing the workflow](#step-3-executing-the-workflow)
-        - [3.3 Running the workflow with the data used in the manuscript](#33-running-the-workflow-with-the-data-used-in-the-manuscript)
-            - [Step 1: Download files from EGA](#step-1-download-files-from-ega)
-            - [Step 2: Check manuscript config files](#step-2-check-manuscript-config-files)
-            - [Step 3: Executing the workflow](#step-3-executing-the-workflow-1)
-            - [Step 4: Reproducing figures 2 and 3](#step-4-reproducing-figures-2-and-3)
-        - [3.4 Running the workflow with your own data](#34-running-the-workflow-with-your-own-data)
-            - [Step 1: Configure Workflow](#step-1-configure-workflow)
-            - [Step 2: Execute workflow](#step-2-execute-workflow)
-            - [Step 3: Investigate results](#step-3-investigate-results)
-    - [4 Contribution guidelines](#4-contribution-guidelines)
-    - [5. References](#5-references)
+  - [1 Dependencies](#1-dependencies)
+  - [2 Functional summary](#2-functional-summary)
+    - [2.1 Raw data processing](#21-raw-data-processing)
+    - [2.2 Quality control](#22-quality-control)
+    - [2.3 Signal extraction and sequence analysis functionality](#23-signal-extraction-and-sequence-analysis-functionality)
+    - [2.4 Report](#24-report)
+    - [2.5 Comparison of fragment based GC bias correction methods for cfDNA](#25-comparison-of-fragment-based-gc-bias-correction-methods-for-cfdna)
+    - [2.6 Reproducing Signals from Snyder et al. Cell 2016](#26-reproducing-signals-from-snyder-et-al-cell-2016)
+    - [2.7 Comparison of cfDNA Uniflow with other methods](#27-comparison-of-cfdna-uniflow-with-other-methods)
+    - [2.8 Notes on resource requirements](#28-notes-on-resource-requirements)
+  - [3 Quick-start Guide](#3-quick-start-guide)
+    - [3.1 Setup](#31-setup)
+      - [Step 1: Obtain a copy of this workflow](#step-1-obtain-a-copy-of-this-workflow)
+      - [Step 2: Install Snakemake](#step-2-install-snakemake)
+      - [Step 3: Activate conda environment](#step-3-activate-conda-environment)
+    - [3.2 Integration test](#32-integration-test)
+      - [Step 1: Download test files](#step-1-download-test-files)
+      - [Step 2: Check config files](#step-2-check-config-files)
+      - [Step 3: Executing the workflow](#step-3-executing-the-workflow)
+    - [3.3 Running the workflow with the data used in the manuscript](#33-running-the-workflow-with-the-data-used-in-the-manuscript)
+      - [Step 1: Download files from EGA](#step-1-download-files-from-ega)
+      - [Step 2: Check manuscript config files](#step-2-check-manuscript-config-files)
+      - [Step 3: Executing the workflow on the manuscript data](#step-3-executing-the-workflow-on-the-manuscript-data)
+      - [Step 4: Reproducing figures 2 and 3](#step-4-reproducing-figures-2-and-3)
+    - [3.4 Running the workflow with data from Snyder et al. Cell 2016](#34-running-the-workflow-with-data-from-snyder-et-al-cell-2016)
+      - [Step 1: Download and prepare files](#step-1-download-and-prepare-files)
+      - [Step 2: Check config files for Snyder et al. data](#step-2-check-config-files-for-snyder-et-al-data)
+      - [Step 3: Executing the workflow for Snyder et al. data](#step-3-executing-the-workflow-for-snyder-et-al-data)
+      - [Step 4: Reproducing Figure S8-10](#step-4-reproducing-figure-s8-10)
+    - [3.5 Running the workflow with your own data](#35-running-the-workflow-with-your-own-data)
+      - [Step 1: Configure samples](#step-1-configure-samples)
+      - [Step 2: Configure regions](#step-2-configure-regions)
+      - [Step 3: Configure workflow](#step-3-configure-workflow)
+      - [Step 4: Execute workflow](#step-4-execute-workflow)
+      - [Step 5: Investigate results](#step-5-investigate-results)
+  - [4 Project structure](#4-project-structure)
+    - [4.1 Config](#41-config)
+    - [4.2 Logs](#42-logs)
+    - [4.3 Resources](#43-resources)
+    - [4.4 Results](#44-results)
+    - [4.5 Workflow](#45-workflow)
+  - [5 Contribution guidelines](#5-contribution-guidelines)
+  - [6 References](#6-references)
 
 <div style="page-break-after: always;"></div>
 
@@ -305,23 +320,21 @@ The table S1 shows a comparison of cfDNA Uniflow with the cfDNApipe workflow. Bo
     </tr>
 </tbody></table>
 
+### 2.8 Notes on resource requirements
 
-
-### 2.7 Notes on resource requirements
-
-* The index creation of bwa-mem2 is resource intensive:
+- The index creation of bwa-mem2 is resource intensive:
 
 ```bash
 # Indexing the reference sequence (Requires 28N GB memory where N is the size of the reference sequence).
 ./bwa-mem2 index [-p prefix] <in.fasta>
-Where 
-<in.fasta> is the path to reference sequence FASTA file and 
+Where
+<in.fasta> is the path to reference sequence FASTA file and
 <prefix> is the prefix of the names of the files that store the resultant index. Default is in.FASTA.
 ```
 
 More information can be found in the [documentation](https://github.com/bwa-mem2/bwa-mem2#usage) or [this issue](https://github.com/bwa-mem2/bwa-mem2/issues/111).
 
-* bwa-mem2 mem uses around 4GB memory per thread.
+- bwa-mem2 mem uses around 4GB memory per thread.
 
 ## 3 Quick-start Guide
 
@@ -431,7 +444,7 @@ We provide a configuration file for the manuscript data in the `supplement/manus
 
 **Note:** Please check the paths/file names in the `manuscript_samples.tsv` file and adjust them if necessary.
 
-#### Step 3: Executing the workflow
+#### Step 3: Executing the workflow on the manuscript data
 
 This step is similar to the integration test, but with the manuscript data.
 
@@ -508,6 +521,16 @@ If possible, we highly encourage the execution of the workflow in a cluster envi
 #### Step 4: Reproducing Figure S8-10
 
 To reproduce the figures S8-10, the workflow in [step 3](#step-3-executing-the-workflow-for-snyder-et-al-data) needs to be executed and finished. Afterwards, plots can be generated using the provided Jupyter notebook `cfDNA_Uniflow_figure2-3.ipynb` located in the `supplement/Snyder-et-al_Cell2016_analysis` directory.
+
+### 3.5 Running the workflow with your own data
+
+After running the integration test, you can start using the workflow with your own data. For this, you need to modify the configuration files and provide your own data. All three configuration files (`samples.tsv`, `regions.tsv`, `config.yaml`) should be located in the `config/` directory and will be automatically validated before workflow execution. All other default files are either included, or will be downloaded and generated automatically.
+
+**Note:** Names of the configuration files are arbitrary and can be changed according to your needs, but have to be referenced correctly in the Snakemake command and `config.yaml`.
+
+#### Step 1: Configure samples
+
+The `samples.tsv` file should contain the relevant information for each sample in an experiment. It should contain the following columns:
 
 ```yaml
 # Identifier of the cohort/experiment
