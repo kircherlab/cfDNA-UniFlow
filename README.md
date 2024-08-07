@@ -170,7 +170,7 @@ In the following section, plots are shown that were generated using the cfDNA Un
  <img loading="eager" src="supplement/Snyder-et-al_Cell2016_analysis/TFBS_CELL_vs_UniFlow.png">
  <figcaption>
   <div align="justify" style="page-break-inside: avoid;">
-   <strong>Figure S8: Nucleosome phasing around aggregated transcription factor binding sites.</strong> Each panel shows two plots. One showing signals extracted from data as shown in Snyder et al. using the original processing steps and one showing signals extracted using cfDNA UniFlow. Panel a) shows signals around CTCF binding sites, panel b) shows signals around MAFK binding sites and panel c) shows signals around ETS binding sites. In all cases, signals are reproducible between the original and the cfDNA UniFlow processing, even though the processing was different.
+   <strong>Figure S8: Windowed Protection Score around aggregated transcription factor binding sites.</strong> Each panel shows two plots. One showing signals extracted from data as shown in Snyder et al. using the original processing steps and one showing signals extracted using cfDNA UniFlow. Panel a) shows signals around CTCF binding sites, panel b) shows signals around MAFK binding sites and panel c) shows signals around ETS binding sites. In all cases, signals are reproducible between the original and the cfDNA UniFlow processing, even though the processing was different.
   </div>
  </figcaption>
 </figure>
@@ -182,7 +182,7 @@ In the following section, plots are shown that were generated using the cfDNA Un
  <img loading="eager" src="supplement/Snyder-et-al_Cell2016_analysis/geneic_features_CELL_vs_UniFlow.png" style="page-break-inside: avoid;">
  <figcaption>
   <div align="justify" style="page-break-inside: avoid;">
-   <strong>Figure S9: Nucleosome phasing around aggregated genic features.</strong> Each panel shows two plots. One showing signals extracted from data as shown in Snyder et al. using the original processing steps and one showing signals extracted using cfDNA UniFlow. Panel a) shows signals around TSSs, panel b) shows signals around TESs, panel c) shows signals around splice sites, panel d) shows signals around start codons and panel e) shows signals around stop codons. Strong phasing around TSSs and splice sites are visible in both processing steps. Weaker phasing around TESs, start and stop codons are visible, but less pronounced in the cfDNA UniFlow processing.
+   <strong>Figure S9: Windowed Protection Score around aggregated genic features.</strong> Each panel shows two plots. One showing signals extracted from data as shown in Snyder et al. using the original processing steps and one showing signals extracted using cfDNA UniFlow. Panel a) shows signals around TSSs, panel b) shows signals around TESs, panel c) shows signals around splice sites, panel d) shows signals around start codons and panel e) shows signals around stop codons. Strong phasing around TSSs and splice sites are visible in both processing steps. Weaker phasing around TESs, start and stop codons are visible, but less pronounced in the cfDNA UniFlow processing.
   </div>
  </figcaption>
 </figure>
@@ -192,7 +192,7 @@ In the following section, plots are shown that were generated using the cfDNA Un
  <img loading="eager" src="supplement/Snyder-et-al_Cell2016_analysis/expression_TSS_CELL_vs_UniFlow.png">
  <figcaption>
   <div align="justify" style="page-break-inside: avoid;">
-   <strong>Figure S10: Nucleosome phasing around TSSs stratified by expression.</strong> Panel a) shows signals extracted from data as shown in Snyder et al. and panel b) shows signals extracted using cfDNA UniFlow. In both cases, signals are stratified by expression levels, showing stronger phasing around highly expressed genes.
+   <strong>Figure S10: Windowed Protection Score around TSSs stratified by expression.</strong> Panel a) shows signals extracted from data as shown in Snyder et al. and panel b) shows signals extracted using cfDNA UniFlow. In both cases, signals are stratified by expression levels, showing stronger phasing around highly expressed genes.
   </div>
  </figcaption>
 </figure>
