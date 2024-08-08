@@ -164,7 +164,7 @@ The figure below shows a comparison of fragment based GC bias correction methods
 
 ### 2.6 Reproducing Signals from Snyder et al. Cell 2016
 
-In the following section, plots are shown that were generated using the cfDNA UniFlow workflow and the data from the Snyder et al. Cell 2016 paper. The figures demonstrate that the workflow, even though a different processing, additional bias correction steps and refinement of raw signals were used, can reproduce the signals from the original publication. Figure S8 shows signals around transcription factor binding sites (TFBS) of CTCF, MAFK, and ETS, as shown in Snyder et al. [[3]](#Cell2016). Additionally, Figure S9 shows the signals around genomic features like Transcription Start Sites (TSSs), Transcription End Sites (TESs), splice sites, and start- and stop codons. Finally, Figure S10 shows signals around TSSs stratified by expression levels, as shown in Snyder et al. [[3]](#Cell2016).
+In the following section, plots are shown that were generated using the cfDNA UniFlow workflow and the data from the Snyder et al. Cell 2016 paper. The figures demonstrate that the workflow, even though a different processing, additional bias correction steps and refinement of raw signals were used, can reproduce the signals from the original publication. Figure S8 shows signals around transcription factor binding sites (TFBS) of CTCF, MAFK, and ETS, as shown in Snyder et al. [[3]](#Cell2016). Additionally, Figure S9 shows the signals around genomic features like Transcription Start Sites (TSSs), Transcription End Sites (TESs), splice sites, and start- and stop codons. Finally, Figure S10 shows signals around TSSs stratified by expression levels, as shown in Snyder et al. [[3]](#Cell2016). A report containing further information on the processed files can be found in the [supplement](https://github.com/kircherlab/cfDNA-UniFlow/tree/main/supplement/Snyder-et-al_Cell2016_analysis) directory and needs to be unzipped before viewing.
 
 <figure>
  <img loading="eager" src="supplement/Snyder-et-al_Cell2016_analysis/TFBS_CELL_vs_UniFlow.png">
@@ -499,8 +499,9 @@ Configuration files for the Snyder et al. data are provided in the `supplement/S
 - CELL2016_samples.tsv
 - CELL2016_regions.tsv
 - CELL2016_region_files
+- Cell2016_data
 - Snyder-et-al_Cell2016_report.zip
-- Snyder-et-al_Cell2016_plots.ipynb
+- Reproduce_cell2016_plots.ipynb
 
 **Note:** Please check the paths/file names in the `CELL2016_samples.tsv` file and adjust them if necessary.
 
