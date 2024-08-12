@@ -171,7 +171,7 @@ def process_sample(
                 x, window_length=smooth_window, polyorder=smooth_polyorder
             ),
             axis=1,
-            result_type="broadcast",
+            result_type="expand",
         )
 
     if overlay_mode.lower() == "mean":
