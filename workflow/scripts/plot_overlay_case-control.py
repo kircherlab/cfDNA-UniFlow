@@ -107,9 +107,10 @@ def process_sample(
     scaling: bool = False,
     rolling: bool = False,
     rolling_window: int = 1000,
+    detrend: str = "substract",
     edge_norm: bool = False,
     window: int = 1000,
-    flank:int = 500,
+    flank: int = 500,
 ) -> pd.DataFrame:
     """Process sample for plotting. This includes smoothing, normalization and the removal of edge regions to mitigate edge effects.
 
@@ -122,6 +123,7 @@ def process_sample(
         scaling (bool, optional): Switch on whether the signal should be standardized. Defaults to False.
         rolling (bool, optional): Switch on whether the signal should be demeaned by substracting the rolling median. Defaults to False.
         rolling_window (int, optional): Window size being used in rolling_window demeaning.
+        detrend (str, optional): Mode for detrending. Can be substract or divide. Defaults to "substract".
         edge_norm (bool, optional): Switch on whether the signal should be demeaned by substracting the average signal in the flanking regions. Defaults to False.
         window (int, optional): Size of window centered on region of interest. Defaults to 1000.
         flank (int, optional): Size of flanking regions for edge_norm. Defaults to 500.
@@ -133,27 +135,17 @@ def process_sample(
         pd.DataFrame: Processed sample.
     """
 
-    #print(locals())
-    if window % 2 == 0:
-        fstart = int(window / 2 + 1)
-        fstop = int(-window / 2)
-    elif window % 2 == 1:
-        fstart = int(window / 2 - 0.5 + 1)
-        fstop = int(-window / 2 + 0.5)
-
-
-
     if edge_norm:
-        flank_start, flank_end = get_window_slice(len(sample.columns),flank*2)
+        flank_start, flank_end = get_window_slice(len(sample.columns), flank * 2)
 
-        helper = abs(
-            sample.iloc[:, flank_start:flank_end].mean(axis=1)
-        )
-        if (helper==0).any():
-            zero_mask = (helper==0)
-            print(f"Regions with zero mean in Normalization slice [{flank_start}, {flank_end}] encountered. Removing respective regions.")
+        helper = abs(sample.iloc[:, flank_start:flank_end].mean(axis=1))
+        if (helper == 0).any():
+            zero_mask = helper == 0
+            logger.info(
+                f"Regions with zero mean in Normalization slice [{flank_start}, {flank_end}] encountered. Removing respective regions."
+            )
             for zero_region in zero_mask[zero_mask].index:
-                print(f"Removing region: {zero_region}")
+                logger.info(f"Removing region: {zero_region}")
             helper.drop(helper[zero_mask].index, inplace=True)
             sample.drop(sample[zero_mask].index, inplace=True)
         sample = sample.div(helper, axis=0)
@@ -164,32 +156,28 @@ def process_sample(
                 x, window_length=smooth_window, polyorder=smooth_polyorder
             ),
             axis=1,
-            result_type="broadcast",
+            result_type="expand",
         )
-             
+
     if overlay_mode.lower() == "mean":
         sample = pd.DataFrame(sample.mean(numeric_only=True))
     elif overlay_mode.lower() == "median":
         sample = pd.DataFrame(sample.median(numeric_only=True))
     else:
         raise ValueError(f"{overlay_mode} is not a valid keyword.")
-   
-        
+
+
     if rolling:
-        if edge_norm:
-            trend = sample.rolling(rolling_window, center=True, min_periods=1).median()
+        trend = sample.rolling(rolling_window, center=True, min_periods=1).median()
+        if detrend == "substract":
+            sample = sample.sub(trend)
+        elif detrend == "divide":
             sample = sample.div(trend)
         else:
-            flank_start, flank_end = get_window_slice(len(sample),flank*2)
-            norm_sample = sample.div(sample.iloc[flank_start:flank_end].mean())
-            trend = norm_sample.rolling(rolling_window, center=True, min_periods=1).median()
-            sample = sample.div(trend)
-        
-            
+            raise ValueError("{detrend} is not a valid keyword.".format(detrend=detrend))
+
     sample["position"] = calculate_flanking_regions(len(sample))
     sample = sample.set_index("position")
-    
-    #sample = sample.iloc[fstop:fstart, :]
 
     return sample
 
@@ -450,6 +438,11 @@ def main(
 ):
     """Takes aggregated control samples and case samples. Processes the cases and plots them together with the controls and saves the plot as image."""
 
+    if signal == "Coverage":
+        detrend = "divide"
+    elif signal == "WPS":
+        detrend = "substract"
+
     controls_df = load_controls(control_samples)
     if aggregate_controls:
         control_conf_df = pd.DataFrame()
@@ -472,6 +465,7 @@ def main(
             smooth_polyorder=smooth_polyorder,
             rolling=rolling,
             rolling_window=rolling_window,
+            detrend=detrend,
             edge_norm=flank_norm,
             flank=flank,
         )
