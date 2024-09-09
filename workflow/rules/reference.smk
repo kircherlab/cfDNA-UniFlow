@@ -5,9 +5,11 @@ rule get_fasta_reference:
     log:
         "logs/get_fasta_reference_{GENOME}.log",
     params:
-        url= lambda wc:get_fasta_ref_url(wc)
+        url=lambda wc: get_fasta_ref_url(wc),
+        tmp_name="resources/reference/{GENOME}.fa.gz",
     shell:
-        "(curl -L {params.url:q} | gzip -d > {output}) 2> {log}"
+        "(rsync -avzP {params.url} {params.tmp_name}; gzip -f -d {params.tmp_name} > {output} )2> {log}"
+
 
 rule get_twobit_reference:
     output:
@@ -15,9 +17,9 @@ rule get_twobit_reference:
     log:
         "logs/get_twobit_reference_{GENOME}.log",
     params:
-        url=lambda wc:get_twobit_ref_url(wc)
+        url=lambda wc: get_twobit_ref_url(wc),
     shell:
-        "(curl -L -o {output} {params.url:q}) 2> {log}"
+        "rsync -avzP {params.url} {output} 2> {log}"
 
 
 rule bwa_mem2_index:
