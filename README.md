@@ -389,7 +389,7 @@ First, you should create the expected directory for the test files:
 mkdir -p resources/testsample/
 ```
 
-Afterwards, download the files located on this [webserver](https://kircherlab.bihealth.org/download/cfDNA-testSam):
+Afterwards, download the files located on this [webserver](https://kircherlab.bihealth.org/download/cfDNA-testSample/):
 
 ```bash
 curl -L -o resources/testsample/testsample_hg19_1x_chr20-22.bam https://kircherlab.bihealth.org/download/cfDNA-testSample/testsample_hg19_1x_chr20-22.bam
