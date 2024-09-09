@@ -1,0 +1,3 @@
+ID	sample	bam	fq1	fq2	genome_build	library_name	platform	status	info
+test-run	test38_chr20-22	-	resources/testsample/testsample_hg19_1x_chr20-22_R1.fastq.gz	resources/testsample/testsample_hg19_1x_chr20-22_R2.fastq.gz	hg38	ThruPLEX_DNA-seq	Illumina_NextSeq_500	healthy	
+test-run	test38_chr20-22-case	-	resources/testsample/testsample_hg19_1x_chr20-22_R1.fastq.gz	resources/testsample/testsample_hg19_1x_chr20-22_R2.fastq.gz	hg38	ThruPLEX_DNA-seq	Illumina_NextSeq_500	healthy-case	
