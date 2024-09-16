@@ -395,12 +395,16 @@ Afterwards, download the files located on this [webserver](https://kircherlab.bi
 curl -L -o resources/testsample/testsample_hg19_1x_chr20-22.bam https://kircherlab.bihealth.org/download/cfDNA-testSample/testsample_hg19_1x_chr20-22.bam
 ```
 
+Alternatively, you can download the files manually from [Zenodo](10.5281/zenodo.13768204) and place them in the `resources/testsample/` directory.
+
 #### Step 2: Check config files
 
-There are three files that are used in this example:
+There are five files that are used in this example:
 
 - config/test-config.yaml
+- config/test-config_fastq.yaml
 - config/test-samples.tsv
+- config/test-samples_fastq.tsv
 - config/test-regions.tsv
 
 **Note**: These files are configured for a quick integration test and shouldn't be edited.
@@ -415,6 +419,14 @@ Test the configuration with a dry-run:
 snakemake --use-conda --configfile config/test-config.yaml -n
 ```
 
+or
+
+```bash
+snakemake --use-conda --configfile config/test-config_fastq.yaml -n
+```
+
+if you want to use the FASTQ files.
+
 The workflow is executed locally with $N cores via:
 
 ```bash
@@ -422,6 +434,8 @@ snakemake --use-conda --configfile config/test-config.yaml --cores $N
 ```
 
 For cluster execution, read the guidelines in the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/executing/cluster.html).
+
+**Note**: The only difference between the two configs is the input file format (BAM or FASTQ). If a BAM file is used, the workflow will convert it to FASTQ files before processing. Otherwise, the FASTQ files are used directly. 
 
 ### 3.3 Running the workflow with the data used in the manuscript
 
@@ -558,7 +572,7 @@ status: string
 info: string
 ```
 
-If FASTQ files are used, either single-end or paired-end sequencing can be specified, depending on how many FASTQ files are provided. If BAM files are used, the FASTQ columns should be filled with "-" and vice versa.
+If FASTQ files are used, either single-end or paired-end sequencing can be specified, depending on how many FASTQ files are provided. If BAM files are used, the FASTQ columns should be filled with "-" and vice versa. Examples for either BAM or FASTQ based sample configuration can be found in the `config/test-samples.tsv` file, or `config/test-samples_fastq.tsv` file, respectively.
 
 #### Step 2: Configure regions
 
