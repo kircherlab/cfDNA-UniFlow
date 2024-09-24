@@ -33,6 +33,8 @@
 !config/test-config.yaml
 !config/test-samples.tsv
 !config/test-regions.tsv
+!config/test-config_fastq.yaml
+!config/test-samples_fastq.tsv
 
 !resources/qual_profile.txt
 

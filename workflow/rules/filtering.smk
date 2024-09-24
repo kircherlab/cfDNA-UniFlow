@@ -21,7 +21,7 @@ rule filter_noadapter:
             "results/{ID}/NGmerge/nonmerged/{SAMPLE}_noadapters_{read}.filtered.fastq.gz"
         ),
     log:
-        "logs/{ID}/filter_noadapter/filter_noadapter_{SAMPLE}.log",
+        "logs/{ID}/filter_noadapter/filter_noadapter_{SAMPLE}_noadapters_{read}.log",
     params:
         min_RL=config["length-filter"]["MINLEN"],
     conda:

@@ -5,9 +5,11 @@ rule get_fasta_reference:
     log:
         "logs/get_fasta_reference_{GENOME}.log",
     params:
-        url= lambda wc:get_fasta_ref_url(wc)
+        url=lambda wc: get_fasta_ref_url(wc),
+        tmp_name="resources/reference/{GENOME}.fa.gz",
     shell:
-        "(curl -L {params.url:q} | gzip -d > {output}) 2> {log}"
+        "(rsync -avzP {params.url} {params.tmp_name}; gzip -f -d {params.tmp_name} > {output} )2> {log}"
+
 
 rule get_twobit_reference:
     output:
@@ -15,18 +17,23 @@ rule get_twobit_reference:
     log:
         "logs/get_twobit_reference_{GENOME}.log",
     params:
-        url=lambda wc:get_twobit_ref_url(wc)
+        url=lambda wc: get_twobit_ref_url(wc),
     shell:
-        "(curl -L -o {output} {params.url:q}) 2> {log}"
+        "rsync -avzP {params.url} {output} 2> {log}"
 
 
 rule bwa_mem2_index:
     input:
         ref="resources/reference/{GENOME}.fa",
     output:
-        ref=multiext( "resources/reference/{GENOME}.fa", ".amb", ".ann", ".pac", ),
+        ref=multiext(
+            "resources/reference/{GENOME}.fa",
+            ".amb",
+            ".ann",
+            ".pac",
+        ),
     log:
-       "logs/bwa_mem2_index-{GENOME}.log",
+        "logs/bwa_mem2_index-{GENOME}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
     threads: 16
@@ -44,27 +51,28 @@ rule get_trimmomatic_adapters:
         "resources/adapter/TruSeq3-SE.fa",
     params:
         prefix="resources/adapter/",
-        URLs = [
-        "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/NexteraPE-PE.fa",
-        "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/TruSeq2-PE.fa",
-        "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/TruSeq2-SE.fa",
-        "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/TruSeq3-PE-2.fa",
-        "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/TruSeq3-PE.fa",
-        "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/TruSeq3-SE.fa",
-        ]
+        URLs=[
+            "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/NexteraPE-PE.fa",
+            "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/TruSeq2-PE.fa",
+            "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/TruSeq2-SE.fa",
+            "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/TruSeq3-PE-2.fa",
+            "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/TruSeq3-PE.fa",
+            "https://raw.githubusercontent.com/usadellab/Trimmomatic/main/adapters/TruSeq3-SE.fa",
+        ],
     log:
-        "logs/get_trimmomatic_adapter.log"
+        "logs/get_trimmomatic_adapter.log",
     shell:
         "wget -P {params.prefix} {params.URLs} -o {log}"
+
 
 rule get_ichorCNA_files:
     output:
         zip="ichorCNA_master.zip",
-        dir=directory("resources/ichorCNA")
+        dir=directory("resources/ichorCNA"),
     params:
         prefix="resources/",
-        URL="https://github.com/broadinstitute/ichorCNA/archive/refs/heads/master.zip" #"https://github.com/GavinHaLab/ichorCNA/archive/refs/heads/master.zip"
+        URL="https://github.com/broadinstitute/ichorCNA/archive/refs/heads/master.zip",  #"https://github.com/GavinHaLab/ichorCNA/archive/refs/heads/master.zip"
     log:
-        "logs/get_ichorCNA_files.log"
+        "logs/get_ichorCNA_files.log",
     shell:
         '(wget -P {params.prefix} -c {params.URL} -O {output.zip}; unzip -j {output.zip} "ichorCNA-master/inst/*" -d {output.dir}) 2> {log}'

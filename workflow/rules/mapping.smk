@@ -40,8 +40,6 @@ rule index_bam:
         "{path}.bam",
     output:
         "{path}.bam.bai",
-    log:
-        "logs/{ID}/index_bam/index_bam_{SAMPLE}.{GENOME}.log",
     conda:
         "../envs/cfDNA_prep.yaml"
     threads: 32
