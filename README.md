@@ -394,7 +394,7 @@ mkdir -p resources/testsample/
 Afterwards, the test-files located on this [webserver](https://kircherlab.bihealth.org/download/cfDNA-testSample/) need to be downloaded:
 
 ```bash
-curl -L -o resources/testsample/testsample_hg19_1x_chr20-22.bam https://kircherlab.bihealth.org/download/cfDNA-testSample/testsample_hg19_1x_chr20-22.bam
+wget -r -nd --directory-prefix=resources/testsample/ --reject="index.html*" --no-parent --tries=inf --continue https://kircherlab.bihealth.org/download/cfDNA-testSample/
 ```
 
 Alternatively, the test-files can be downloaded manually from [Zenodo](https://doi.org/10.5281/zenodo.13768204) and be placed in the `resources/testsample/` directory.
