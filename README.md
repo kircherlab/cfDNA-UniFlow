@@ -397,7 +397,7 @@ Afterwards, the test-files located on this [webserver](https://kircherlab.biheal
 curl -L -o resources/testsample/testsample_hg19_1x_chr20-22.bam https://kircherlab.bihealth.org/download/cfDNA-testSample/testsample_hg19_1x_chr20-22.bam
 ```
 
-Alternatively, the test-files can be downloaded manually from [Zenodo](10.5281/zenodo.13768204) and be placed in the `resources/testsample/` directory.
+Alternatively, the test-files can be downloaded manually from [Zenodo](https://doi.org/10.5281/zenodo.13768204) and be placed in the `resources/testsample/` directory.
 
 #### Step 2: Check config files
 
